@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة حضور الطلاب</title>
+    <style>
+        :root {
+            --primary-color: #2196F3;
+            --secondary-color: #FFC107;
+            --text-color: #333;
+            --background-color: #f5f5f5;
+            --border-radius: 8px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            direction: rtl;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+
+        .group-link {
+            display: block;
+            margin: 12px 0;
+            padding: 15px;
+            font-size: 16px;
+            color: var(--text-color);
+            text-decoration: none;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            border: 1px solid #eee;
+        }
+
+        .group-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            background-color: #1976D2;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        td input[type="text"], 
+        th input[type="text"],
+        th input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        td input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin: 0 3px;
+            cursor: pointer;
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+            justify-content: center;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .search-result {
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-result:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            button {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            .buttons-container {
+                flex-direction: column;
+            }
+        }
+
+        #groupLinks {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .group-link {
+            margin: 0;
+            text-align: center;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60px;
+            padding: 10px;
+            font-size: calc(14px + 0.5vw);
+            word-break: break-word;
+        }
+
+        @media (max-width: 768px) {
+            #groupLinks {
+                grid-template-columns: repeat(2, 1fr); /* ضمان عمودين حتى في الشاشات الصغيرة */
+                gap: 10px;
+            }
+            
+            .group-link {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+
+        .reset-button {
+            background-color: #dc3545;
+        }
+        
+        .reset-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>إدارة حضور الطلاب</h1>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="ابحث عن اسم الطالب...">
+        </div>
+
+        <div class="buttons-container">
+            <button onclick="addGroup()">إضافة مجموعة جديدة</button>
+            <button onclick="backupLocalStorage()">حفظ نسخة احتياطية</button>
+            <button onclick="document.getElementById('restoreInput').click()">استعادة نسخة احتياطية</button>
+            <button onclick="resetToDefaults()" class="reset-button">استعادة القيم الافتراضية</button>
+            <input type="file" id="restoreInput" accept=".json" style="display: none;" onchange="restoreLocalStorage(event)">
+        </div>
+
+        <div id="groupLinks">
+            <!-- الروابط سيتم إنشاؤها ديناميكيًا -->
+        </div>
+    </div>
+
+    <script>
+        // دالة لإنشاء رابط المجموعة
+        function createGroupLink(groupNumber, groupName) {
+            const link = document.createElement('a');
+            link.href = `#group${groupNumber}`;
+            link.textContent = groupName || `المجموعة ${groupNumber}`;
+            link.classList.add('group-link');
+            link.onclick = () => loadGroup(groupNumber);
+            return link;
+        }
+
+        // إنشاء 15 رابطًا للمجموعات
+        const groupLinksContainer = document.getElementById('groupLinks');
+        for (let i = 1; i <= 15; i++) {
+            const groupData = JSON.parse(localStorage.getItem(`group${i}`)) || { groupName: `المجموعة ${i}` };
+            const link = createGroupLink(i, groupData.groupName);
+            groupLinksContainer.appendChild(link);
+        }
+
+        // العودة إلى القائمة الرئيسية
+        function navigateToMainPage() {
+            document.body.innerHTML = `
+                <div class="container">
+                    <h1>إدارة حضور الطلاب</h1>
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="ابحث عن اسم الطالب...">
+                    </div>
+                    <div class="buttons-container">
+                        <button onclick="addGroup()">إضافة مجموعة جديدة</button>
+                        <button onclick="backupLocalStorage()">حفظ نسخة احتياطية</button>
+                        <button onclick="document.getElementById('restoreInput').click()">استعادة نسخة احتياطية</button>
+                        <button onclick="resetToDefaults()" class="reset-button">استعادة القيم الافتراضية</button>
+                        <input type="file" id="restoreInput" accept=".json" style="display: none;" onchange="restoreLocalStorage(event)">
+                    </div>
+                    <div id="groupLinks">
+                        <!-- الروابط سيتم إنشاؤها ديناميكيًا -->
+                    </div>
+                </div>
+            `;
+            const groupLinksContainer = document.getElementById('groupLinks');
+            for (let i = 1; i <= 15; i++) {
+                const groupData = JSON.parse(localStorage.getItem(`group${i}`)) || { groupName: `المجموعة ${i}` };
+                const link = createGroupLink(i, groupData.groupName);
+                groupLinksContainer.appendChild(link);
+            }
+        }
+
+        // تحميل المجموعة
+        function loadGroup(groupNumber) {
+            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`)) || { students: [], dates: Array(40).fill(''), groupName: `المجموعة ${groupNumber}` };
+            document.body.innerHTML = `
+                <div class="container">
+                    <h1>${groupData.groupName}</h1>
+                    <div class="buttons-container">
+                        <button onclick="changeGroupName(${groupNumber})">تغيير اسم المجموعة</button>
+                        <button onclick="exportToExcel(${groupNumber})">تصدير إلى Excel</button>
+                        <input type="file" id="importFile" onchange="importFromExcel(${groupNumber})" accept=".xlsx">
+                        <button onclick="addStudent(${groupNumber})">إضافة طالب</button>
+                    </div>
+                    <div class="table-container">
+                        <table id="attendanceTable">
+                            <thead>
+                                <tr>
+                                    <th> اسم الطالب كاملا</th> 
+                                    ${groupData.dates.map((date, index) => `
+                                        <th>
+                                            <input type="date" value="${date}" onchange="updateDate(${groupNumber}, ${index}, this.value)">
+                                        </th>
+                                        ${(index + 1) % 8 === 0 ? '<th> اسم الطالب كاملا</th>' : ''}
+                                    `).join('')}
+                                    <th>ملاحظات</th>
+                                </tr>
+                                <tr>
+                                    <th><input type="text" value="عنوان جديد" onchange="updateTitle(this.value)"></th>
+                                    ${groupData.dates.map((date, index) => `
+                                        <th><input type="text" placeholder="بيانات"></th>
+                                        ${(index + 1) % 8 === 0 ? '<th><input type="text" placeholder="بيانات"></th>' : ''}
+                                    `).join('')}
+                                    <th><input type="text" placeholder="ملاحظات"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${groupData.students.map((student, index) => `
+                                    <tr>
+                                        <td><input type="text" value="${student.name}" onchange="updateStudentName(${groupNumber}, ${index}, this.value)"></td>
+                                        ${student.attendance.map((att, i) => `
+                                            <td>
+                                                <input type="checkbox" ${att[0] ? 'checked' : ''} onchange="updateAttendance(${groupNumber}, ${index}, ${i}, 0, this.checked)">
+                                                <input type="checkbox" ${att[1] ? 'checked' : ''} onchange="updateAttendance(${groupNumber}, ${index}, ${i}, 1, this.checked)">
+                                            </td>
+                                            ${(i + 1) % 8 === 0 ? `<td><input type="text" value="${student.name}" onchange="updateStudentName(${groupNumber}, ${index}, this.value)"></td>` : ''}
+                                        `).join('')}
+                                        <td><input type="text" value="${student.notes}" onchange="updateStudentNotes(${groupNumber}, ${index}, this.value)"></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    <button onclick="window.location.reload()">العودة إلى القائمة الرئيسية</button>
+                </div>
+            `;
+        }
+
+        // تغيير اسم المجموعة
+        function changeGroupName(groupNumber) {
+            const newName = prompt("الرجاء إدخال الاسم الجديد للمجموعة:");
+            if (newName) {
+                const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`)) || { students: [], dates: Array(40).fill(''), groupName: `المجموعة ${groupNumber}` };
+                groupData.groupName = newName;
+                localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+                updateGroupLink(groupNumber, newName);
+                loadGroup(groupNumber);
+            }
+        }
+
+        // تحديث رابط المجموعة في الصفحة الرئيسية
+        function updateGroupLink(groupNumber, newName) {
+            const links = document.querySelectorAll('.group-link');
+            links.forEach(link => {
+                if (link.textContent.includes(`المجموعة ${groupNumber}`) || link.textContent === newName) {
+                    link.textContent = newName;
+                }
+            });
+        }
+
+        // إضافة طالب جديد
+        function addStudent(groupNumber) {
+            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`)) || { students: [], dates: Array(40).fill(''), groupName: `المجموعة ${groupNumber}` };
+            groupData.students.push({ name: 'طالب جديد', attendance: Array(40).fill([false, false]), notes: '' });
+            localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+            loadGroup(groupNumber);
+        }
+
+        // دالة لإضافة مجموعة جديدة
+        function addGroup() {
+            const groupNumber = document.querySelectorAll('.group-link').length + 1;
+            const groupData = { groupName: `المجموعة ${groupNumber}`, students: [], dates: Array(40).fill('') };
+            localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+            const link = createGroupLink(groupNumber, groupData.groupName);
+            groupLinksContainer.appendChild(link);
+        }
+
+        // تحديث اسم الطالب
+        function updateStudentName(groupNumber, studentIndex, newName) {
+            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
+            groupData.students[studentIndex].name = newName;
+            localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+        }
+
+        // تحديث الحضور
+        function updateAttendance(groupNumber, studentIndex, dayIndex, checkboxIndex, isPresent) {
+            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
+            groupData.students[studentIndex].attendance[dayIndex][checkboxIndex] = isPresent;
+            localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+        }
+
+        // تحديث التاريخ
+        function updateDate(groupNumber, dateIndex, newDate) {
+            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
+            groupData.dates[dateIndex] = newDate;
+            localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+        }
+
+        // تحديث ملاحظات الطالب
+        function updateStudentNotes(groupNumber, studentIndex, newNotes) {
+            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
+            groupData.students[studentIndex].notes = newNotes;
+            localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+        }
+
+        // تصدير إلى Excel
+        function exportToExcel(groupNumber) {
+            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
+            const wsData = groupData.students.map(student => [student.name, ...student.attendance.map(a => a[0] || a[1] ? 'حاضر' : 'غائب'), student.notes]);
+            const ws = XLSX.utils.aoa_to_sheet([['اسم الطالب', ...groupData.dates, 'ملاحظات'], ...wsData]);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, groupData.groupName);
+            XLSX.writeFile(wb, `${groupData.groupName}.xlsx`);
+        }
+
+        // استيراد من Excel
+        function importFromExcel(groupNumber) {
+            const file = document.getElementById('importFile').files[0];
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                const dates = json[0].slice(1, 41);
+                const students = json.slice(1).map(row => ({
+                    name: row[0],
+                    attendance: row.slice(1, 41).map(cell => [cell === 'حاضر', false]),
+                    notes: row[41] || ''
+                }));
+                const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`)) || { students: [], dates: Array(40).fill(''), groupName: `المجموعة ${groupNumber}` };
+                groupData.students = students;
+                groupData.dates = dates;
+                localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+                loadGroup(groupNumber);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // البحث عن الطالب
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase();
+            const links = document.querySelectorAll('.group-link');
+            links.forEach(link => {
+                const groupNumber = link.href.split('#group')[1];
+                const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`)) || { students: [] };
+                const hasMatch = groupData.students.some(student => student.name.toLowerCase().includes(searchTerm));
+                link.style.display = hasMatch ? 'block' : 'none';
+            });
+        });
+    
+        // Backup functions for localStorage
+        function backupLocalStorage() {
+            const backup = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('group')) {
+                    backup[key] = localStorage.getItem(key);
+                }
+            }
+            const backupStr = JSON.stringify(backup);
+            const date = new Date().toISOString().slice(0, 10);
+            const blob = new Blob([backupStr], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `attendance_backup_${date}.json`;
+            a.click();
+        }
+
+        function restoreLocalStorage(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const backup = JSON.parse(e.target.result);
+                    for (const key in backup) {
+                        localStorage.setItem(key, backup[key]);
+                    }
+                    alert('تم استعادة النسخة الاحتياطية بنجاح');
+                    window.location.reload();
+                } catch (error) {
+                    alert('حدث خطأ أثناء استعادة النسخة الاحتياطية');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // دالة إعادة التعيين إلى القيم الافتراضية
+        function resetToDefaults() {
+            if (confirm('هل أنت متأكد من أنك تريد استعادة جميع المجموعات إلى قيمها الافتراضية؟ سيتم حذف جميع البيانات الحالية.')) {
+                // مسح جميع بيانات المجموعات من localStorage
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('group')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+
+                // إعادة تهيئة المجموعات بالقيم الافتراضية
+                for (let i = 1; i <= 15; i++) {
+                    const defaultGroup = {
+                        groupName: `المجموعة ${i}`,
+                        students: [],
+                        dates: Array(40).fill('')
+                    };
+                    localStorage.setItem(`group${i}`, JSON.stringify(defaultGroup));
+                }
+
+                // إعادة تحميل الصفحة لتحديث العرض
+                window.location.reload();
+            }
+        }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+
+</body>
+</html>
