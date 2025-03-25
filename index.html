@@ -694,7 +694,7 @@
                                                 student.attendance[7] && 
                                                 (student.attendance[7][0] || student.attendance[7][1]);
                             const totalPaid = student.payments ? student.payments.reduce((a, b) => a + b, 0) : 0;
-                            const expectedAmount = student.payments && student.payments[0] ? student.payments[0] : 150;
+                            const expectedAmount = student.payments && student.payments[0] ? student.payments[0] : 300;
                             const unpaidAmount = hasAttendance ? (expectedAmount * student.payments.length) - totalPaid : 0;
                             
                             if (hasAttendance && unpaidAmount > 0) {
