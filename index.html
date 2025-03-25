@@ -657,6 +657,20 @@
                 <div class="container">
                     <h1>الإحصائيات العامة</h1>
                     
+                    ${stats.unpaidStudents.length > 0 ? `
+                    <div class="stats-card" style="background-color: #fff3cd; border: 1px solid #ffeeba;">
+                        <h2 style="color: #856404;">تنبيه: طلاب حضروا ولم يسددوا</h2>
+                        <ul style="list-style: none; padding: 0;">
+                            ${stats.unpaidStudents.map(student => `
+                                <li style="margin: 10px 0;">
+                                    <span>${student.name}</span> - 
+                                    <span>المجموعة: ${student.groupName}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                    ` : ''}
+
                     <div class="stats-container">
                         <div class="stats-card">
                             <h2>إجمالي المبالغ</h2>
@@ -731,7 +745,8 @@
                 totalCollected: 0,
                 totalExpected: 0,
                 groupStats: [],
-                monthlyStats: Array(5).fill().map(() => ({ collected: 0, expected: 0 }))
+                monthlyStats: Array(5).fill().map(() => ({ collected: 0, expected: 0 })),
+                unpaidStudents: []
             };
 
             // حساب إحصائيات كل مجموعة
@@ -739,6 +754,22 @@
                 const groupData = JSON.parse(localStorage.getItem(`group${i}`));
                 if (groupData && groupData.students.length > 0) {
                     const groupStats = calculateGroupStats(groupData);
+                    
+                    // فحص الطلاب الذين حضروا الحصة الثامنة ولم يسددوا
+                    groupData.students.forEach(student => {
+                        const hasAttendance = student.attendance && student.attendance[7] && 
+                                            (student.attendance[7][0] || student.attendance[7][1]);
+                        const hasPayment = student.payments && student.payments[0] > 0;
+                        
+                        if (hasAttendance && !hasPayment) {
+                            stats.unpaidStudents.push({
+                                name: student.name,
+                                groupName: groupData.groupName
+                            });
+                        }
+                    });
+
+                    // ... باقي الكود الموجود
                     stats.totalCollected += groupStats.totalCollected;
                     stats.totalExpected += groupStats.totalExpected;
                     stats.groupStats.push({
@@ -777,7 +808,7 @@
                     });
 
                     // حساب المبلغ المتوقع لكل الفترات
-                    totalExpected += expectedPayment * 5; // 5 فترات
+                    totalExpected += expectedPayment * 4; // 5 فترات
                 }
             });
 
@@ -788,7 +819,7 @@
             };
         }
 
-     </script>
+        </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 
