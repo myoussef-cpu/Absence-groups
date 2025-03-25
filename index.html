@@ -664,7 +664,8 @@
                             ${stats.unpaidStudents.map(student => `
                                 <li style="margin: 10px 0;">
                                     <span>${student.name}</span> - 
-                                    <span>المجموعة: ${student.groupName}</span>
+                                    <span>المجموعة: ${student.groupName}</span> - 
+                                    <span>المبلغ المستحق: ${student.unpaidAmount} جنية</span>
                                 </li>
                             `).join('')}
                         </ul>
@@ -759,12 +760,14 @@
                     groupData.students.forEach(student => {
                         const hasAttendance = student.attendance && student.attendance[7] && 
                                             (student.attendance[7][0] || student.attendance[7][1]);
-                        const hasPayment = student.payments && student.payments[0] > 0;
+                        const payment = student.payments && student.payments[0] ? student.payments[0] : 0;
+                        const unpaidAmount = hasAttendance ? (student.payments && student.payments[0] ? student.payments[0] : 150) - payment : 0;
                         
-                        if (hasAttendance && !hasPayment) {
+                        if (hasAttendance && unpaidAmount > 0) {
                             stats.unpaidStudents.push({
                                 name: student.name,
-                                groupName: groupData.groupName
+                                groupName: groupData.groupName,
+                                unpaidAmount: unpaidAmount
                             });
                         }
                     });
