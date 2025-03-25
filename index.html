@@ -639,6 +639,120 @@
             });
         }
 
+        // تحديث دالة updatePayment مع معالجة أفضل للأخطاء
+        function updatePayment(groupNumber, studentIndex, paymentIndex, value) {
+            try {
+                const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
+                if (!groupData || !groupData.students || !groupData.students[studentIndex]) {
+                    throw new Error('بيانات المجموعة أو الطالب غير موجودة');
+                }
+
+                if (!groupData.students[studentIndex].payments) {
+                    groupData.students[studentIndex].payments = [];
+                }
+
+                // التحقق من صحة القيمة المدخلة
+                const numValue = parseFloat(value);
+                if (isNaN(numValue) || numValue < 0) {
+                    alert('الرجاء إدخال قيمة صحيحة موجبة');
+                    return;
+                }
+
+                groupData.students[studentIndex].payments[paymentIndex] = numValue;
+                localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+                calculateAllStatistics();
+            } catch (error) {
+                console.error('خطأ في تحديث المدفوعات:', error);
+                alert('حدث خطأ في تحديث المدفوعات');
+            }
+        }
+
+        // تحديث دالة calculateAllStatistics مع معالجة أفضل للأخطاء
+        function calculateAllStatistics() {
+            try {
+                const stats = {
+                    totalCollected: 0,
+                    totalExpected: 0,
+                    groupStats: [],
+                    monthlyStats: Array(5).fill().map(() => ({ collected: 0, expected: 0 })),
+                    unpaidStudents: []
+                };
+
+                for (let i = 1; i <= 15; i++) {
+                    try {
+                        const groupData = JSON.parse(localStorage.getItem(`group${i}`));
+                        if (!groupData || !groupData.students) continue;
+
+                        const groupStats = calculateGroupStats(groupData);
+                        
+                        groupData.students.forEach((student, index) => {
+                            if (!student) return;
+
+                            // تحسين التحقق من حضور الطالب
+                            const hasAttendance = student.attendance && 
+                                                Array.isArray(student.attendance) && 
+                                                student.attendance[7] && 
+                                                (student.attendance[7][0] || student.attendance[7][1]);
+
+                            const payment = student.payments && student.payments[0] ? student.payments[0] : 0;
+                            const expectedAmount = student.payments && student.payments[0] ? student.payments[0] : 150;
+                            const unpaidAmount = hasAttendance ? expectedAmount - payment : 0;
+
+                            if (hasAttendance && unpaidAmount > 0) {
+                                stats.unpaidStudents.push({
+                                    name: student.name || 'طالب بدون اسم',
+                                    groupName: groupData.groupName || `المجموعة ${i}`,
+                                    unpaidAmount: Math.round(unpaidAmount * 100) / 100 // تقريب لأقرب رقمين عشريين
+                                });
+                            }
+                        });
+
+                        if (groupStats) {
+                            stats.totalCollected += groupStats.totalCollected;
+                            stats.totalExpected += groupStats.totalExpected;
+                            stats.groupStats.push({
+                                name: groupData.groupName || `المجموعة ${i}`,
+                                collected: Math.round(groupStats.totalCollected * 100) / 100,
+                                expected: Math.round(groupStats.totalExpected * 100) / 100,
+                                remaining: Math.round((groupStats.totalExpected - groupStats.totalCollected) * 100) / 100
+                            });
+
+                            groupStats.monthlyStats.forEach((month, index) => {
+                                if (stats.monthlyStats[index]) {
+                                    stats.monthlyStats[index].collected += month.collected;
+                                    stats.monthlyStats[index].expected += month.expected;
+                                }
+                            });
+                        }
+                    } catch (groupError) {
+                        console.error(`خطأ في حساب إحصائيات المجموعة ${i}:`, groupError);
+                    }
+                }
+
+                // تقريب الإجماليات
+                stats.totalCollected = Math.round(stats.totalCollected * 100) / 100;
+                stats.totalExpected = Math.round(stats.totalExpected * 100) / 100;
+
+                // محاولة حفظ الإحصائيات
+                try {
+                    localStorage.setItem('statistics', JSON.stringify(stats));
+                } catch (storageError) {
+                    console.error('خطأ في حفظ الإحصائيات:', storageError);
+                }
+
+                return stats;
+            } catch (error) {
+                console.error('خطأ في حساب الإحصائيات:', error);
+                return {
+                    totalCollected: 0,
+                    totalExpected: 0,
+                    groupStats: [],
+                    monthlyStats: Array(5).fill().map(() => ({ collected: 0, expected: 0 })),
+                    unpaidStudents: []
+                };
+            }
+        }
+
         function updatePayment(groupNumber, studentIndex, paymentIndex, value) {
             const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
             if (!groupData.students[studentIndex].payments) {
