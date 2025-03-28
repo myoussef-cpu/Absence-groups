@@ -945,25 +945,44 @@
         // تحسين دالة النسخ الاحتياطي
         function backupLocalStorage() {
             try {
+                // تجميع البيانات المطلوب حفظها
                 const backup = {};
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key.startsWith('group')) {
-                        backup[key] = localStorage.getItem(key);
+                for (let i = 1; i <= 30; i++) {
+                    const groupData = localStorage.getItem(`group${i}`);
+                    if (groupData) {
+                        backup[`group${i}`] = groupData;
                     }
                 }
-                const backupStr = JSON.stringify(backup);
-                const date = new Date().toISOString().slice(0, 10);
+                
+                // تحويل البيانات إلى نص JSON
+                const backupStr = JSON.stringify(backup, null, 2);
+                
+                // إنشاء ملف وتحميله
                 const blob = new Blob([backupStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const date = new Date().toISOString().slice(0, 10);
+                
+                // إنشاء رابط وهمي للتحميل
                 const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = `attendance_backup_${date}.json`;
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `backup_${date}.json`;
+                
+                // إضافة الرابط للصفحة، النقر عليه، ثم إزالته
+                document.body.appendChild(a);
                 a.click();
-                URL.revokeObjectURL(a.href); // تحرير الموارد
+                
+                // تنظيف المصادر
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 100);
+
+                alert('تم حفظ النسخة الاحتياطية بنجاح');
                 return true;
             } catch (error) {
-                console.error('خطأ في النسخ الاحتياطي:', error);
-                alert('حدث خطأ أثناء إنشاء النسخة الاحتياطية');
+                console.error('خطأ في حفظ النسخة الاحتياطية:', error);
+                alert('حدث خطأ أثناء حفظ النسخة الاحتياطية');
                 return false;
             }
         }
