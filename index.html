@@ -602,6 +602,7 @@
             <button onclick="backupLocalStorage()">حفظ نسخة احتياطية</button>
             <button onclick="document.getElementById('restoreInput').click()">استعادة نسخة احتياطية</button>
             <button onclick="resetToDefaults()" class="reset-button">استعادة القيم الافتراضية</button>
+            <button onclick="showAboutPage()" style="background-color: var(--secondary-color)">عن البرنامج</button>
             <input type="file" id="restoreInput" accept=".json" style="display: none;" onchange="restoreLocalStorage(event)">
         </div>
 
@@ -646,6 +647,7 @@
                         <button onclick="backupLocalStorage()">حفظ نسخة احتياطية</button>
                         <button onclick="document.getElementById('restoreInput').click()">استعادة نسخة احتياطية</button>
                         <button onclick="resetToDefaults()" class="reset-button">استعادة القيم الافتراضية</button>
+                        <button onclick="showAboutPage()" style="background-color: var(--secondary-color)">عن البرنامج</button>
                         <input type="file" id="restoreInput" accept=".json" style="display: none;" onchange="restoreLocalStorage(event)">
                     </div>
                     <div id="groupLinks"></div>
@@ -664,6 +666,81 @@
 
             // إعادة تفعيل البحث
             initializeSearch();
+        }
+
+        // عرض صفحة "عن البرنامج"
+        function showAboutPage() {
+            document.body.innerHTML = `
+                <div class="container">
+                    <button onclick="navigateToMainPage()" class="back-button">العودة إلى القائمة الرئيسية</button>
+                    <h1>عن البرنامج</h1>
+
+                    <div class="stats-card">
+                        <h2>المميزات الرئيسية</h2>
+                        <ul style="line-height: 1.6">
+                            <li>إدارة كاملة لحضور الطلاب في مجموعات مختلفة</li>
+                            <li>تتبع المدفوعات الشهرية وحساب المتأخرات</li>
+                            <li>إمكانية تخصيص قيمة السداد الشهرية لكل طالب</li>
+                            <li>نظام بحث متقدم عن الطلاب في جميع المجموعات</li>
+                            <li>تقارير إحصائية تفصيلية عن الحضور والمدفوعات</li>
+                            <li>إمكانية تصدير البيانات إلى ملفات Excel</li>
+                            <li>نظام نسخ احتياطي واستعادة للبيانات</li>
+                        </ul>
+                    </div>
+
+                    <div class="stats-card">
+                        <h2>كيفية الاستخدام</h2>
+                        <h3>إدارة المجموعات</h3>
+                        <ul style="line-height: 1.6">
+                            <li>استخدم زر "إضافة مجموعة" لإنشاء مجموعة جديدة</li>
+                            <li>يمكنك تغيير اسم المجموعة أو حذفها من داخل صفحة المجموعة</li>
+                            <li>كل مجموعة تبدأ بشهر واحد (8 أيام) ويمكن إضافة المزيد</li>
+                        </ul>
+
+                        <h3>إدارة الطلاب</h3>
+                        <ul style="line-height: 1.6">
+                            <li>أضف طلاب جدد باستخدام زر "إضافة طالب" داخل المجموعة</li>
+                            <li>سجل حضور الطلاب باستخدام مربعات الاختيار في كل يوم</li>
+                            <li>أدخل المدفوعات الشهرية في نهاية كل شهر</li>
+                        </ul>
+
+                        <h3>المتابعة والإحصائيات</h3>
+                        <ul style="line-height: 1.6">
+                            <li>استخدم صفحة الإحصائيات لمراقبة أداء جميع المجموعات</li>
+                            <li>تتبع الطلاب المتأخرين عن السداد</li>
+                            <li>صدّر التقارير إلى Excel للطباعة والتحليل</li>
+                        </ul>
+                    </div>
+
+                    <div class="stats-card">
+                        <h2>الأسئلة الشائعة</h2>
+                        
+                        <div style="line-height: 1.6">
+                            <h3>كيف يتم حساب المتأخرات؟</h3>
+                            <p>يتم حساب المتأخرات بناءً على عدد الحصص الإجمالي (8 حصص) بغض النظر عن الشهر، مضروباً في قيمة السداد الشهرية، مطروحاً منه إجمالي ما تم سداده.</p>
+
+                            <h3>هل يمكن تغيير قيمة السداد الشهرية لطالب معين؟</h3>
+                            <p>نعم، يمكنك تعديل قيمة السداد الشهرية لكل طالب على حدة من خلال حقل "قيمة السداد الشهرية" في جدول الحضور.</p>
+
+                            <h3>كيف يمكنني حماية البيانات من الضياع؟</h3>
+                            <p>استخدم ميزة "حفظ نسخة احتياطية" بشكل دوري لتصدير جميع البيانات إلى ملف. يمكنك استعادة البيانات لاحقاً باستخدام زر "استعادة نسخة احتياطية".</p>
+
+                            <h3>هل يمكن البحث عن طالب معين؟</h3>
+                            <p>نعم، استخدم حقل البحث في الصفحة الرئيسية للبحث عن أي طالب في جميع المجموعات. سيظهر لك تفاصيل حضوره ومدفوعاته.</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-card">
+                        <h2>نصائح مهمة</h2>
+                        <ul style="line-height: 1.6">
+                            <li>قم بعمل نسخة احتياطية بشكل دوري للحفاظ على بياناتك</li>
+                            <li>استخدم خاصية البحث للوصول السريع إلى بيانات أي طالب</li>
+                            <li>راجع صفحة الإحصائيات بشكل دوري لمتابعة المتأخرات</li>
+                            <li>يمكنك تصدير البيانات إلى Excel لعمل تحليلات إضافية</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
         }
 
         // تحميل المجموعة
@@ -1223,68 +1300,91 @@
                                 absent: 0
                             }));
 
-                            // حساب الحضور لكل شهر
+                            // حساب الحضور الكلي للطالب
+                            let totalAttendanceDays = 0;
+                            const attendancePeriods = [];
+                            let currentPeriod = {
+                                startMonth: 0,
+                                count: 0,
+                                attended: []
+                            };
+
                             for (let monthIndex = 0; monthIndex < maxMonths; monthIndex++) {
                                 for (let day = 0; day < 8; day++) {
                                     const index = monthIndex * 8 + day;
                                     if (student.attendance && student.attendance[index]) {
                                         const [isPresent] = student.attendance[index];
-                                        if (isPresent) {  // نحسب فقط إذا كان حاضراً
-                                            monthlyAttendance[monthIndex].counted++;
-                                            monthlyAttendance[monthIndex].attended++;
+                                        if (isPresent) {
+                                            totalAttendanceDays++;
+                                            currentPeriod.count++;
+                                            currentPeriod.attended.push(index);
+                                        }
+                                        
+                                        // إذا وصلنا إلى 8 حصص، نعتبرها فترة مكتملة
+                                        if (currentPeriod.count === 8) {
+                                            attendancePeriods.push(currentPeriod);
+                                            currentPeriod = {
+                                                startMonth: monthIndex,
+                                                count: 0,
+                                                attended: []
+                                            };
                                         }
                                     }
                                 }
+                            }
+
+                            // إضافة الفترة الأخيرة إذا كانت غير مكتملة
+                            if (currentPeriod.count > 0) {
+                                monthlyAttendance[Math.floor(currentPeriod.attended[0] / 8)].partial = true;
                             }
 
                             const payments = student.payments || [];
                             const totalPaid = payments.reduce((sum, payment) => sum + (Number(payment) || 0), 0);
                             const expectedMonthlyPayment = student.monthlyPayment || 150;
 
-                            // حساب الشهور التي فيها حضور فعلي
-                            const monthsWithRealAttendance = monthlyAttendance.reduce((count, month, idx) => {
-                                // نعتبر الشهر محتسب إذا كان فيه حضور فعلي
-                                if (month.attended > 0) {
-                                    // نضيف المبلغ المتوقع للشهر
-                                    stats.monthlyStats[idx].expected += expectedMonthlyPayment;
-                                    // نضيف المبلغ المدفوع للشهر
-                                    stats.monthlyStats[idx].collected += payments[idx] || 0;
-                                    return count + 1;
-                                }
-                                return count;
-                            }, 0);
+                            // حساب المتأخرات بناءً على عدد الفترات المكتملة (كل 8 حصص)
+                            const completePeriods = attendancePeriods.length;
+                            const totalExpected = completePeriods * expectedMonthlyPayment;
 
-                            // حساب المتأخرات بناءً على الشهور التي فيها حضور فعلي فقط
-                            const totalExpected = monthsWithRealAttendance * expectedMonthlyPayment;
-                            
-                            if (totalExpected > totalPaid && monthsWithRealAttendance > 0) {
+                            if (totalExpected > totalPaid && completePeriods > 0) {
                                 const unpaidAmount = totalExpected - totalPaid;
-                                const unpaidMonths = monthlyAttendance.map((month, idx) => ({
-                                    month: idx + 1,
-                                    hasAttendance: month.attended > 0,
-                                    expectedAmount: month.attended > 0 ? expectedMonthlyPayment : 0,
-                                    paidAmount: payments[idx] || 0,
-                                    attendance: month
-                                })).filter(m => m.hasAttendance && m.paidAmount < m.expectedAmount);
 
-                                if (unpaidMonths.length > 0) {
+                                // تجميع معلومات الفترات المتأخرة
+                                const unpaidPeriods = attendancePeriods.map((period, idx) => {
+                                    const monthIndex = Math.floor(period.attended[0] / 8);
+                                    return {
+                                        period: idx + 1,
+                                        hasAttendance: true,
+                                        expectedAmount: expectedMonthlyPayment,
+                                        paidAmount: payments[monthIndex] || 0,
+                                        startMonth: period.startMonth,
+                                        attendance: {
+                                            counted: 8,
+                                            attended: 8,
+                                            absent: 0
+                                        }
+                                    };
+                                }).filter(p => p.paidAmount < p.expectedAmount);
+
+                                if (unpaidPeriods.length > 0) {
                                     stats.unpaidStudents.push({
                                         name: student.name || 'طالب بدون اسم',
                                         groupName: groupData.groupName || `المجموعة ${i}`,
-                                        monthsOverdue: unpaidMonths.length,
-                                        monthsWithAttendance: monthsWithRealAttendance,
+                                        monthsOverdue: unpaidPeriods.length,
+                                        completePeriods: completePeriods,
                                         expectedPerMonth: expectedMonthlyPayment,
                                         totalPaid: totalPaid,
                                         totalDue: totalExpected,
                                         unpaidAmount: unpaidAmount,
-                                        attendanceDetails: monthlyAttendance.map((month, idx) => ({
-                                            month: idx + 1,
-                                            countedLessons: month.counted,
-                                            attendedLessons: month.attended,
-                                            absentLessons: month.absent,
-                                            paid: payments[idx] || 0,
-                                            expected: month.attended > 0 ? expectedMonthlyPayment : 0,
-                                            isUnpaid: month.attended > 0 && (payments[idx] || 0) < expectedMonthlyPayment
+                                        attendanceDetails: unpaidPeriods.map(period => ({
+                                            periodNumber: period.period,
+                                            startMonth: period.startMonth + 1,
+                                            countedLessons: period.attendance.counted,
+                                            attendedLessons: period.attendance.attended,
+                                            absentLessons: period.attendance.absent,
+                                            paid: period.paidAmount,
+                                            expected: period.expectedAmount,
+                                            isUnpaid: period.paidAmount < period.expectedAmount
                                         }))
                                     });
                                 }
@@ -1371,7 +1471,7 @@
                                         <div class="month-details">
                                             ${student.attendanceDetails.filter(detail => detail.countedLessons > 0).map(detail => `
                                                 <div class="month-item">
-                                                    <strong>الشهر ${detail.month}:</strong>
+                                                    <strong>الشهر ${detail.startMonth}:</strong>
                                                     <div>حضور: ${detail.attendedLessons} مرة</div>
                                                     <div>غياب: ${detail.absentLessons} مرة</div>
                                                     <div>المدفوع: ${detail.paid} جنيه</div>
