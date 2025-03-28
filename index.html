@@ -28,6 +28,7 @@
             padding: 25px;
             border-radius: var(--border-radius);
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.05);
         }
 
         h1 {
@@ -35,7 +36,27 @@
             text-align: center;
             margin-bottom: 30px;
             font-size: 2.2em;
-            animation: titleFloat 3s ease-in-out infinite;
+            position: relative;
+            padding-bottom: 15px;
+            animation: titleGlow 3s infinite;
+        }
+
+        h1:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        @keyframes titleGlow {
+            0% { text-shadow: 0 0 5px rgba(33, 150, 243, 0); }
+            50% { text-shadow: 0 0 20px rgba(33, 150, 243, 0.3); }
+            100% { text-shadow: 0 0 5px rgba(33, 150, 243, 0); }
         }
 
         .group-link {
@@ -71,13 +92,35 @@
             transition: all 0.3s ease;
             margin: 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            animation: buttonShine 3s infinite;
+            position: relative;
+            overflow: hidden;
         }
 
         button:hover {
             background-color: #1976D2;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(transparent, rgba(255,255,255,0.2), transparent);
+            transform: rotate(45deg);
+            transition: 0.5s;
+        }
+
+        button:hover::after {
+            left: 100%;
         }
 
         .search-box input {
@@ -96,6 +139,16 @@
             box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
         }
 
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            position: relative;
+        }
+
         table {
             width: 100%;
             border-collapse: separate;
@@ -103,7 +156,66 @@
             margin-top: 20px;
             background: white;
             border-radius: var(--border-radius);
-            overflow: hidden;
+            overflow: visible;
+        }
+
+        th:first-child{
+            right: 0;
+            z-index: 2;
+            background: rgb(248, 243, 243);
+            border-left: 2px solid var(--primary-color);
+            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+        }
+        td:first-child {
+            position: sticky;
+            right: 0;
+            z-index: 2;
+            background: rgb(248, 243, 243);
+            border-left: 2px solid var(--primary-color);
+            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+        }
+
+        th:first-child {
+            z-index: 3;
+        }
+
+        /* تحسين مظهر الخلايا الثابتة */
+        td:first-child {
+            background-color: #fff;
+        }
+
+        td:first-child:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* إصلاح مشكلة الظل في Chrome */
+        td:first-child::after,
+        th:first-child::after {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background: linear-gradient(to left, rgba(0,0,0,0.1), transparent);
+        }
+
+        /* تحسين مظهر الحقول في العمود الثابت */
+        td:first-child input[type="text"],
+        td:first-child .delete-student {
+            position: relative;
+            z-index: 2;
+        }
+
+        td input[type="text"], 
+        th input[type="text"],
+        th input[type="date"] {
+            width: calc(100% - 16px);
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            margin: 0;
         }
 
         th, td {
@@ -141,15 +253,6 @@
             flex-wrap: wrap;
             margin: 20px 0;
             justify-content: center;
-        }
-
-        .table-container {
-            overflow-x: auto;
-            margin-top: 20px;
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 20px;
         }
 
         .search-result {
@@ -305,7 +408,7 @@
 
         .student-name {
             font-weight: bold;
-            color: #856404;
+            color: #e9bc06;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -331,6 +434,43 @@
             background: #f8f9fa;
             border-radius: 4px;
             font-size: 0.9em;
+        }
+
+        .monthly-payment-input {
+            width: 100px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .monthly-payment-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+        }
+
+        .back-button {
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+            background-color: var(--secondary-color);
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .back-button:hover {
+            background-color: #e6a800;
+        }
+
+        .back-button::before {
+            content: '←';
+            font-size: 1.2em;
+            margin-left: 5px;
         }
     </style>
 </head>
@@ -417,6 +557,7 @@
             document.body.innerHTML = `
                 <div class="container">
                     <h1>${groupData.groupName}</h1>
+                    <button onclick="navigateToMainPage()" class="back-button">العودة إلى القائمة الرئيسية</button>
                     <div class="buttons-container">
                         <button onclick="changeGroupName(${groupNumber})">تغيير اسم المجموعة</button>
                         <button onclick="deleteGroup(${groupNumber})" class="delete-button">حذف المجموعة</button>
@@ -424,11 +565,23 @@
                         <input type="file" id="importFile" onchange="importFromExcel(${groupNumber})" accept=".xlsx">
                         <button onclick="addStudent(${groupNumber})">إضافة طالب</button>
                     </div>
+                    
                     <div class="table-container">
                         <table id="attendanceTable">
                             <thead>
                                 <tr>
+                                    <th colspan="2">رقم الحصة</th>
+                                    ${groupData.dates.map((_, index) => `
+                                        <th>${(index % 8) + 1}</th>
+                                        ${(index + 1) % 8 === 0 ? `
+                                            <th colspan="2">نهاية الشهر ${Math.floor(index / 8) + 1}</th>
+                                        ` : ''}
+                                    `).join('')}
+                                    <th></th>
+                                </tr>
+                                <tr>
                                     <th style="width: 100px; min-width: 100px;">اسم الطالب كاملا</th>
+                                    <th style="width: 100px; min-width: 100px;">قيمة السداد الشهرية</th>
                                     ${groupData.dates.map((date, index) => `
                                         <th>
                                             <input style="width: 70px" type="date" value="${date}" onchange="updateDate(${groupNumber}, ${index}, this.value)">
@@ -440,17 +593,6 @@
                                     `).join('')}
                                     <th>ملاحظات</th>
                                 </tr>
-                                <tr>
-                                    <th><input type="text" value="عنوان جديد" onchange="updateTitle(this.value)"></th>
-                                    ${groupData.dates.map((date, index) => `
-                                        <th><input type="text" placeholder="بيانات"></th>
-                                        ${(index + 1) % 8 === 0 ? `
-                                            <th><input type="text" placeholder="المبلغ"></th>
-                                            <th><input type="text" placeholder="بيانات"></th>
-                                        ` : ''}
-                                    `).join('')}
-                                    <th><input type="text" placeholder="ملاحظات"></th>
-                                </tr>
                             </thead>
                             <tbody>
                                 ${groupData.students.map((student, index) => `
@@ -458,6 +600,11 @@
                                         <td>
                                             <button onclick="deleteStudent(${groupNumber}, ${index})" class="delete-student">حذف</button>
                                             <input type="text" value="${student.name}" onchange="updateStudentName(${groupNumber}, ${index}, this.value)">
+                                        </td>
+                                        <td>
+                                            <input type="number" class="monthly-payment-input" 
+                                                value="${student.monthlyPayment || 150}" 
+                                                onchange="updateMonthlyPayment(${groupNumber}, ${index}, this.value)">
                                         </td>
                                         ${student.attendance.map((att, i) => `
                                             <td>
@@ -475,6 +622,7 @@
                             </tbody>
                         </table>
                     </div>
+                    
                     <div class="buttons-container">
                         <button onclick="navigateToMainPage()" style="margin-top: 20px; width: 200px;">العودة إلى القائمة الرئيسية</button>
                     </div>
@@ -507,7 +655,7 @@
         // إضافة طالب جديد
         function addStudent(groupNumber) {
             const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`)) || { students: [], dates: Array(40).fill(''), groupName: `المجموعة ${groupNumber}` };
-            groupData.students.push({ name: 'طالب جديد', attendance: Array(40).fill([false, false]), notes: '' });
+            groupData.students.push({ name: 'طالب جديد', attendance: Array(40).fill([false, false]), notes: '', monthlyPayment: 150 });
             localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
             loadGroup(groupNumber);
         }
@@ -647,8 +795,8 @@
         // تصدير إلى Excel
         function exportToExcel(groupNumber) {
             const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
-            const wsData = groupData.students.map(student => [student.name, ...student.attendance.map(a => a[0] || a[1] ? 'حاضر' : 'غائب'), student.notes]);
-            const ws = XLSX.utils.aoa_to_sheet([['اسم الطالب', ...groupData.dates, 'ملاحظات'], ...wsData]);
+            const wsData = groupData.students.map(student => [student.name, student.monthlyPayment || 150, ...student.attendance.map(a => a[0] || a[1] ? 'حاضر' : 'غائب'), student.notes]);
+            const ws = XLSX.utils.aoa_to_sheet([['اسم الطالب', 'قيمة السداد الشهرية', ...groupData.dates, 'ملاحظات'], ...wsData]);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, groupData.groupName);
             XLSX.writeFile(wb, `${groupData.groupName}.xlsx`);
@@ -663,11 +811,12 @@
                 const workbook = XLSX.read(data, { type: 'array' });
                 const sheet = workbook.Sheets[workbook.SheetNames[0]];
                 const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                const dates = json[0].slice(1, 41);
+                const dates = json[0].slice(2, 42);
                 const students = json.slice(1).map(row => ({
                     name: row[0],
-                    attendance: row.slice(1, 41).map(cell => [cell === 'حاضر', false]),
-                    notes: row[41] || ''
+                    monthlyPayment: parseFloat(row[1]) || 150,
+                    attendance: row.slice(2, 42).map(cell => [cell === 'حاضر', false]),
+                    notes: row[42] || ''
                 }));
                 const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`)) || { students: [], dates: Array(40).fill(''), groupName: `المجموعة ${groupNumber}` };
                 groupData.students = students;
@@ -818,11 +967,17 @@
                     totalCollected: 0,
                     totalExpected: 0,
                     groupStats: [],
-                    monthlyStats: Array(5).fill().map(() => ({ collected: 0, expected: 0 })),
+                    monthlyStats: Array(5).fill().map(() => ({ 
+                        collected: 0, 
+                        expected: 0,
+                        totalLessons: 0,
+                        attendedLessons: 0,
+                        absentLessons: 0 
+                    })),
                     unpaidStudents: []
                 };
 
-                for (let i = 1; i <= 30; i++) { // تعديل الحد الأقصى إلى 30 بدلاً من 15
+                for (let i = 1; i <= 30; i++) {
                     try {
                         const groupData = JSON.parse(localStorage.getItem(`group${i}`));
                         if (!groupData || !groupData.students) continue;
@@ -837,57 +992,69 @@
                         groupData.students.forEach((student) => {
                             if (!student) return;
 
-                            // تحديد الحصص الأخيرة لكل شهر (كل 8 حصص)
-                            const lastLessonsOfMonths = Array.from({ length: 5 }, (_, monthIndex) => {
-                                const lessonIndex = (monthIndex + 1) * 8 - 1; // الحصة الأخيرة من كل شهر
-                                return student.attendance?.[lessonIndex] || [false, false];
+                            // حساب الحضور والغياب لكل شهر
+                            const monthlyAttendance = Array(5).fill().map(() => ({
+                                counted: 0,    // عدد الحصص المحتسبة
+                                attended: 0,   // عدد مرات الحضور
+                                absent: 0      // عدد مرات الغياب
+                            }));
+
+                            // حساب الحضور والغياب لكل شهر
+                            student.attendance.forEach((att, index) => {
+                                const monthIndex = Math.floor(index / 8);
+                                if (monthIndex >= 5) return;
+
+                                const [isCounted, isPresent] = att;
+                                if (isCounted) {
+                                    monthlyAttendance[monthIndex].counted++;
+                                    if (isPresent) {
+                                        monthlyAttendance[monthIndex].attended++;
+                                    } else {
+                                        monthlyAttendance[monthIndex].absent++;
+                                    }
+                                }
                             });
 
-                            // حساب عدد الأشهر التي حضر فيها الطالب الحصة الأخيرة
-                            const monthsWithLastLessonAttendance = lastLessonsOfMonths.reduce((count, attendance, index) => {
-                                if (attendance[0] || attendance[1]) {
-                                    return count + 1;
-                                }
-                                return count;
-                            }, 0);
-
-                            // حساب المدفوعات
                             const payments = student.payments || [];
                             const totalPaid = payments.reduce((sum, payment) => sum + (payment || 0), 0);
                             const expectedMonthlyPayment = calculateExpectedAmount(student);
 
-                            // حساب المبلغ المستحق بناءً على حضور الحصص الأخيرة
-                            const totalExpected = monthsWithLastLessonAttendance * expectedMonthlyPayment;
-                            const monthsOwed = Math.max(0, monthsWithLastLessonAttendance - (totalPaid / expectedMonthlyPayment));
+                            // حساب عدد الأشهر المحتسبة
+                            const monthsWithCountedLessons = monthlyAttendance.filter(month => month.counted >= 8).length;
+                            const totalExpected = monthsWithCountedLessons * expectedMonthlyPayment;
+                            const monthsOwed = Math.max(0, monthsWithCountedLessons - (totalPaid / expectedMonthlyPayment));
 
-                            // إذا حضر أي حصة أخيرة ولم يسدد المبلغ المتوقع
-                            if (monthsWithLastLessonAttendance > 0 && monthsOwed > 0) {
+                            if (monthsWithCountedLessons > 0 && monthsOwed > 0) {
                                 stats.unpaidStudents.push({
                                     name: student.name || 'طالب بدون اسم',
                                     groupName: groupData.groupName || `المجموعة ${i}`,
                                     monthsOverdue: monthsOwed,
-                                    monthsAttended: monthsWithLastLessonAttendance,
+                                    monthsAttended: monthsWithCountedLessons,
                                     expectedPerMonth: expectedMonthlyPayment,
                                     totalPaid: totalPaid,
                                     totalDue: totalExpected,
                                     unpaidAmount: totalExpected - totalPaid,
-                                    lastLessonDetails: lastLessonsOfMonths.map((att, idx) => ({
+                                    attendanceDetails: monthlyAttendance.map((month, idx) => ({
                                         month: idx + 1,
-                                        attended: att[0] || att[1],
+                                        countedLessons: month.counted,
+                                        attendedLessons: month.attended,
+                                        absentLessons: month.absent,
                                         paid: payments[idx] || 0
                                     }))
                                 });
                             }
 
-                            // تحديث إحصائيات المجموعة
+                            // تحديث إحصائيات المجموعة والشهور
                             groupStats.collected += totalPaid;
                             groupStats.expected += totalExpected;
 
-                            // تحديث الإحصائيات الشهرية
-                            lastLessonsOfMonths.forEach((attendance, index) => {
-                                if (attendance[0] || attendance[1]) {
-                                    stats.monthlyStats[index].expected += expectedMonthlyPayment;
-                                    stats.monthlyStats[index].collected += payments[index] || 0;
+                            monthlyAttendance.forEach((month, idx) => {
+                                if (month.counted >= 8) {
+                                    stats.monthlyStats[idx].expected += expectedMonthlyPayment;
+                                    stats.monthlyStats[idx].collected += payments[idx] || 0;
+                                    stats.monthlyStats[idx].totalLessons += month.counted;
+                                    stats.monthlyStats[idx].attendedLessons += month.attended;
+                                    stats.monthlyStats[idx].absentLessons += month.absent;
                                 }
                             });
                         });
@@ -902,15 +1069,6 @@
                     }
                 }
 
-                // تقريب جميع القيم المالية
-                stats.totalCollected = Math.round(stats.totalCollected * 100) / 100;
-                stats.totalExpected = Math.round(stats.totalExpected * 100) / 100;
-                stats.groupStats.forEach(group => {
-                    group.collected = Math.round(group.collected * 100) / 100;
-                    group.expected = Math.round(group.expected * 100) / 100;
-                    group.remaining = Math.round(group.remaining * 100) / 100;
-                });
-
                 return stats;
             } catch (error) {
                 console.error('خطأ في حساب الإحصائيات:', error);
@@ -918,33 +1076,70 @@
                     totalCollected: 0,
                     totalExpected: 0,
                     groupStats: [],
-                    monthlyStats: Array(5).fill().map(() => ({ collected: 0, expected: 0 })),
+                    monthlyStats: Array(5).fill().map(() => ({ 
+                        collected: 0, 
+                        expected: 0,
+                        totalLessons: 0,
+                        attendedLessons: 0,
+                        absentLessons: 0 
+                    })),
                     unpaidStudents: []
                 };
             }
         }
 
-        // حذف النسخة المكررة من الدالة calculateAllStatistics
+        // تحديث عرض تفاصيل الطالب في الإحصائيات
+        function showStudentDetails(student) {
+            return `
+                <div class="student-details">
+                    <div><strong>المجموعة:</strong> ${student.groupName}</div>
+                    <div><strong>المبلغ المتوقع شهرياً:</strong> ${student.expectedPerMonth} جنيه</div>
+                    <div><strong>إجمالي المدفوعات:</strong> ${student.totalPaid} جنيه</div>
+                    <div><strong>المبلغ المستحق:</strong> ${student.totalDue} جنيه</div>
+                    <div class="month-details">
+                        ${student.attendanceDetails.map(detail => `
+                            <div class="month-item">
+                                <div>الشهر ${detail.month}:</div>
+                                <div>الحصص المحتسبة: ${detail.countedLessons}</div>
+                                <div>حضور: ${detail.attendedLessons}</div>
+                                <div>غياب: ${detail.absentLessons}</div>
+                                <div>المدفوع: ${detail.paid} جنيه</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
 
         // إضافة التحقق من القيم قبل العمليات الحسابية في دالة calculateExpectedAmount
         function calculateExpectedAmount(student) {
             if (!student) return 150; // القيمة الافتراضية إذا كان الطالب غير موجود
             
-            const payments = student.payments || [];
-            const validPayments = payments.filter(payment => payment && payment > 0);
-            
-            if (validPayments.length > 0) {
-                // استخدام آخر دفعة صالحة كمرجع للمبلغ المتوقع
-                return validPayments[validPayments.length - 1];
+            return student.monthlyPayment || 150;
+        }
+
+        function updateMonthlyPayment(groupNumber, studentIndex, value) {
+            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
+            if (!groupData || !groupData.students || !groupData.students[studentIndex]) return;
+
+            const numValue = parseFloat(value);
+            if (isNaN(numValue) || numValue < 0) {
+                alert('الرجاء إدخال قيمة صحيحة موجبة');
+                return;
             }
-            
-            return 150; // القيمة الافتراضية
+
+            groupData.students[studentIndex].monthlyPayment = numValue;
+            localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+            calculateAllStatistics();
         }
 
         function showStatistics() {
             const stats = calculateAllStatistics();
             document.body.innerHTML = `
                 <div class="container">
+                    <button onclick="navigateToMainPage()" class="back-button" style="width: 200px; margin: 0 auto 20px auto; display: block;">
+                        العودة إلى القائمة الرئيسية
+                    </button>
                     <h1>الإحصائيات العامة</h1>
                     
                     ${stats.unpaidStudents.length > 0 ? `
@@ -964,12 +1159,13 @@
                                         <div><strong>إجمالي المدفوعات:</strong> ${student.totalPaid} جنيه</div>
                                         <div><strong>المبلغ المستحق:</strong> ${student.totalDue} جنيه</div>
                                         <div class="month-details">
-                                            ${student.lastLessonDetails.map(detail => `
+                                            ${student.attendanceDetails.map(detail => `
                                                 <div class="month-item">
                                                     الشهر ${detail.month}: 
-                                                    ${detail.attended ? 
-                                                        `حضر ${detail.paid > 0 ? `وسدد ${detail.paid} جنيه` : 'ولم يسدد'}` : 
+                                                    ${detail.countedLessons > 0 ? 
+                                                        `حضر ${detail.attendedLessons} مرة وغياب ${detail.absentLessons} مرة` : 
                                                         'لم يحضر'}
+                                                    ${detail.paid > 0 ? `وسدد ${detail.paid} جنيه` : 'ولم يسدد'}
                                                 </div>
                                             `).join('')}
                                         </div>
@@ -1038,6 +1234,9 @@
                                             <th>المبلغ المتوقع</th>
                                             <th>المتبقي</th>
                                             <th>نسبة التحصيل</th>
+                                            <th>عدد الحصص</th>
+                                            <th>عدد مرات الحضور</th>
+                                            <th>عدد مرات الغياب</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1048,6 +1247,9 @@
                                                 <td>${month.expected} جنيه</td>
                                                 <td>${month.expected - month.collected} جنيه</td>
                                                 <td>${Math.round((month.collected / month.expected) * 100)}%</td>
+                                                <td>${month.totalLessons}</td>
+                                                <td>${month.attendedLessons}</td>
+                                                <td>${month.absentLessons}</td>
                                             </tr>
                                         `).join('')}
                                     </tbody>
