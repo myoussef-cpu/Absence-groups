@@ -123,76 +123,6 @@
             left: 100%;
         }
 
-        .search-box {
-            position: relative;
-        }
-
-        .search-results {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            z-index: 1000;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .search-result-card {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .search-result-card:hover {
-            background-color: #f8f9fa;
-        }
-
-        .search-result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .search-result-details {
-            display: none;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 4px;
-            margin-top: 10px;
-        }
-
-        .search-result-details.show {
-            display: block;
-        }
-
-        .attendance-summary {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .payment-status {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.9em;
-        }
-
-        .payment-status.paid {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .payment-status.unpaid {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
         .search-box input {
             width: 100%;
             padding: 12px;
@@ -215,7 +145,7 @@
             background: white;
             border-radius: var(--border-radius);
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 20px;
+            padding: 0px;
             position: relative;
         }
 
@@ -542,6 +472,120 @@
             font-size: 1.2em;
             margin-left: 5px;
         }
+
+        /* أنماط جديدة لصفحة البحث */
+        .search-results {
+            margin-top: 20px;
+        }
+
+        .student-card {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .student-card.active {
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .student-name {
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .group-badge {
+            background: var(--secondary-color);
+            color: var(--text-color);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+
+        .student-details {
+            display: none;
+            padding: 15px;
+            border-top: 1px solid #eee;
+            background: #f9f9f9;
+        }
+
+        .student-details.show {
+            display: block;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .attendance-months {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .month-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            padding: 10px;
+        }
+
+        .month-card.inactive {
+            opacity: 0.6;
+        }
+
+        .month-header {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+
+        .month-stats {
+            font-size: 0.9em;
+        }
+
+        .month-stats > div {
+            margin: 4px 0;
+        }
+
+        /* إضافة أنماط جديدة للأيقونات */
+        .month-actions {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-right: 5px;
+        }
+
+        .action-icon {
+            cursor: pointer;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .delete-month {
+            color: white;
+            background-color: #dc3545;
+        }
+
+        .add-month {
+            color: white;
+            background-color: #28a745;
+        }
+
+        .action-icon:hover {
+            opacity: 0.8;
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
@@ -644,7 +688,16 @@
                                     ${groupData.dates.map((_, index) => `
                                         <th>${(index % 8) + 1}</th>
                                         ${(index + 1) % 8 === 0 ? `
-                                            <th colspan="2">نهاية الشهر ${Math.floor(index / 8) + 1}</th>
+                                            <th colspan="2">
+                                                نهاية الشهر ${Math.floor(index / 8) + 1}
+                                                <div class="month-actions">
+                                                    <span class="action-icon delete-month" onclick="deleteMonth(${groupNumber}, ${Math.floor(index / 8)})">×</span>
+                                                    ${Math.floor(index / 8) === Math.floor(groupData.dates.length / 8) - 1 ? 
+                                                        `<span class="action-icon add-month" onclick="addNewMonth(${groupNumber})">+</span>` : 
+                                                        ''
+                                                    }
+                                                </div>
+                                            </th>
                                         ` : ''}
                                     `).join('')}
                                     <th></th>
@@ -898,152 +951,651 @@
         }
 
         // البحث عن الطالب
-        function initializeSearch() {
-            const searchInput = document.getElementById('searchInput');
-            let searchResults = document.querySelector('.search-results');
-            
-            if (!searchResults) {
-                searchResults = document.createElement('div');
-                searchResults.className = 'search-results';
-                searchInput.parentElement.appendChild(searchResults);
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.trim().toLowerCase();
+            if (searchTerm.length >= 2) { // البدء في البحث بعد كتابة حرفين على الأقل
+                showSearchPage(searchTerm);
+            } else {
+                // إعادة عرض روابط المجموعات إذا كان حقل البحث فارغاً
+                const links = document.querySelectorAll('.group-link');
+                links.forEach(link => link.style.display = 'block');
             }
+        });
 
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase().trim();
-                searchResults.innerHTML = '';
-                
-                if (searchTerm.length < 2) {
-                    searchResults.style.display = 'none';
-                    return;
-                }
+        // دالة لعرض صفحة نتائج البحث
+        function showSearchPage(searchTerm) {
+            const searchResults = [];
+            
+            // البحث في جميع المجموعات
+            for (let i = 1; i <= 30; i++) {
+                const groupData = JSON.parse(localStorage.getItem(`group${i}`));
+                if (!groupData || !groupData.students) continue;
 
-                const results = [];
-                
-                // البحث في جميع المجموعات
-                for (let i = 1; i <= 30; i++) {
-                    const groupData = JSON.parse(localStorage.getItem(`group${i}`));
-                    if (!groupData || !groupData.students) continue;
+                groupData.students.forEach((student, studentIndex) => {
+                    if (student.name.toLowerCase().includes(searchTerm)) {
+                        const studentStats = {
+                            name: student.name,
+                            groupNumber: i,
+                            groupName: groupData.groupName,
+                            monthlyPayment: student.monthlyPayment || 150,
+                            attendanceByMonth: [],
+                            payments: student.payments || []
+                        };
 
-                    groupData.students.forEach((student, studentIndex) => {
-                        if (student.name.toLowerCase().includes(searchTerm)) {
-                            const attendance = calculateStudentAttendance(student);
-                            const payments = calculateStudentPayments(student);
-                            
-                            results.push({
-                                name: student.name,
-                                groupNumber: i,
-                                groupName: groupData.groupName,
-                                attendance,
-                                payments,
-                                studentIndex
-                            });
+                        // تجميع إحصائيات الحضور حسب الشهر
+                        for (let month = 0; month < 10; month++) {
+                            const monthStats = {
+                                month: month + 1,
+                                present: 0,
+                                absent: 0,
+                                total: 0,
+                                payment: student.payments ? student.payments[month] || 0 : 0
+                            };
+
+                            for (let day = 0; day < 8; day++) {
+                                const index = month * 8 + day;
+                                if (student.attendance && student.attendance[index]) {
+                                    const [isPresent] = student.attendance[index];
+                                    if (isPresent) monthStats.present++;
+                                    monthStats.total++;
+                                }
+                            }
+                            monthStats.absent = monthStats.total - monthStats.present;
+                            studentStats.attendanceByMonth.push(monthStats);
                         }
-                    });
-                }
 
-                if (results.length > 0) {
-                    searchResults.style.display = 'block';
-                    results.forEach(result => {
-                        const card = createSearchResultCard(result);
-                        searchResults.appendChild(card);
-                    });
-                } else {
-                    searchResults.innerHTML = '<div class="search-result-card">لا توجد نتائج</div>';
-                    searchResults.style.display = 'block';
-                }
-            });
-
-            // إغلاق نتائج البحث عند النقر خارجها
-            document.addEventListener('click', function(e) {
-                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                    searchResults.style.display = 'none';
-                }
-            });
-        }
-
-        function calculateStudentAttendance(student) {
-            const attendance = {
-                total: 0,
-                present: 0,
-                absent: 0
-            };
-
-            student.attendance.forEach(day => {
-                if (day[0]) { // إذا كان اليوم محتسب
-                    attendance.total++;
-                    if (day[1]) attendance.present++;
-                    else attendance.absent++;
-                }
-            });
-
-            return attendance;
-        }
-
-        function calculateStudentPayments(student) {
-            const payments = {
-                total: 0,
-                expected: student.monthlyPayment || 150,
-                monthsPaid: 0,
-                monthsUnpaid: 0
-            };
-
-            if (student.payments) {
-                student.payments.forEach(payment => {
-                    if (payment >= payments.expected) payments.monthsPaid++;
-                    else if (payment > 0) payments.monthsUnpaid++;
-                    payments.total += payment || 0;
+                        searchResults.push(studentStats);
+                    }
                 });
             }
 
-            return payments;
-        }
-
-        function createSearchResultCard(result) {
-            const card = document.createElement('div');
-            card.className = 'search-result-card';
-            
-            card.innerHTML = `
-                <div class="search-result-header">
-                    <strong>${result.name}</strong>
-                    <span>${result.groupName}</span>
-                </div>
-                <div class="search-result-details">
-                    <div class="attendance-summary">
-                        <div>
-                            <strong>الحضور:</strong> ${result.attendance.present} مرة
-                        </div>
-                        <div>
-                            <strong>الغياب:</strong> ${result.attendance.absent} مرة
-                        </div>
-                        <div>
-                            <strong>نسبة الحضور:</strong> 
-                            ${Math.round((result.attendance.present / result.attendance.total) * 100) || 0}%
-                        </div>
+            // تحديث واجهة المستخدم مع نتائج البحث
+            document.body.innerHTML = `
+                <div class="container">
+                    <button onclick="navigateToMainPage()" class="back-button">العودة إلى القائمة الرئيسية</button>
+                    <h1>نتائج البحث</h1>
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="ابحث عن اسم الطالب..." value="${searchTerm}">
                     </div>
-                    <div class="attendance-summary">
-                        <div>
-                            <strong>إجمالي المدفوعات:</strong> ${result.payments.total} جنيه
-                        </div>
-                        <div>
-                            <strong>المبلغ الشهري:</strong> ${result.payments.expected} جنيه
-                        </div>
-                        <div class="payment-status ${result.payments.monthsUnpaid > 0 ? 'unpaid' : 'paid'}">
-                            ${result.payments.monthsUnpaid > 0 ? 'متأخر عن السداد' : 'منتظم في السداد'}
-                        </div>
+                    
+                    <div class="search-results">
+                        ${searchResults.map((result, index) => `
+                            <div class="student-card" onclick="toggleSearchDetails(${index})">
+                                <div class="student-name">
+                                    <span>${result.name}</span>
+                                    <span class="group-badge">${result.groupName}</span>
+                                </div>
+                                <div id="search-details-${index}" class="student-details">
+                                    <div class="details-grid">
+                                        <div class="detail-item">
+                                            <strong>المجموعة:</strong> ${result.groupName}
+                                        </div>
+                                        <div class="detail-item">
+                                            <strong>قيمة السداد الشهرية:</strong> ${result.monthlyPayment} جنيه
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="attendance-months">
+                                        ${result.attendanceByMonth.map(month => `
+                                            <div class="month-card ${month.total > 0 ? '' : 'inactive'}">
+                                                <div class="month-header">الشهر ${month.month}</div>
+                                                <div class="month-stats">
+                                                    <div>الحضور: ${month.present}</div>
+                                                    <div>الغياب: ${month.absent}</div>
+                                                    <div>المبلغ المدفوع: ${month.payment} جنيه</div>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
                     </div>
-                    <button onclick="loadGroup(${result.groupNumber})" class="button">
-                        عرض المجموعة
-                    </button>
                 </div>
             `;
 
-            // تبديل عرض التفاصيل
-            card.querySelector('.search-result-header').addEventListener('click', function() {
-                const details = card.querySelector('.search-result-details');
-                details.classList.toggle('show');
+            // إعادة تفعيل البحث
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function() {
+                const newSearchTerm = this.value.trim().toLowerCase();
+                if (newSearchTerm.length >= 2) {
+                    showSearchPage(newSearchTerm);
+                }
+            });
+        }
+
+        function toggleSearchDetails(index) {
+            const details = document.getElementById(`search-details-${index}`);
+            const allDetails = document.querySelectorAll('.student-details');
+            
+            // إغلاق جميع التفاصيل المفتوحة الأخرى
+            allDetails.forEach(detail => {
+                if (detail !== details && detail.classList.contains('show')) {
+                    detail.classList.remove('show');
+                    detail.parentElement.classList.remove('active');
+                }
             });
 
-            return card;
+            // تبديل حالة التفاصيل الحالية
+            details.classList.toggle('show');
+            details.parentElement.classList.toggle('active');
+        }
+
+        // Backup functions for localStorage
+        function backupLocalStorage() {
+            const backup = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('group')) {
+                    backup[key] = localStorage.getItem(key);
+                }
+            }
+            const backupStr = JSON.stringify(backup);
+            const date = new Date().toISOString().slice(0, 10);
+            const blob = new Blob([backupStr], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `attendance_backup_${date}.json`;
+            a.click();
+        }
+
+        function restoreLocalStorage(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const backup = JSON.parse(e.target.result);
+                    for (const key in backup) {
+                        localStorage.setItem(key, backup[key]);
+                    }
+                    alert('تم استعادة النسخة الاحتياطية بنجاح');
+                    window.location.reload();
+                } catch (error) {
+                    alert('حدث خطأ أثناء استعادة النسخة الاحتياطية');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // دالة إعادة التعيين إلى القيم الافتراضية
+        function resetToDefaults() {
+            if (confirm('هل أنت متأكد من أنك تريد استعادة جميع المجموعات إلى قيمها الافتراضية؟ سيتم حذف جميع البيانات الحالية.')) {
+                // مسح جميع بيانات المجموعات من localStorage
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('group')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+
+                // إعادة تهيئة المجموعات بالقيم الافتراضية
+                for (let i = 1; i <= 15; i++) {
+                    const defaultGroup = {
+                        groupName: `المجموعة ${i}`,
+                        students: [],
+                        dates: Array(40).fill('')
+                    };
+                    localStorage.setItem(`group${i}`, JSON.stringify(defaultGroup));
+                }
+
+                // إعادة تحميل الصفحة لتحديث العرض
+                window.location.reload();
+            }
+        }
+
+        // دالة حذف الطالب
+        function deleteStudent(groupNumber, studentIndex) {
+            if (confirm('هل أنت متأكد من حذف هذا الطالب؟')) {
+                const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
+                groupData.students.splice(studentIndex, 1);
+                localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+                loadGroup(groupNumber);
+            }
+        }
+
+        // دالة حذف المجموعة
+        function deleteGroup(groupNumber) {
+            if (confirm('هل أنت متأكد من حذف هذه المجموعة؟')) {
+                localStorage.removeItem(`group${groupNumber}`);
+                window.location.reload();
+            }
+        }
+
+        // دالة تهيئة البحث
+        function initializeSearch() {
+            document.getElementById('searchInput').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const links = document.querySelectorAll('.group-link');
+                links.forEach(link => {
+                    const groupNumber = link.href.split('#group')[1];
+                    const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`)) || { students: [] };
+                    const hasMatch = groupData.students.some(student => student.name.toLowerCase().includes(searchTerm));
+                    link.style.display = hasMatch ? 'block' : 'none';
+                });
+            });
+        }
+
+        // تحديث دالة updatePayment مع معالجة أفضل للأخطاء
+        function updatePayment(groupNumber, studentIndex, paymentIndex, value) {
+            try {
+                const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
+                if (!groupData || !groupData.students || !groupData.students[studentIndex]) {
+                    throw new Error('بيانات المجموعة أو الطالب غير موجودة');
+                }
+
+                if (!groupData.students[studentIndex].payments) {
+                    groupData.students[studentIndex].payments = [];
+                }
+
+                // التحقق من صحة القيمة المدخلة
+                const numValue = parseFloat(value);
+                if (isNaN(numValue) || numValue < 0) {
+                    alert('الرجاء إدخال قيمة صحيحة موجبة');
+                    return;
+                }
+
+                groupData.students[studentIndex].payments[paymentIndex] = numValue;
+                localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+                calculateAllStatistics();
+            } catch (error) {
+                console.error('خطأ في تحديث المدفوعات:', error);
+                alert('حدث خطأ في تحديث المدفوعات');
+            }
+        }
+
+        // تحديث دالة calculateAllStatistics مع معالجة أفضل للأخطاء
+        function calculateAllStatistics() {
+            try {
+                const stats = {
+                    totalCollected: 0,
+                    totalExpected: 0,
+                    groupStats: [],
+                    monthlyStats: Array(5).fill().map(() => ({ 
+                        collected: 0, 
+                        expected: 0,
+                        totalLessons: 0,
+                        attendedLessons: 0,
+                        absentLessons: 0 
+                    })),
+                    unpaidStudents: []
+                };
+
+                for (let i = 1; i <= 30; i++) {
+                    try {
+                        const groupData = JSON.parse(localStorage.getItem(`group${i}`));
+                        if (!groupData || !groupData.students) continue;
+
+                        const groupStats = {
+                            name: groupData.groupName || `المجموعة ${i}`,
+                            collected: 0,
+                            expected: 0,
+                            remaining: 0
+                        };
+
+                        groupData.students.forEach((student) => {
+                            if (!student) return;
+
+                            // حساب الحضور والغياب لكل شهر
+                            const monthlyAttendance = Array(5).fill().map(() => ({
+                                counted: 0,    // عدد الحصص المحتسبة
+                                attended: 0,   // عدد مرات الحضور
+                                absent: 0      // عدد مرات الغياب
+                            }));
+
+                            // حساب الحضور والغياب لكل شهر
+                            student.attendance.forEach((att, index) => {
+                                const monthIndex = Math.floor(index / 8);
+                                if (monthIndex >= 10) return;
+
+                                const [isCounted, isPresent] = att;
+                                if (isCounted) {
+                                    monthlyAttendance[monthIndex].counted++;
+                                    if (isPresent) {
+                                        monthlyAttendance[monthIndex].attended++;
+                                    } else {
+                                        monthlyAttendance[monthIndex].absent++;
+                                    }
+                                }
+                            });
+
+                            const payments = student.payments || [];
+                            const totalPaid = payments.reduce((sum, payment) => sum + (payment || 0), 0);
+                            const expectedMonthlyPayment = calculateExpectedAmount(student);
+
+                            // حساب عدد الأشهر المحتسبة
+                            const monthsWithCountedLessons = monthlyAttendance.filter(month => month.counted >= 8).length;
+                            const totalExpected = monthsWithCountedLessons * expectedMonthlyPayment;
+                            const monthsOwed = Math.max(0, monthsWithCountedLessons - (totalPaid / expectedMonthlyPayment));
+
+                            if (monthsWithCountedLessons > 0 && monthsOwed > 0) {
+                                stats.unpaidStudents.push({
+                                    name: student.name || 'طالب بدون اسم',
+                                    groupName: groupData.groupName || `المجموعة ${i}`,
+                                    monthsOverdue: monthsOwed,
+                                    monthsAttended: monthsWithCountedLessons,
+                                    expectedPerMonth: expectedMonthlyPayment,
+                                    totalPaid: totalPaid,
+                                    totalDue: totalExpected,
+                                    unpaidAmount: totalExpected - totalPaid,
+                                    attendanceDetails: monthlyAttendance.map((month, idx) => ({
+                                        month: idx + 1,
+                                        countedLessons: month.counted,
+                                        attendedLessons: month.attended,
+                                        absentLessons: month.absent,
+                                        paid: payments[idx] || 0
+                                    }))
+                                });
+                            }
+
+                            // تحديث إحصائيات المجموعة والشهور
+                            groupStats.collected += totalPaid;
+                            groupStats.expected += totalExpected;
+
+                            monthlyAttendance.forEach((month, idx) => {
+                                if (month.counted >= 8) {
+                                    stats.monthlyStats[idx].expected += expectedMonthlyPayment;
+                                    stats.monthlyStats[idx].collected += payments[idx] || 0;
+                                    stats.monthlyStats[idx].totalLessons += month.counted;
+                                    stats.monthlyStats[idx].attendedLessons += month.attended;
+                                    stats.monthlyStats[idx].absentLessons += month.absent;
+                                }
+                            });
+                        });
+
+                        groupStats.remaining = groupStats.expected - groupStats.collected;
+                        stats.groupStats.push(groupStats);
+                        stats.totalCollected += groupStats.collected;
+                        stats.totalExpected += groupStats.expected;
+
+                    } catch (groupError) {
+                        console.error(`خطأ في حساب إحصائيات المجموعة ${i}:`, groupError);
+                    }
+                }
+
+                return stats;
+            } catch (error) {
+                console.error('خطأ في حساب الإحصائيات:', error);
+                return {
+                    totalCollected: 0,
+                    totalExpected: 0,
+                    groupStats: [],
+                    monthlyStats: Array(5).fill().map(() => ({ 
+                        collected: 0, 
+                        expected: 0,
+                        totalLessons: 0,
+                        attendedLessons: 0,
+                        absentLessons: 0 
+                    })),
+                    unpaidStudents: []
+                };
+            }
+        }
+
+        // تحديث عرض تفاصيل الطالب في الإحصائيات
+        function showStudentDetails(student) {
+            return `
+                <div class="student-details">
+                    <div><strong>المجموعة:</strong> ${student.groupName}</div>
+                    <div><strong>المبلغ المتوقع شهرياً:</strong> ${student.expectedPerMonth} جنيه</div>
+                    <div><strong>إجمالي المدفوعات:</strong> ${student.totalPaid} جنيه</div>
+                    <div><strong>المبلغ المستحق:</strong> ${student.totalDue} جنيه</div>
+                    <div class="month-details">
+                        ${student.attendanceDetails.map(detail => `
+                            <div class="month-item">
+                                <div>الشهر ${detail.month}:</div>
+                                <div>الحصص المحتسبة: ${detail.countedLessons}</div>
+                                <div>حضور: ${detail.attendedLessons}</div>
+                                <div>غياب: ${detail.absentLessons}</div>
+                                <div>المدفوع: ${detail.paid} جنيه</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // إضافة التحقق من القيم قبل العمليات الحسابية في دالة calculateExpectedAmount
+        function calculateExpectedAmount(student) {
+            if (!student) return 150; // القيمة الافتراضية إذا كان الطالب غير موجود
+            
+            return student.monthlyPayment || 150;
+        }
+
+        function updateMonthlyPayment(groupNumber, studentIndex, value) {
+            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
+            if (!groupData || !groupData.students || !groupData.students[studentIndex]) return;
+
+            const numValue = parseFloat(value);
+            if (isNaN(numValue) || numValue < 0) {
+                alert('الرجاء إدخال قيمة صحيحة موجبة');
+                return;
+            }
+
+            groupData.students[studentIndex].monthlyPayment = numValue;
+            localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+            calculateAllStatistics();
+        }
+
+        function showStatistics() {
+            const stats = calculateAllStatistics();
+            document.body.innerHTML = `
+                <div class="container">
+                    <button onclick="navigateToMainPage()" class="back-button" style="width: 200px; margin: 0 auto 20px auto; display: block;">
+                        العودة إلى القائمة الرئيسية
+                    </button>
+                    <h1>الإحصائيات العامة</h1>
+                    
+                    ${stats.unpaidStudents.length > 0 ? `
+                    <div class="stats-card" style="background-color: #fff3cd; border: 1px solid #ffeeba;">
+                        <h2 style="color: #856404;">تنبيه: طلاب متأخرون عن السداد (${stats.unpaidStudents.length})</h2>
+                        <div class="students-grid">
+                            ${stats.unpaidStudents.map((student, index) => `
+                                <div class="student-card" onclick="toggleStudentDetails(${index})">
+                                    <div class="student-name">
+                                        <span>${student.name}</span>
+                                        <span class="badge">${student.monthsOverdue} شهر</span>
+                                    </div>
+                                    <div id="student-details-${index}" class="student-details">
+                                        <div><strong>المجموعة:</strong> ${student.groupName}</div>
+                                        <div><strong>عدد الأشهر التي حضر فيها:</strong> ${student.monthsAttended} شهر</div>
+                                        <div><strong>المبلغ المتوقع شهرياً:</strong> ${student.expectedPerMonth} جنيه</div>
+                                        <div><strong>إجمالي المدفوعات:</strong> ${student.totalPaid} جنيه</div>
+                                        <div><strong>المبلغ المستحق:</strong> ${student.totalDue} جنيه</div>
+                                        <div class="month-details">
+                                            ${student.attendanceDetails.map(detail => `
+                                                <div class="month-item">
+                                                    الشهر ${detail.month}: 
+                                                    ${detail.countedLessons > 0 ? 
+                                                        `حضر ${detail.attendedLessons} مرة وغياب ${detail.absentLessons} مرة` : 
+                                                        'لم يحضر'}
+                                                    ${detail.paid > 0 ? `وسدد ${detail.paid} جنيه` : 'ولم يسدد'}
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="stats-container">
+                        <div class="stats-card">
+                            <h2>إجمالي المبالغ</h2>
+                            <div class="stats-grid">
+                                <div>
+                                    <h3>المبلغ الإجمالي المحصل</h3>
+                                    <p>${stats.totalCollected} جنيه</p>
+                                </div>
+                                <div>
+                                    <h3>المبلغ الإجمالي المتوقع</h3>
+                                    <p>${stats.totalExpected} جنيه</p>
+                                </div>
+                                <div>
+                                    <h3>المبلغ المتبقي</h3>
+                                    <p>${stats.totalExpected - stats.totalCollected} جنيه</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stats-card">
+                            <h2>إحصائيات المجموعات</h2>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>المجموعة</th>
+                                            <th>المبلغ المحصل</th>
+                                            <th>المبلغ المتوقع</th>
+                                            <th>المتبقي</th>
+                                            <th>نسبة التحصيل</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${stats.groupStats.map(group => `
+                                            <tr>
+                                                <td>${group.name}</td>
+                                                <td>${group.collected} جنيه</td>
+                                                <td>${group.expected} جنيه</td>
+                                                <td>${group.remaining} جنيه</td>
+                                                <td>${Math.round((group.collected / group.expected) * 100)}%</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="stats-card">
+                            <h2>الإحصائيات الشهرية</h2>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>الشهر</th>
+                                            <th>المبلغ المحصل</th>
+                                            <th>المبلغ المتوقع</th>
+                                            <th>المتبقي</th>
+                                            <th>نسبة التحصيل</th>
+                                            <th>عدد الحصص</th>
+                                            <th>عدد مرات الحضور</th>
+                                            <th>عدد مرات الغياب</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${stats.monthlyStats.map((month, index) => `
+                                            <tr>
+                                                <td>الشهر ${index + 1}</td>
+                                                <td>${month.collected} جنيه</td>
+                                                <td>${month.expected} جنيه</td>
+                                                <td>${month.expected - month.collected} جنيه</td>
+                                                <td>${Math.round((month.collected / month.expected) * 100)}%</td>
+                                                <td>${month.totalLessons}</td>
+                                                <td>${month.attendedLessons}</td>
+                                                <td>${month.absentLessons}</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="buttons-container">
+                        <button onclick="exportStatisticsToExcel()">تصدير الإحصائيات إلى Excel</button>
+                        <button onclick="navigateToMainPage()">العودة للصفحة الرئيسية</button>
+                    </div>
+                </div>
+            `;
+
+            // إضافة دالة لتبديل عرض تفاصيل الطالب
+            window.toggleStudentDetails = function(index) {
+                const details = document.getElementById(`student-details-${index}`);
+                const card = details.parentElement;
+                
+                // إغلاق جميع البطاقات المفتوحة الأخرى
+                document.querySelectorAll('.student-details.show').forEach(el => {
+                    if (el !== details) {
+                        el.classList.remove('show');
+                        el.parentElement.classList.remove('active');
+                    }
+                });
+
+                // تبديل حالة البطاقة الحالية
+                details.classList.toggle('show');
+                card.classList.toggle('active');
+            };
+        }
+
+        function exportStatisticsToExcel() {
+            const stats = calculateAllStatistics();
+            const wb = XLSX.utils.book_new();
+
+            // إنشاء ورقة للطلاب المتأخرين
+            if (stats.unpaidStudents.length > 0) {
+                const unpaidData = stats.unpaidStudents.map(student => ({
+                    'الاسم': student.name,
+                    'المجموعة': student.groupName,
+                    'عدد مرات الحضور': student.totalAttendance,
+                    'المبلغ المتوقع شهرياً': student.expectedPerMonth,
+                    'إجمالي المدفوعات': student.totalPaid,
+                    'المبلغ المستحق': student.totalDue,
+                    'عدد الأشهر المتأخرة': student.monthsOverdue
+                }));
+                const wsUnpaid = XLSX.utils.json_to_sheet(unpaidData);
+                XLSX.utils.book_append_sheet(wb, wsUnpaid, 'الطلاب المتأخرون');
+            }
+
+            // إنشاء ورقة لإحصائيات المجموعات
+            const groupData = stats.groupStats.map(group => ({
+                'المجموعة': group.name,
+                'المبلغ المحصل': group.collected,
+                'المبلغ المتوقع': group.expected,
+                'المتبقي': group.remaining,
+                'نسبة التحصيل': `${Math.round((group.collected / group.expected) * 100)}%`
+            }));
+            const wsGroups = XLSX.utils.json_to_sheet(groupData);
+            XLSX.utils.book_append_sheet(wb, wsGroups, 'إحصائيات المجموعات');
+
+            XLSX.writeFile(wb, `إحصائيات_${new Date().toISOString().split('T')[0]}.xlsx`);
+        }
+
+        // إضافة الدوال الجديدة
+        function deleteMonth(groupNumber, monthIndex) {
+            if (!confirm(`هل أنت متأكد من حذف الشهر ${monthIndex + 1}؟`)) return;
+
+            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
+            if (!groupData) return;
+
+            // حذف بيانات الشهر (8 أيام)
+            const startIndex = monthIndex * 8;
+            groupData.dates.splice(startIndex, 8);
+            
+            // حذف بيانات الحضور للشهر لكل طالب
+            groupData.students.forEach(student => {
+                student.attendance.splice(startIndex, 8);
+                if (student.payments) {
+                    student.payments.splice(monthIndex, 1);
+                }
+            });
+
+            localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+            loadGroup(groupNumber);
+        }
+
+        function addNewMonth(groupNumber) {
+            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
+            if (!groupData) return;
+
+            // إضافة 8 أيام جديدة
+            groupData.dates.push(...Array(8).fill(''));
+            
+            // إضافة بيانات الحضور الجديدة لكل طالب
+            groupData.students.forEach(student => {
+                student.attendance.push(...Array(8).fill([false, false]));
+            });
+
+            localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+            loadGroup(groupNumber);
         }
     </script>
 
