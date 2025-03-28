@@ -123,6 +123,76 @@
             left: 100%;
         }
 
+        .search-box {
+            position: relative;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .search-result-card {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-result-card:hover {
+            background-color: #f8f9fa;
+        }
+
+        .search-result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .search-result-details {
+            display: none;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .search-result-details.show {
+            display: block;
+        }
+
+        .attendance-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .payment-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.9em;
+        }
+
+        .payment-status.paid {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .payment-status.unpaid {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
         .search-box input {
             width: 100%;
             padding: 12px;
@@ -828,495 +898,153 @@
         }
 
         // البحث عن الطالب
-        document.getElementById('searchInput').addEventListener('input', function () {
-            const searchTerm = this.value.toLowerCase();
-            const links = document.querySelectorAll('.group-link');
-            links.forEach(link => {
-                const groupNumber = link.href.split('#group')[1];
-                const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`)) || { students: [] };
-                const hasMatch = groupData.students.some(student => student.name.toLowerCase().includes(searchTerm));
-                link.style.display = hasMatch ? 'block' : 'none';
-            });
-        });
-    
-        // Backup functions for localStorage
-        function backupLocalStorage() {
-            const backup = {};
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key.startsWith('group')) {
-                    backup[key] = localStorage.getItem(key);
-                }
-            }
-            const backupStr = JSON.stringify(backup);
-            const date = new Date().toISOString().slice(0, 10);
-            const blob = new Blob([backupStr], { type: 'application/json' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `attendance_backup_${date}.json`;
-            a.click();
-        }
-
-        function restoreLocalStorage(event) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const backup = JSON.parse(e.target.result);
-                    for (const key in backup) {
-                        localStorage.setItem(key, backup[key]);
-                    }
-                    alert('تم استعادة النسخة الاحتياطية بنجاح');
-                    window.location.reload();
-                } catch (error) {
-                    alert('حدث خطأ أثناء استعادة النسخة الاحتياطية');
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // دالة إعادة التعيين إلى القيم الافتراضية
-        function resetToDefaults() {
-            if (confirm('هل أنت متأكد من أنك تريد استعادة جميع المجموعات إلى قيمها الافتراضية؟ سيتم حذف جميع البيانات الحالية.')) {
-                // مسح جميع بيانات المجموعات من localStorage
-                Object.keys(localStorage).forEach(key => {
-                    if (key.startsWith('group')) {
-                        localStorage.removeItem(key);
-                    }
-                });
-
-                // إعادة تهيئة المجموعات بالقيم الافتراضية
-                for (let i = 1; i <= 15; i++) {
-                    const defaultGroup = {
-                        groupName: `المجموعة ${i}`,
-                        students: [],
-                        dates: Array(40).fill('')
-                    };
-                    localStorage.setItem(`group${i}`, JSON.stringify(defaultGroup));
-                }
-
-                // إعادة تحميل الصفحة لتحديث العرض
-                window.location.reload();
-            }
-        }
-
-        // دالة حذف الطالب
-        function deleteStudent(groupNumber, studentIndex) {
-            if (confirm('هل أنت متأكد من حذف هذا الطالب؟')) {
-                const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
-                groupData.students.splice(studentIndex, 1);
-                localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
-                loadGroup(groupNumber);
-            }
-        }
-
-        // دالة حذف المجموعة
-        function deleteGroup(groupNumber) {
-            if (confirm('هل أنت متأكد من حذف هذه المجموعة؟')) {
-                localStorage.removeItem(`group${groupNumber}`);
-                window.location.reload();
-            }
-        }
-
-        // دالة تهيئة البحث
         function initializeSearch() {
-            document.getElementById('searchInput').addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                const links = document.querySelectorAll('.group-link');
-                links.forEach(link => {
-                    const groupNumber = link.href.split('#group')[1];
-                    const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`)) || { students: [] };
-                    const hasMatch = groupData.students.some(student => student.name.toLowerCase().includes(searchTerm));
-                    link.style.display = hasMatch ? 'block' : 'none';
-                });
-            });
-        }
+            const searchInput = document.getElementById('searchInput');
+            let searchResults = document.querySelector('.search-results');
+            
+            if (!searchResults) {
+                searchResults = document.createElement('div');
+                searchResults.className = 'search-results';
+                searchInput.parentElement.appendChild(searchResults);
+            }
 
-        // تحديث دالة updatePayment مع معالجة أفضل للأخطاء
-        function updatePayment(groupNumber, studentIndex, paymentIndex, value) {
-            try {
-                const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
-                if (!groupData || !groupData.students || !groupData.students[studentIndex]) {
-                    throw new Error('بيانات المجموعة أو الطالب غير موجودة');
-                }
-
-                if (!groupData.students[studentIndex].payments) {
-                    groupData.students[studentIndex].payments = [];
-                }
-
-                // التحقق من صحة القيمة المدخلة
-                const numValue = parseFloat(value);
-                if (isNaN(numValue) || numValue < 0) {
-                    alert('الرجاء إدخال قيمة صحيحة موجبة');
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                searchResults.innerHTML = '';
+                
+                if (searchTerm.length < 2) {
+                    searchResults.style.display = 'none';
                     return;
                 }
 
-                groupData.students[studentIndex].payments[paymentIndex] = numValue;
-                localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
-                calculateAllStatistics();
-            } catch (error) {
-                console.error('خطأ في تحديث المدفوعات:', error);
-                alert('حدث خطأ في تحديث المدفوعات');
-            }
-        }
-
-        // تحديث دالة calculateAllStatistics مع معالجة أفضل للأخطاء
-        function calculateAllStatistics() {
-            try {
-                const stats = {
-                    totalCollected: 0,
-                    totalExpected: 0,
-                    groupStats: [],
-                    monthlyStats: Array(5).fill().map(() => ({ 
-                        collected: 0, 
-                        expected: 0,
-                        totalLessons: 0,
-                        attendedLessons: 0,
-                        absentLessons: 0 
-                    })),
-                    unpaidStudents: []
-                };
-
+                const results = [];
+                
+                // البحث في جميع المجموعات
                 for (let i = 1; i <= 30; i++) {
-                    try {
-                        const groupData = JSON.parse(localStorage.getItem(`group${i}`));
-                        if (!groupData || !groupData.students) continue;
+                    const groupData = JSON.parse(localStorage.getItem(`group${i}`));
+                    if (!groupData || !groupData.students) continue;
 
-                        const groupStats = {
-                            name: groupData.groupName || `المجموعة ${i}`,
-                            collected: 0,
-                            expected: 0,
-                            remaining: 0
-                        };
-
-                        groupData.students.forEach((student) => {
-                            if (!student) return;
-
-                            // حساب الحضور والغياب لكل شهر
-                            const monthlyAttendance = Array(5).fill().map(() => ({
-                                counted: 0,    // عدد الحصص المحتسبة
-                                attended: 0,   // عدد مرات الحضور
-                                absent: 0      // عدد مرات الغياب
-                            }));
-
-                            // حساب الحضور والغياب لكل شهر
-                            student.attendance.forEach((att, index) => {
-                                const monthIndex = Math.floor(index / 8);
-                                if (monthIndex >= 5) return;
-
-                                const [isCounted, isPresent] = att;
-                                if (isCounted) {
-                                    monthlyAttendance[monthIndex].counted++;
-                                    if (isPresent) {
-                                        monthlyAttendance[monthIndex].attended++;
-                                    } else {
-                                        monthlyAttendance[monthIndex].absent++;
-                                    }
-                                }
+                    groupData.students.forEach((student, studentIndex) => {
+                        if (student.name.toLowerCase().includes(searchTerm)) {
+                            const attendance = calculateStudentAttendance(student);
+                            const payments = calculateStudentPayments(student);
+                            
+                            results.push({
+                                name: student.name,
+                                groupNumber: i,
+                                groupName: groupData.groupName,
+                                attendance,
+                                payments,
+                                studentIndex
                             });
-
-                            const payments = student.payments || [];
-                            const totalPaid = payments.reduce((sum, payment) => sum + (payment || 0), 0);
-                            const expectedMonthlyPayment = calculateExpectedAmount(student);
-
-                            // حساب عدد الأشهر المحتسبة
-                            const monthsWithCountedLessons = monthlyAttendance.filter(month => month.counted >= 8).length;
-                            const totalExpected = monthsWithCountedLessons * expectedMonthlyPayment;
-                            const monthsOwed = Math.max(0, monthsWithCountedLessons - (totalPaid / expectedMonthlyPayment));
-
-                            if (monthsWithCountedLessons > 0 && monthsOwed > 0) {
-                                stats.unpaidStudents.push({
-                                    name: student.name || 'طالب بدون اسم',
-                                    groupName: groupData.groupName || `المجموعة ${i}`,
-                                    monthsOverdue: monthsOwed,
-                                    monthsAttended: monthsWithCountedLessons,
-                                    expectedPerMonth: expectedMonthlyPayment,
-                                    totalPaid: totalPaid,
-                                    totalDue: totalExpected,
-                                    unpaidAmount: totalExpected - totalPaid,
-                                    attendanceDetails: monthlyAttendance.map((month, idx) => ({
-                                        month: idx + 1,
-                                        countedLessons: month.counted,
-                                        attendedLessons: month.attended,
-                                        absentLessons: month.absent,
-                                        paid: payments[idx] || 0
-                                    }))
-                                });
-                            }
-
-                            // تحديث إحصائيات المجموعة والشهور
-                            groupStats.collected += totalPaid;
-                            groupStats.expected += totalExpected;
-
-                            monthlyAttendance.forEach((month, idx) => {
-                                if (month.counted >= 8) {
-                                    stats.monthlyStats[idx].expected += expectedMonthlyPayment;
-                                    stats.monthlyStats[idx].collected += payments[idx] || 0;
-                                    stats.monthlyStats[idx].totalLessons += month.counted;
-                                    stats.monthlyStats[idx].attendedLessons += month.attended;
-                                    stats.monthlyStats[idx].absentLessons += month.absent;
-                                }
-                            });
-                        });
-
-                        groupStats.remaining = groupStats.expected - groupStats.collected;
-                        stats.groupStats.push(groupStats);
-                        stats.totalCollected += groupStats.collected;
-                        stats.totalExpected += groupStats.expected;
-
-                    } catch (groupError) {
-                        console.error(`خطأ في حساب إحصائيات المجموعة ${i}:`, groupError);
-                    }
+                        }
+                    });
                 }
 
-                return stats;
-            } catch (error) {
-                console.error('خطأ في حساب الإحصائيات:', error);
-                return {
-                    totalCollected: 0,
-                    totalExpected: 0,
-                    groupStats: [],
-                    monthlyStats: Array(5).fill().map(() => ({ 
-                        collected: 0, 
-                        expected: 0,
-                        totalLessons: 0,
-                        attendedLessons: 0,
-                        absentLessons: 0 
-                    })),
-                    unpaidStudents: []
-                };
-            }
+                if (results.length > 0) {
+                    searchResults.style.display = 'block';
+                    results.forEach(result => {
+                        const card = createSearchResultCard(result);
+                        searchResults.appendChild(card);
+                    });
+                } else {
+                    searchResults.innerHTML = '<div class="search-result-card">لا توجد نتائج</div>';
+                    searchResults.style.display = 'block';
+                }
+            });
+
+            // إغلاق نتائج البحث عند النقر خارجها
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.style.display = 'none';
+                }
+            });
         }
 
-        // تحديث عرض تفاصيل الطالب في الإحصائيات
-        function showStudentDetails(student) {
-            return `
-                <div class="student-details">
-                    <div><strong>المجموعة:</strong> ${student.groupName}</div>
-                    <div><strong>المبلغ المتوقع شهرياً:</strong> ${student.expectedPerMonth} جنيه</div>
-                    <div><strong>إجمالي المدفوعات:</strong> ${student.totalPaid} جنيه</div>
-                    <div><strong>المبلغ المستحق:</strong> ${student.totalDue} جنيه</div>
-                    <div class="month-details">
-                        ${student.attendanceDetails.map(detail => `
-                            <div class="month-item">
-                                <div>الشهر ${detail.month}:</div>
-                                <div>الحصص المحتسبة: ${detail.countedLessons}</div>
-                                <div>حضور: ${detail.attendedLessons}</div>
-                                <div>غياب: ${detail.absentLessons}</div>
-                                <div>المدفوع: ${detail.paid} جنيه</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
-
-        // إضافة التحقق من القيم قبل العمليات الحسابية في دالة calculateExpectedAmount
-        function calculateExpectedAmount(student) {
-            if (!student) return 150; // القيمة الافتراضية إذا كان الطالب غير موجود
-            
-            return student.monthlyPayment || 150;
-        }
-
-        function updateMonthlyPayment(groupNumber, studentIndex, value) {
-            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
-            if (!groupData || !groupData.students || !groupData.students[studentIndex]) return;
-
-            const numValue = parseFloat(value);
-            if (isNaN(numValue) || numValue < 0) {
-                alert('الرجاء إدخال قيمة صحيحة موجبة');
-                return;
-            }
-
-            groupData.students[studentIndex].monthlyPayment = numValue;
-            localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
-            calculateAllStatistics();
-        }
-
-        function showStatistics() {
-            const stats = calculateAllStatistics();
-            document.body.innerHTML = `
-                <div class="container">
-                    <button onclick="navigateToMainPage()" class="back-button" style="width: 200px; margin: 0 auto 20px auto; display: block;">
-                        العودة إلى القائمة الرئيسية
-                    </button>
-                    <h1>الإحصائيات العامة</h1>
-                    
-                    ${stats.unpaidStudents.length > 0 ? `
-                    <div class="stats-card" style="background-color: #fff3cd; border: 1px solid #ffeeba;">
-                        <h2 style="color: #856404;">تنبيه: طلاب متأخرون عن السداد (${stats.unpaidStudents.length})</h2>
-                        <div class="students-grid">
-                            ${stats.unpaidStudents.map((student, index) => `
-                                <div class="student-card" onclick="toggleStudentDetails(${index})">
-                                    <div class="student-name">
-                                        <span>${student.name}</span>
-                                        <span class="badge">${student.monthsOverdue} شهر</span>
-                                    </div>
-                                    <div id="student-details-${index}" class="student-details">
-                                        <div><strong>المجموعة:</strong> ${student.groupName}</div>
-                                        <div><strong>عدد الأشهر التي حضر فيها:</strong> ${student.monthsAttended} شهر</div>
-                                        <div><strong>المبلغ المتوقع شهرياً:</strong> ${student.expectedPerMonth} جنيه</div>
-                                        <div><strong>إجمالي المدفوعات:</strong> ${student.totalPaid} جنيه</div>
-                                        <div><strong>المبلغ المستحق:</strong> ${student.totalDue} جنيه</div>
-                                        <div class="month-details">
-                                            ${student.attendanceDetails.map(detail => `
-                                                <div class="month-item">
-                                                    الشهر ${detail.month}: 
-                                                    ${detail.countedLessons > 0 ? 
-                                                        `حضر ${detail.attendedLessons} مرة وغياب ${detail.absentLessons} مرة` : 
-                                                        'لم يحضر'}
-                                                    ${detail.paid > 0 ? `وسدد ${detail.paid} جنيه` : 'ولم يسدد'}
-                                                </div>
-                                            `).join('')}
-                                        </div>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    ` : ''}
-                    
-                    <div class="stats-container">
-                        <div class="stats-card">
-                            <h2>إجمالي المبالغ</h2>
-                            <div class="stats-grid">
-                                <div>
-                                    <h3>المبلغ الإجمالي المحصل</h3>
-                                    <p>${stats.totalCollected} جنيه</p>
-                                </div>
-                                <div>
-                                    <h3>المبلغ الإجمالي المتوقع</h3>
-                                    <p>${stats.totalExpected} جنيه</p>
-                                </div>
-                                <div>
-                                    <h3>المبلغ المتبقي</h3>
-                                    <p>${stats.totalExpected - stats.totalCollected} جنيه</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="stats-card">
-                            <h2>إحصائيات المجموعات</h2>
-                            <div class="table-container">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>المجموعة</th>
-                                            <th>المبلغ المحصل</th>
-                                            <th>المبلغ المتوقع</th>
-                                            <th>المتبقي</th>
-                                            <th>نسبة التحصيل</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${stats.groupStats.map(group => `
-                                            <tr>
-                                                <td>${group.name}</td>
-                                                <td>${group.collected} جنيه</td>
-                                                <td>${group.expected} جنيه</td>
-                                                <td>${group.remaining} جنيه</td>
-                                                <td>${Math.round((group.collected / group.expected) * 100)}%</td>
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div class="stats-card">
-                            <h2>الإحصائيات الشهرية</h2>
-                            <div class="table-container">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>الشهر</th>
-                                            <th>المبلغ المحصل</th>
-                                            <th>المبلغ المتوقع</th>
-                                            <th>المتبقي</th>
-                                            <th>نسبة التحصيل</th>
-                                            <th>عدد الحصص</th>
-                                            <th>عدد مرات الحضور</th>
-                                            <th>عدد مرات الغياب</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${stats.monthlyStats.map((month, index) => `
-                                            <tr>
-                                                <td>الشهر ${index + 1}</td>
-                                                <td>${month.collected} جنيه</td>
-                                                <td>${month.expected} جنيه</td>
-                                                <td>${month.expected - month.collected} جنيه</td>
-                                                <td>${Math.round((month.collected / month.expected) * 100)}%</td>
-                                                <td>${month.totalLessons}</td>
-                                                <td>${month.attendedLessons}</td>
-                                                <td>${month.absentLessons}</td>
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="buttons-container">
-                        <button onclick="exportStatisticsToExcel()">تصدير الإحصائيات إلى Excel</button>
-                        <button onclick="navigateToMainPage()">العودة للصفحة الرئيسية</button>
-                    </div>
-                </div>
-            `;
-
-            // إضافة دالة لتبديل عرض تفاصيل الطالب
-            window.toggleStudentDetails = function(index) {
-                const details = document.getElementById(`student-details-${index}`);
-                const card = details.parentElement;
-                
-                // إغلاق جميع البطاقات المفتوحة الأخرى
-                document.querySelectorAll('.student-details.show').forEach(el => {
-                    if (el !== details) {
-                        el.classList.remove('show');
-                        el.parentElement.classList.remove('active');
-                    }
-                });
-
-                // تبديل حالة البطاقة الحالية
-                details.classList.toggle('show');
-                card.classList.toggle('active');
+        function calculateStudentAttendance(student) {
+            const attendance = {
+                total: 0,
+                present: 0,
+                absent: 0
             };
+
+            student.attendance.forEach(day => {
+                if (day[0]) { // إذا كان اليوم محتسب
+                    attendance.total++;
+                    if (day[1]) attendance.present++;
+                    else attendance.absent++;
+                }
+            });
+
+            return attendance;
         }
 
-        function exportStatisticsToExcel() {
-            const stats = calculateAllStatistics();
-            const wb = XLSX.utils.book_new();
+        function calculateStudentPayments(student) {
+            const payments = {
+                total: 0,
+                expected: student.monthlyPayment || 150,
+                monthsPaid: 0,
+                monthsUnpaid: 0
+            };
 
-            // إنشاء ورقة للطلاب المتأخرين
-            if (stats.unpaidStudents.length > 0) {
-                const unpaidData = stats.unpaidStudents.map(student => ({
-                    'الاسم': student.name,
-                    'المجموعة': student.groupName,
-                    'عدد مرات الحضور': student.totalAttendance,
-                    'المبلغ المتوقع شهرياً': student.expectedPerMonth,
-                    'إجمالي المدفوعات': student.totalPaid,
-                    'المبلغ المستحق': student.totalDue,
-                    'عدد الأشهر المتأخرة': student.monthsOverdue
-                }));
-                const wsUnpaid = XLSX.utils.json_to_sheet(unpaidData);
-                XLSX.utils.book_append_sheet(wb, wsUnpaid, 'الطلاب المتأخرون');
+            if (student.payments) {
+                student.payments.forEach(payment => {
+                    if (payment >= payments.expected) payments.monthsPaid++;
+                    else if (payment > 0) payments.monthsUnpaid++;
+                    payments.total += payment || 0;
+                });
             }
 
-            // إنشاء ورقة لإحصائيات المجموعات
-            const groupData = stats.groupStats.map(group => ({
-                'المجموعة': group.name,
-                'المبلغ المحصل': group.collected,
-                'المبلغ المتوقع': group.expected,
-                'المتبقي': group.remaining,
-                'نسبة التحصيل': `${Math.round((group.collected / group.expected) * 100)}%`
-            }));
-            const wsGroups = XLSX.utils.json_to_sheet(groupData);
-            XLSX.utils.book_append_sheet(wb, wsGroups, 'إحصائيات المجموعات');
-
-            XLSX.writeFile(wb, `إحصائيات_${new Date().toISOString().split('T')[0]}.xlsx`);
+            return payments;
         }
 
+        function createSearchResultCard(result) {
+            const card = document.createElement('div');
+            card.className = 'search-result-card';
+            
+            card.innerHTML = `
+                <div class="search-result-header">
+                    <strong>${result.name}</strong>
+                    <span>${result.groupName}</span>
+                </div>
+                <div class="search-result-details">
+                    <div class="attendance-summary">
+                        <div>
+                            <strong>الحضور:</strong> ${result.attendance.present} مرة
+                        </div>
+                        <div>
+                            <strong>الغياب:</strong> ${result.attendance.absent} مرة
+                        </div>
+                        <div>
+                            <strong>نسبة الحضور:</strong> 
+                            ${Math.round((result.attendance.present / result.attendance.total) * 100) || 0}%
+                        </div>
+                    </div>
+                    <div class="attendance-summary">
+                        <div>
+                            <strong>إجمالي المدفوعات:</strong> ${result.payments.total} جنيه
+                        </div>
+                        <div>
+                            <strong>المبلغ الشهري:</strong> ${result.payments.expected} جنيه
+                        </div>
+                        <div class="payment-status ${result.payments.monthsUnpaid > 0 ? 'unpaid' : 'paid'}">
+                            ${result.payments.monthsUnpaid > 0 ? 'متأخر عن السداد' : 'منتظم في السداد'}
+                        </div>
+                    </div>
+                    <button onclick="loadGroup(${result.groupNumber})" class="button">
+                        عرض المجموعة
+                    </button>
+                </div>
+            `;
+
+            // تبديل عرض التفاصيل
+            card.querySelector('.search-result-header').addEventListener('click', function() {
+                const details = card.querySelector('.search-result-details');
+                details.classList.toggle('show');
+            });
+
+            return card;
+        }
     </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
