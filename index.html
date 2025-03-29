@@ -4,41 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة حضور الطلاب</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #2196F3;
-            --secondary-color: #FFC107;
-            --text-color: #333;
-            --background-color: #f5f5f5;
-            --border-radius: 8px;
+            --primary-color: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary-color: #ec4899;
+            --text-color: #1f2937;
+            --background-color: #f9fafb;
+            --surface-color: #ffffff;
+            --border-color: #e5e7eb;
+            --border-radius: 1rem;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
             direction: rtl;
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 1.5rem;
             background-color: var(--background-color);
             color: var(--text-color);
+            line-height: 1.5;
         }
 
         .container {
-            background: white;
-            padding: 25px;
+            background: var(--surface-color);
+            padding: 2rem;
             border-radius: var(--border-radius);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
         }
 
         h1 {
             color: var(--primary-color);
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.2em;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to left, var(--primary-color), var(--secondary-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             position: relative;
-            padding-bottom: 15px;
-            animation: titleGlow 3s infinite;
+            padding-bottom: 1rem;
         }
 
         h1:after {
@@ -48,63 +60,75 @@
             left: 50%;
             transform: translateX(-50%);
             width: 100px;
-            height: 3px;
-            background: var(--primary-color);
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             border-radius: 2px;
         }
 
-        @keyframes titleGlow {
-            0% { text-shadow: 0 0 5px rgba(33, 150, 243, 0); }
-            50% { text-shadow: 0 0 20px rgba(33, 150, 243, 0.3); }
-            100% { text-shadow: 0 0 5px rgba(33, 150, 243, 0); }
-        }
-
         .group-link {
-            display: block;
-            margin: 12px 0;
-            padding: 15px;
-            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem;
+            font-size: 1rem;
             color: var(--text-color);
             text-decoration: none;
-            background: white;
+            background: var(--surface-color);
             border-radius: var(--border-radius);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: var(--shadow-sm);
             transition: all 0.3s ease;
-            border: 1px solid #eee;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
         }
 
         .group-link:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
             border-color: var(--primary-color);
             color: var(--primary-color);
         }
 
+        .group-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: 0.5s;
+        }
+
+        .group-link:hover::before {
+            transform: translateX(100%);
+        }
+
         button {
-            background-color: var(--primary-color);
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 0.875rem 1.5rem;
             border-radius: var(--border-radius);
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 1rem;
+            font-weight: 600;
             transition: all 0.3s ease;
-            margin: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
             position: relative;
             overflow: hidden;
         }
 
         button:hover {
-            background-color: #1976D2;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: var(--shadow-lg);
+            filter: brightness(110%);
         }
 
         button:active {
             transform: translateY(0);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-sm);
         }
 
         button::after {
@@ -123,28 +147,38 @@
             left: 100%;
         }
 
-        .search-box input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: var(--border-radius);
-            font-size: 16px;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            align-items: center;
         }
 
-        .search-box input:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+        .search-box input {
+            flex: 1;
+            margin-bottom: 0;
+            width: auto;
+            min-width: 200px;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .search-box button {
+            white-space: nowrap;
         }
 
         .table-container {
             overflow-x: auto;
-            margin-top: 20px;
-            background: white;
+            margin-top: 1.5rem;
+            background: var(--surface-color);
             border-radius: var(--border-radius);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow-lg);
             padding: 0px;
             position: relative;
         }
@@ -153,24 +187,25 @@
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            margin-top: 20px;
-            background: white;
+            margin-top: 1.5rem;
+            background: var(--surface-color);
             border-radius: var(--border-radius);
             overflow: visible;
         }
 
-        th:first-child{
+        th:first-child {
             right: 0;
             z-index: 2;
-            background: rgb(248, 243, 243);
+            background: var(--surface-color);
             border-left: 2px solid var(--primary-color);
             box-shadow: -2px 0 5px rgba(0,0,0,0.1);
         }
+
         td:first-child {
             position: sticky;
             right: 0;
             z-index: 2;
-            background: rgb(248, 243, 243);
+            background: var(--surface-color);
             border-left: 2px solid var(--primary-color);
             box-shadow: -2px 0 5px rgba(0,0,0,0.1);
         }
@@ -179,16 +214,14 @@
             z-index: 3;
         }
 
-        /* تحسين مظهر الخلايا الثابتة */
         td:first-child {
-            background-color: #fff;
+            background-color: var(--surface-color);
         }
 
         td:first-child:hover {
             background-color: #f8f9fa;
         }
 
-        /* إصلاح مشكلة الظل في Chrome */
         td:first-child::after,
         th:first-child::after {
             content: '';
@@ -200,7 +233,6 @@
             background: linear-gradient(to left, rgba(0,0,0,0.1), transparent);
         }
 
-        /* تحسين مظهر الحقول في العمود الثابت */
         td:first-child input[type="text"],
         td:first-child .delete-student {
             position: relative;
@@ -211,33 +243,33 @@
         th input[type="text"],
         th input[type="date"] {
             width: calc(100% - 16px);
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
             margin: 0;
         }
 
         th, td {
-            padding: 12px;
+            padding: 0.75rem;
             text-align: center;
-            border: 1px solid #eee;
+            border: 1px solid var(--border-color);
         }
 
         th {
             background-color: #f8f9fa;
             font-weight: 600;
-            color: var (--text-color);
+            color: var(--text-color);
         }
 
         td input[type="text"], 
         th input[type="text"],
         th input[type="date"] {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
         }
 
         td input[type="checkbox"] {
@@ -251,33 +283,33 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
-            margin: 20px 0;
+            margin: 1.5rem 0;
             justify-content: center;
         }
 
         .search-result {
-            padding: 15px;
-            margin: 10px 0;
-            background: white;
+            padding: 1rem;
+            margin: 0.75rem 0;
+            background: var(--surface-color);
             border-radius: var(--border-radius);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: var(--shadow-sm);
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .search-result:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
         }
 
         @media (max-width: 768px) {
             body {
-                padding: 10px;
+                padding: 0.75rem;
             }
             
             button {
                 width: 100%;
-                margin: 5px 0;
+                margin: 0.5rem 0;
             }
 
             .buttons-container {
@@ -288,8 +320,8 @@
         #groupLinks {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-            padding: 15px;
+            gap: 1rem;
+            padding: 1rem;
         }
 
         .group-link {
@@ -300,20 +332,20 @@
             align-items: center;
             justify-content: center;
             min-height: 60px;
-            padding: 10px;
+            padding: 0.75rem;
             font-size: calc(14px + 0.5vw);
             word-break: break-word;
         }
 
         @media (max-width: 768px) {
             #groupLinks {
-                grid-template-columns: repeat(3, 1fr); /* ضمان عمودين حتى في الشاشات الصغيرة */
-                gap: 10px;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 0.75rem;
             }
             
             .group-link {
-                padding: 8px;
-                font-size: 14px;
+                padding: 0.5rem;
+                font-size: 1rem;
             }
         }
 
@@ -337,56 +369,55 @@
         .delete-student {
             background-color: #dc3545;
             color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            margin-right: 5px;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            margin-right: 0.5rem;
         }
 
         .stats-container {
-            margin: 20px 0;
+            margin: 1.5rem 0;
         }
         
         .stats-card {
-            background: white;
-            padding: 15px;
+            background: var(--surface-color);
+            padding: 1rem;
             border-radius: var(--border-radius);
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-sm);
         }
         
         .stats-card h2 {
             color: var(--primary-color);
             border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
         }
         
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
+            gap: 1rem;
         }
 
-        /* إضافة الأنماط الجديدة */
         .students-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-            padding: 10px;
+            gap: 0.75rem;
+            padding: 0.75rem;
         }
 
         .student-card {
-            background: white;
+            background: var(--surface-color);
             border: 1px solid #ffeeba;
             border-radius: var(--border-radius);
-            padding: 10px;
+            padding: 0.75rem;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .student-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
         }
 
         .student-card.active {
@@ -395,11 +426,11 @@
 
         .student-details {
             display: none;
-            background: white;
-            padding: 15px;
-            margin-top: 10px;
+            background: var(--surface-color);
+            padding: 1rem;
+            margin-top: 0.75rem;
             border-radius: var(--border-radius);
-            border: 1px solid #eee;
+            border: 1px solid var(--border-color);
         }
 
         .student-details.show {
@@ -417,50 +448,50 @@
         .student-name .badge {
             background: #dc3545;
             color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.75rem;
             font-size: 0.8em;
         }
 
         .month-details {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
         }
 
         .month-item {
-            padding: 5px;
+            padding: 0.5rem;
             background: #f8f9fa;
-            border-radius: 4px;
+            border-radius: 0.5rem;
             font-size: 0.9em;
         }
 
         .monthly-payment-input {
             width: 100px;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
             text-align: center;
-            font-size: 14px;
+            font-size: 1rem;
         }
 
         .monthly-payment-input:focus {
             border-color: var(--primary-color);
             outline: none;
-            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
         }
 
         .back-button {
             position: sticky;
-            top: 20px;
+            top: 1.5rem;
             z-index: 100;
             background-color: var(--secondary-color);
-            margin: 10px 0;
+            margin: 0.75rem 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 0.5rem;
         }
 
         .back-button:hover {
@@ -470,30 +501,29 @@
         .back-button::before {
             content: '←';
             font-size: 1.2em;
-            margin-left: 5px;
+            margin-left: 0.5rem;
         }
 
-        /* أنماط جديدة لصفحة البحث */
         .search-results {
-            margin-top: 20px;
+            margin-top: 1.5rem;
         }
 
         .student-card {
-            background: white;
-            border: 1px solid #eee;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
-            margin-bottom: 10px;
+            margin-bottom: 0.75rem;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .student-card.active {
             border-color: var(--primary-color);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
         }
 
         .student-name {
-            padding: 15px;
+            padding: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -502,15 +532,15 @@
         .group-badge {
             background: var(--secondary-color);
             color: var(--text-color);
-            padding: 4px 8px;
-            border-radius: 12px;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.75rem;
             font-size: 0.8em;
         }
 
         .student-details {
             display: none;
-            padding: 15px;
-            border-top: 1px solid #eee;
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
             background: #f9f9f9;
         }
 
@@ -521,21 +551,21 @@
         .details-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 1rem;
+            margin-bottom: 1rem;
         }
 
         .attendance-months {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
+            gap: 0.75rem;
         }
 
         .month-card {
-            background: white;
-            border: 1px solid #ddd;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
-            padding: 10px;
+            padding: 0.75rem;
         }
 
         .month-card.inactive {
@@ -544,7 +574,7 @@
 
         .month-header {
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 0.5rem;
             color: var(--primary-color);
         }
 
@@ -553,22 +583,21 @@
         }
 
         .month-stats > div {
-            margin: 4px 0;
+            margin: 0.25rem 0;
         }
 
-        /* إضافة أنماط جديدة للأيقونات */
         .month-actions {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            margin-right: 5px;
+            gap: 0.25rem;
+            margin-right: 0.25rem;
         }
 
         .action-icon {
             cursor: pointer;
-            padding: 2px 5px;
-            border-radius: 3px;
-            font-size: 12px;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
             transition: all 0.2s ease;
         }
 
@@ -586,28 +615,180 @@
             opacity: 0.8;
             transform: scale(1.1);
         }
+
+        .nav-bar {
+            background: var(--surface-color);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            padding: 0.5rem 1rem;
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .nav-link.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .nav-bar {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                width: 100%;
+            }
+        }
+
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .group-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .group-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .group-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .group-card h3 i {
+            transition: transform 0.3s ease;
+            color: var(--secondary-color);
+        }
+
+        .group-card.expanded h3 i {
+            transform: rotate(180deg);
+        }
+
+        .group-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .group-card.expanded .group-details {
+            max-height: 500px;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .group-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+
+        .stat-item {
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.9em;
+        }
+
+        .stat-item span {
+            display: block;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-item strong {
+            color: var(--primary-color);
+        }
+
+        .group-students {
+            margin-top: 1rem;
+        }
+
+        .student-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .student-list li {
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .student-list li:last-child {
+            border-bottom: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <nav class="nav-bar">
+            <div class="nav-links">
+                <a href="#" class="nav-link active" onclick="navigateToMainPage()">الصفحة الرئيسية</a>
+                <a href="#" class="nav-link" onclick="showGroups()">المجموعات</a>
+                <a href="#" class="nav-link" onclick="showStatistics()">الإحصائيات</a>
+                <a href="#" class="nav-link" onclick="showSearchPage(document.getElementById('searchInput')?.value || '')">البحث</a>
+                <a href="#" class="nav-link" onclick="showAboutPage()">عن البرنامج</a>
+            </div>
+        </nav>
+
         <h1>إدارة حضور الطلاب</h1>
 
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="ابحث عن اسم الطالب...">
+            <button onclick="showSearchPage(document.getElementById('searchInput').value.trim())">بحث</button>
         </div>
 
         <div class="buttons-container">
-            <button onclick="addGroup()">إضافة مجموعة </button>
+            <button onclick="showGroups()">عرض المجموعات</button>
+            <button onclick="addGroup()">إضافة مجموعة جديدة</button>
             <button onclick="showStatistics()">الإحصائيات</button>
             <button onclick="backupLocalStorage()">حفظ نسخة احتياطية</button>
             <button onclick="document.getElementById('restoreInput').click()">استعادة نسخة احتياطية</button>
             <button onclick="resetToDefaults()" class="reset-button">استعادة القيم الافتراضية</button>
             <button onclick="showAboutPage()" style="background-color: var(--secondary-color)">عن البرنامج</button>
             <input type="file" id="restoreInput" accept=".json" style="display: none;" onchange="restoreLocalStorage(event)">
-        </div>
-
-        <div id="groupLinks">
-            <!-- الروابط سيتم إنشاؤها ديناميكيًا -->
         </div>
     </div>
 
@@ -622,27 +803,27 @@
             return link;
         }
 
-        // تحديث دالة إنشاء روابط المجموعات الأولية
-        const groupLinksContainer = document.getElementById('groupLinks');
-        for (let i = 1; i <= 30; i++) {
-            const groupData = JSON.parse(localStorage.getItem(`group${i}`));
-            if (groupData) { // عرض فقط المجموعات الموجودة في localStorage
-                const link = createGroupLink(i, groupData.groupName);
-                groupLinksContainer.appendChild(link);
-            }
-        }
-
-        // العودة إلى القائمة الرئيسية
+        // تحديث دالة navigateToMainPage لإزالة المجموعات من الصفحة الرئيسية
         function navigateToMainPage() {
             document.body.innerHTML = `
                 <div class="container">
+                    <nav class="nav-bar">
+                        <div class="nav-links">
+                            <a href="#" class="nav-link active" onclick="navigateToMainPage()">الصفحة الرئيسية</a>
+                            <a href="#" class="nav-link" onclick="showGroups()">المجموعات</a>
+                            <a href="#" class="nav-link" onclick="showStatistics()">الإحصائيات</a>
+                            <a href="#" class="nav-link" onclick="showSearchPage(document.getElementById('searchInput')?.value || '')">البحث</a>
+                            <a href="#" class="nav-link" onclick="showAboutPage()">عن البرنامج</a>
+                        </div>
+                    </nav>
                     <h1>إدارة حضور الطلاب</h1>
                     <div class="search-box">
                         <input type="text" id="searchInput" placeholder="ابحث عن اسم الطالب...">
-                        <button onclick="showSearchPage(document.getElementById('searchInput').value.trim())" style="width: 100%; margin-top: 10px;">انتقال إلى صفحة البحث</button>
+                        <button onclick="showSearchPage(document.getElementById('searchInput').value.trim())">بحث</button>
                     </div>
                     <div class="buttons-container">
-                        <button onclick="addGroup()">إضافة مجموعة</button>
+                        <button onclick="showGroups()">عرض المجموعات</button>
+                        <button onclick="addGroup()">إضافة مجموعة جديدة</button>
                         <button onclick="showStatistics()">الإحصائيات</button>
                         <button onclick="backupLocalStorage()">حفظ نسخة احتياطية</button>
                         <button onclick="document.getElementById('restoreInput').click()">استعادة نسخة احتياطية</button>
@@ -650,28 +831,219 @@
                         <button onclick="showAboutPage()" style="background-color: var(--secondary-color)">عن البرنامج</button>
                         <input type="file" id="restoreInput" accept=".json" style="display: none;" onchange="restoreLocalStorage(event)">
                     </div>
-                    <div id="groupLinks"></div>
                 </div>
             `;
 
-            // إعادة تهيئة روابط المجموعات
-            const groupLinksContainer = document.getElementById('groupLinks');
+            // إعادة تفعيل البحث
+            initializeSearch();
+            updateActiveNavLink('الصفحة الرئيسية');
+        }
+
+        // تحديث دالة showGroups لعرض صفحة المجموعات
+        function showGroups() {
+            let allGroups = [];
             for (let i = 1; i <= 30; i++) {
                 const groupData = JSON.parse(localStorage.getItem(`group${i}`));
                 if (groupData) {
-                    const link = createGroupLink(i, groupData.groupName);
-                    groupLinksContainer.appendChild(link);
+                    const stats = calculateGroupStats(groupData);
+                    allGroups.push({
+                        number: i,
+                        ...groupData,
+                        stats
+                    });
                 }
             }
 
+            document.body.innerHTML = `
+                <div class="container">
+                    <nav class="nav-bar">
+                        <div class="nav-links">
+                            <a href="#" class="nav-link" onclick="navigateToMainPage()">الصفحة الرئيسية</a>
+                            <a href="#" class="nav-link active" onclick="showGroups()">المجموعات</a>
+                            <a href="#" class="nav-link" onclick="showStatistics()">الإحصائيات</a>
+                            <a href="#" class="nav-link" onclick="showSearchPage(document.getElementById('searchInput')?.value || '')">البحث</a>
+                            <a href="#" class="nav-link" onclick="showAboutPage()">عن البرنامج</a>
+                        </div>
+                    </nav>
+                    <h1>المجموعات</h1>
+                    <button onclick="navigateToMainPage()" class="back-button">العودة إلى القائمة الرئيسية</button>
+                    
+                    <div class="buttons-container">
+                        <button onclick="addGroup()">إضافة مجموعة جديدة</button>
+                    </div>
+
+                    <div class="groups-grid">
+                        ${allGroups.map(group => `
+                            <div class="group-card" onclick="toggleGroupDetails(event, ${group.number})">
+                                <h3>
+                                    ${group.groupName}
+                                    <i class="fas fa-chevron-down"></i>
+                                </h3>
+                                <div class="group-stats">
+                                    <div class="stat-item">
+                                        <span>عدد الطلاب:</span>
+                                        <strong>${group.students.length}</strong>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span>المبلغ المحصل:</span>
+                                        <strong>${group.stats.collected} جنيه</strong>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span>المتأخرات:</span>
+                                        <strong>${group.stats.remaining} جنيه</strong>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span>نسبة الحضور:</span>
+                                        <strong>${group.stats.attendanceRate}%</strong>
+                                    </div>
+                                </div>
+                                <div class="group-details">
+                                    <div class="group-students">
+                                        <h4>قائمة الطلاب:</h4>
+                                        <ul class="student-list">
+                                            ${group.students.map(student => `
+                                                <li>${student.name}</li>
+                                            `).join('')}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            updateActiveNavLink('المجموعات');
+        }
+
+        // إضافة دالة لتبديل عرض تفاصيل المجموعة
+        function toggleGroupDetails(event, groupNumber) {
+            event.stopPropagation();
+            const card = event.currentTarget;
+            
+            // إذا تم النقر على الكارد نفسه وليس على العنصر الداخلي
+            if (event.target === card || event.target.closest('.group-card')) {
+                if (event.target.closest('h3')) {
+                    card.classList.toggle('expanded');
+                } else {
+                    loadGroup(groupNumber);
+                }
+            }
+        }
+
+        // إضافة شهر جديد للمجموعة
+        function addNewMonth(groupNumber) {
+            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
+            if (!groupData) return;
+
+            // إضافة 8 أيام جديدة للتواريخ
+            groupData.dates = [...groupData.dates, ...Array(8).fill('')];
+
+            // تحديث بيانات الطلاب
+            groupData.students.forEach(student => {
+                // إضافة بيانات الحضور للشهر الجديد
+                student.attendance = [
+                    ...student.attendance,
+                    ...Array(8).fill().map(() => [false, false])
+                ];
+                
+                // إضافة حقل المدفوعات للشهر الجديد
+                if (!student.payments) {
+                    student.payments = [];
+                }
+                student.payments.push(0);
+            });
+
+            // حفظ البيانات
+            localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+            loadGroup(groupNumber);
+        }
+
+        // تعديل دالة حذف الشهر
+        function deleteMonth(groupNumber, monthIndex) {
+            if (!confirm(`هل أنت متأكد من حذف الشهر ${monthIndex + 1}؟`)) {
+                return;
+            }
+
+            try {
+                const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
+                if (!groupData) return;
+
+                // حساب نطاق الأيام للشهر المحدد
+                const startIndex = monthIndex * 8;
+
+                // حذف التواريخ للشهر المحدد
+                groupData.dates.splice(startIndex, 8);
+
+                // تحديث بيانات الطلاب
+                groupData.students.forEach(student => {
+                    // حذف بيانات الحضور للشهر المحدد
+                    student.attendance.splice(startIndex, 8);
+                    
+                    // حذف المدفوعات للشهر المحدد
+                    if (student.payments) {
+                        student.payments.splice(monthIndex, 1);
+                    }
+                });
+
+                // حفظ البيانات وإعادة تحميل المجموعة
+                localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+                loadGroup(groupNumber);
+                
+            } catch (error) {
+                console.error('خطأ في حذف الشهر:', error);
+                alert('حدث خطأ أثناء حذف الشهر');
+            }
+        }
+
+        // العودة إلى القائمة الرئيسية
+        function navigateToMainPage() {
+            document.body.innerHTML = `
+                <div class="container">
+                    <nav class="nav-bar">
+                        <div class="nav-links">
+                            <a href="#" class="nav-link active" onclick="navigateToMainPage()">الصفحة الرئيسية</a>
+                            <a href="#" class="nav-link" onclick="showGroups()">المجموعات</a>
+                            <a href="#" class="nav-link" onclick="showStatistics()">الإحصائيات</a>
+                            <a href="#" class="nav-link" onclick="showSearchPage(document.getElementById('searchInput')?.value || '')">البحث</a>
+                            <a href="#" class="nav-link" onclick="showAboutPage()">عن البرنامج</a>
+                        </div>
+                    </nav>
+                    <h1>إدارة حضور الطلاب</h1>
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="ابحث عن اسم الطالب...">
+                        <button onclick="showSearchPage(document.getElementById('searchInput').value.trim())">بحث</button>
+                    </div>
+                    <div class="buttons-container">
+                        <button onclick="showGroups()">عرض المجموعات</button>
+                        <button onclick="addGroup()">إضافة مجموعة جديدة</button>
+                        <button onclick="showStatistics()">الإحصائيات</button>
+                        <button onclick="backupLocalStorage()">حفظ نسخة احتياطية</button>
+                        <button onclick="document.getElementById('restoreInput').click()">استعادة نسخة احتياطية</button>
+                        <button onclick="resetToDefaults()" class="reset-button">استعادة القيم الافتراضية</button>
+                        <button onclick="showAboutPage()" style="background-color: var(--secondary-color)">عن البرنامج</button>
+                        <input type="file" id="restoreInput" accept=".json" style="display: none;" onchange="restoreLocalStorage(event)">
+                    </div>
+                </div>
+            `;
+
             // إعادة تفعيل البحث
             initializeSearch();
+            updateActiveNavLink('الصفحة الرئيسية');
         }
 
         // عرض صفحة "عن البرنامج"
         function showAboutPage() {
             document.body.innerHTML = `
                 <div class="container">
+                    <nav class="nav-bar">
+                        <div class="nav-links">
+                            <a href="#" class="nav-link" onclick="navigateToMainPage()">الصفحة الرئيسية</a>
+                            <a href="#" class="nav-link" onclick="showGroups()">المجموعات</a>
+                            <a href="#" class="nav-link" onclick="showStatistics()">الإحصائيات</a>
+                            <a href="#" class="nav-link" onclick="showSearchPage(document.getElementById('searchInput')?.value || '')">البحث</a>
+                            <a href="#" class="nav-link" onclick="showAboutPage()">عن البرنامج</a>
+                        </div>
+                    </nav>
                     <button onclick="navigateToMainPage()" class="back-button">العودة إلى القائمة الرئيسية</button>
                     <h1>عن البرنامج</h1>
 
@@ -741,6 +1113,7 @@
                     </div>
                 </div>
             `;
+            updateActiveNavLink('عن البرنامج');
         }
 
         // تحميل المجموعة
@@ -748,6 +1121,15 @@
             const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`)) || { students: [], dates: Array(40).fill(''), groupName: `المجموعة ${groupNumber}` };
             document.body.innerHTML = `
                 <div class="container">
+                    <nav class="nav-bar">
+                        <div class="nav-links">
+                            <a href="#" class="nav-link" onclick="navigateToMainPage()">الصفحة الرئيسية</a>
+                            <a href="#" class="nav-link" onclick="showGroups()">المجموعات</a>
+                            <a href="#" class="nav-link" onclick="showStatistics()">الإحصائيات</a>
+                            <a href="#" class="nav-link" onclick="showSearchPage(document.getElementById('searchInput')?.value || '')">البحث</a>
+                            <a href="#" class="nav-link" onclick="showAboutPage()">عن البرنامج</a>
+                        </div>
+                    </nav>
                     <h1>${groupData.groupName}</h1>
                     <button onclick="navigateToMainPage()" class="back-button">العودة إلى القائمة الرئيسية</button>
                     <div class="buttons-container">
@@ -853,10 +1235,32 @@
             });
         }
 
-        // إضافة طالب جديد
+        // تحديث دالة إضافة طالب جديد
         function addStudent(groupNumber) {
-            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`)) || { students: [], dates: Array(40).fill(''), groupName: `المجموعة ${groupNumber}` };
-            groupData.students.push({ name: 'طالب جديد', attendance: Array(40).fill([false, false]), notes: '', monthlyPayment: 150 });
+            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`)) || { 
+                students: [], 
+                dates: Array(8).fill(''), 
+                groupName: `المجموعة ${groupNumber}` 
+            };
+            
+            // حساب عدد الشهور الموجودة من مصفوفة التواريخ
+            const monthCount = Math.ceil(groupData.dates.length / 8) * 8;
+            
+            // إنشاء مصفوفة حضور بنفس عدد الأيام الموجودة
+            const attendance = Array(monthCount).fill([false, false]);
+            
+            // إنشاء مصفوفة مدفوعات بنفس عدد الشهور
+            const payments = Array(Math.ceil(monthCount / 8)).fill(0);
+            
+            // إضافة الطالب الجديد مع البيانات المناسبة
+            groupData.students.push({ 
+                name: 'طالب جديد', 
+                attendance: attendance,
+                payments: payments,
+                notes: '', 
+                monthlyPayment: 150 
+            });
+            
             localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
             loadGroup(groupNumber);
         }
@@ -880,16 +1284,14 @@
             const groupData = {
                 groupName: groupName,
                 students: [],
-                dates: Array(40).fill('') // نبدأ بشهر واحد (8 أيام)
+                dates: Array(8).fill('') // نبدأ بشهر واحد (8 أيام)
             };
 
             try {
                 localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
-                // إضافة رابط المجموعة الجديدة مباشرة
-                const groupLinksContainer = document.getElementById('groupLinks');
-                const link = createGroupLink(groupNumber, groupName);
-                groupLinksContainer.appendChild(link);
                 alert(`تم إنشاء المجموعة "${groupName}" بنجاح`);
+                // تحميل المجموعة مباشرة بعد إنشائها
+                loadGroup(groupNumber);
             } catch (error) {
                 console.error('خطأ في إنشاء المجموعة:', error);
                 alert('حدث خطأ أثناء إنشاء المجموعة. يرجى التحقق من مساحة التخزين المتاحة.');
@@ -1079,178 +1481,35 @@
                 return;
             }
 
-            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
-            if (!groupData) return;
-
             try {
-                // حساب نطاق الشهر (8 أيام)
-                const startIndex = monthIndex * 8;
-                const endIndex = startIndex + 8;
+                const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
+                if (!groupData) return;
 
-                // حذف التواريخ للشهر
+                // حساب نطاق الأيام للشهر المحدد
+                const startIndex = monthIndex * 8;
+
+                // حذف التواريخ للشهر المحدد
                 groupData.dates.splice(startIndex, 8);
 
-                // حذف بيانات الحضور للشهر لكل الطلاب
+                // تحديث بيانات الطلاب
                 groupData.students.forEach(student => {
+                    // حذف بيانات الحضور للشهر المحدد
                     student.attendance.splice(startIndex, 8);
-                    // حذف المدفوعات للشهر
+                    
+                    // حذف المدفوعات للشهر المحدد
                     if (student.payments) {
                         student.payments.splice(monthIndex, 1);
                     }
                 });
 
+                // حفظ البيانات وإعادة تحميل المجموعة
                 localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
-                loadGroup(groupNumber); // إعادة تحميل المجموعة
-                alert('تم حذف الشهر بنجاح');
+                loadGroup(groupNumber);
+                
             } catch (error) {
                 console.error('خطأ في حذف الشهر:', error);
                 alert('حدث خطأ أثناء حذف الشهر');
             }
-        }
-
-        // إضافة شهر جديد
-        function addNewMonth(groupNumber) {
-            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
-            if (!groupData) return;
-
-            try {
-                // إضافة 8 أيام جديدة فارغة
-                groupData.dates.push(...Array(8).fill(''));
-
-                // إضافة بيانات حضور فارغة لكل الطلاب
-                groupData.students.forEach(student => {
-                    student.attendance.push(...Array(8).fill([false, false]));
-                    // إضافة قيمة مدفوعات فارغة للشهر الجديد
-                    if (!student.payments) {
-                        student.payments = [];
-                    }
-                    student.payments.push(0);
-                });
-
-                localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
-                loadGroup(groupNumber); // إعادة تحميل المجموعة
-            } catch (error) {
-                console.error('خطأ في إضافة الشهر:', error);
-                alert('حدث خطأ أثناء إضافة الشهر');
-            }
-        }
-
-        // البحث عن الطالب
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const searchTerm = this.value.trim().toLowerCase();
-            if (searchTerm.length >= 2) { // البدء في البحث بعد كتابة حرفين على الأقل
-                showSearchPage(searchTerm);
-            } else {
-                // إعادة عرض روابط المجموعات إذا كان حقل البحث فارغاً
-                const links = document.querySelectorAll('.group-link');
-                links.forEach(link => link.style.display = 'block');
-            }
-        });
-
-        // دالة لعرض صفحة نتائج البحث
-        function showSearchPage(searchTerm) {
-            if (!searchTerm || searchTerm.length < 2) {
-                alert('الرجاء إدخال كلمة بحث من حرفين على الأقل');
-                return;
-            }
-
-            const searchResults = [];
-            
-            for (let i = 1; i <= 30; i++) {
-                const groupData = JSON.parse(localStorage.getItem(`group${i}`));
-                if (!groupData || !groupData.students) continue;
-
-                const monthCount = Math.floor(groupData.dates.length / 8); // حساب عدد الشهور الفعلي
-
-                groupData.students.forEach((student, studentIndex) => {
-                    if (student.name.toLowerCase().includes(searchTerm)) {
-                        const studentStats = {
-                            name: student.name,
-                            groupNumber: i,
-                            groupName: groupData.groupName,
-                            monthlyPayment: student.monthlyPayment || 150,
-                            attendanceByMonth: [],
-                            payments: student.payments || []
-                        };
-
-                        // تجميع إحصائيات الحضور لكل الشهور المتاحة
-                        for (let month = 0; month < monthCount; month++) {
-                            const monthStats = {
-                                month: month + 1,
-                                present: 0,
-                                absent: 0,
-                                total: 0,
-                                payment: student.payments ? student.payments[month] || 0 : 0
-                            };
-
-                            for (let day = 0; day < 8; day++) {
-                                const index = month * 8 + day;
-                                if (student.attendance && student.attendance[index]) {
-                                    const [isPresent] = student.attendance[index];
-                                    if (isPresent) monthStats.present++;
-                                    monthStats.total++;
-                                }
-                            }
-                            monthStats.absent = monthStats.total - monthStats.present;
-                            studentStats.attendanceByMonth.push(monthStats);
-                        }
-
-                        searchResults.push(studentStats);
-                    }
-                });
-            }
-
-            document.body.innerHTML = `
-                <div class="container">
-                    <button onclick="navigateToMainPage()" class="back-button">العودة إلى القائمة الرئيسية</button>
-                    <h1>نتائج البحث</h1>
-                    <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="ابحث عن اسم الطالب..." value="${searchTerm}">
-                    </div>
-                    
-                    <div class="search-results">
-                        ${searchResults.map((result, index) => `
-                            <div class="student-card" onclick="toggleSearchDetails(${index})">
-                                <div class="student-name">
-                                    <span>${result.name}</span>
-                                    <span class="group-badge">${result.groupName}</span>
-                                </div>
-                                <div id="search-details-${index}" class="student-details">
-                                    <div class="details-grid">
-                                        <div class="detail-item">
-                                            <strong>المجموعة:</strong> ${result.groupName}
-                                        </div>
-                                        <div class="detail-item">
-                                            <strong>قيمة السداد الشهرية:</strong> ${result.monthlyPayment} جنيه
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="attendance-months">
-                                        ${result.attendanceByMonth.map(month => `
-                                            <div class="month-card ${month.total > 0 ? '' : 'inactive'}">
-                                                <div class="month-header">الشهر ${month.month}</div>
-                                                <div class="month-stats">
-                                                    <div>الحضور: ${month.present}</div>
-                                                    <div>الغياب: ${month.absent}</div>
-                                                    <div>المبلغ المدفوع: ${month.payment} جنيه</div>
-                                                </div>
-                                            </div>
-                                        `).join('')}
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-
-            const searchInput = document.getElementById('searchInput');
-            searchInput.addEventListener('input', function() {
-                const newSearchTerm = this.value.trim().toLowerCase();
-                if (newSearchTerm.length >= 2) {
-                    showSearchPage(newSearchTerm);
-                }
-            });
         }
 
         function toggleSearchDetails(index) {
@@ -1455,15 +1714,19 @@
             // تصفية المجموعات التي لديها نشاط
             const activeGroupStats = stats.groupStats.filter(group => group.collected > 0 || group.expected > 0);
             
-            // تصفية الشهور التي لديها نشاط
-            const activeMonthlyStats = stats.monthlyStats.filter(month => 
-                month.attendedLessons > 0 || month.collected > 0
-            );
-            
             stats.unpaidStudents.sort((a, b) => (b.totalDue - b.totalPaid) - (a.totalDue - a.totalPaid));
 
             document.body.innerHTML = `
                 <div class="container">
+                    <nav class="nav-bar">
+                        <div class="nav-links">
+                            <a href="#" class="nav-link" onclick="navigateToMainPage()">الصفحة الرئيسية</a>
+                            <a href="#" class="nav-link" onclick="showGroups()">المجموعات</a>
+                            <a href="#" class="nav-link active" onclick="showStatistics()">الإحصائيات</a>
+                            <a href="#" class="nav-link" onclick="showSearchPage(document.getElementById('searchInput')?.value || '')">البحث</a>
+                            <a href="#" class="nav-link" onclick="showAboutPage()">عن البرنامج</a>
+                        </div>
+                    </nav>
                     <button onclick="navigateToMainPage()" class="back-button">
                         العودة إلى القائمة الرئيسية
                     </button>
@@ -1550,40 +1813,6 @@
                                 </table>
                             </div>
                         </div>
-
-                        <div class="stats-card">
-                            <h2>الإحصائيات الشهرية النشطة</h2>
-                            <div class="table-container">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>الشهر</th>
-                                            <th>المبلغ المحصل</th>
-                                            <th>المبلغ المتوقع</th>
-                                            <th>المتبقي</th>
-                                            <th>نسبة التحصيل</th>
-                                            <th>عدد الحصص</th>
-                                            <th>عدد مرات الحضور</th>
-                                            <th>عدد مرات الغياب</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${activeMonthlyStats.map((month, index) => `
-                                            <tr>
-                                                <td>الشهر ${index + 1}</td>
-                                                <td>${month.collected} جنيه</td>
-                                                <td>${month.expected} جنيه</td>
-                                                <td>${month.expected - month.collected} جنيه</td>
-                                                <td>${Math.round((month.collected / (month.expected || 1)) * 100)}%</td>
-                                                <td>${month.totalLessons}</td>
-                                                <td>${month.attendedLessons}</td>
-                                                <td>${month.absentLessons}</td>
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="buttons-container">
@@ -1608,16 +1837,35 @@
                 details.classList.toggle('show');
                 card.classList.toggle('active');
             };
+            updateActiveNavLink('الإحصائيات');
         }
 
         function initializeSearch() {
             const searchInput = document.getElementById('searchInput');
             if (!searchInput) return;
 
+            // إضافة وظيفة التوسع التلقائي
             searchInput.addEventListener('input', function() {
+                // إعادة تعيين العرض إلى الحد الأدنى
+                this.style.width = '200px';
+                
+                // حساب العرض المطلوب للنص
+                const textWidth = Math.max(200, this.scrollWidth);
+                
+                // تحديد الحد الأقصى للعرض (80% من عرض الشاشة)
+                const maxWidth = window.innerWidth * 0.8;
+                
+                // تطبيق العرض الجديد
+                this.style.width = Math.min(textWidth, maxWidth) + 'px';
+
+                // تنفيذ البحث الأصلي
                 const searchTerm = this.value.trim().toLowerCase();
                 const links = document.querySelectorAll('.group-link');
                 
+                // Get the container, if it exists
+                const groupLinksContainer = document.getElementById('groupLinks');
+                if (!groupLinksContainer) return;
+
                 if (searchTerm.length >= 2) {
                     // البحث عن الطالب في جميع المجموعات
                     let found = false;
@@ -1745,19 +1993,6 @@
                     'نسبة التحصيل': Math.round((group.collected / (group.expected || 1)) * 100) + '%'
                 }));
 
-                // بيانات الشهور النشطة
-                const monthlyData = stats.monthlyStats.filter(month => month.attendedLessons > 0 || month.collected > 0)
-                    .map((month, index) => ({
-                        'الشهر': `الشهر ${index + 1}`,
-                        'المبلغ المحصل': month.collected,
-                        'المبلغ المتوقع': month.expected,
-                        'المتبقي': month.expected - month.collected,
-                        'نسبة التحصيل': Math.round((month.collected / (month.expected || 1)) * 100) + '%',
-                        'عدد الحصص': month.totalLessons,
-                        'عدد مرات الحضور': month.attendedLessons,
-                        'عدد مرات الغياب': month.absentLessons
-                    }));
-
                 // إضافة جداول البيانات إلى ملف Excel
                 if (unpaidData.length > 0) {
                     const unpaidSheet = XLSX.utils.json_to_sheet(unpaidData);
@@ -1767,9 +2002,6 @@
                 const groupsSheet = XLSX.utils.json_to_sheet(groupsData);
                 XLSX.utils.book_append_sheet(workbook, groupsSheet, 'المجموعات');
 
-                const monthlySheet = XLSX.utils.json_to_sheet(monthlyData);
-                XLSX.utils.book_append_sheet(workbook, monthlySheet, 'الإحصائيات الشهرية');
-
                 // تصدير الملف
                 const date = new Date().toISOString().slice(0, 10);
                 XLSX.writeFile(workbook, `احصائيات_${date}.xlsx`);
@@ -1778,6 +2010,234 @@
                 console.error('خطأ في تصدير الإحصائيات:', error);
                 alert('حدث خطأ أثناء تصدير الإحصائيات');
             }
+        }
+
+        // دالة لتحديث الرابط النشط في شريط التنقل
+        function updateActiveNavLink(linkText) {
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.textContent === linkText) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // إضافة دالة حساب إحصائيات المجموعة
+        function calculateGroupStats(groupData) {
+            let stats = {
+                collected: 0,
+                remaining: 0,
+                attendanceRate: 0
+            };
+
+            if (!groupData.students || groupData.students.length === 0) {
+                return stats;
+            }
+
+            let totalAttendanceDays = 0;
+            let totalPossibleDays = 0;
+
+            // حساب إجمالي المدفوعات والحضور
+            groupData.students.forEach(student => {
+                // حساب المدفوعات
+                const payments = student.payments || [];
+                stats.collected += payments.reduce((sum, payment) => sum + (Number(payment) || 0), 0);
+
+                // حساب الحضور
+                if (student.attendance) {
+                    student.attendance.forEach(day => {
+                        if (day[0]) totalAttendanceDays++;
+                        totalPossibleDays++;
+                    });
+                }
+
+                // حساب المتأخرات
+                const monthlyPayment = student.monthlyPayment || 150;
+                const completedMonths = Math.floor(student.attendance?.length / 8) || 0;
+                const expectedPayment = completedMonths * monthlyPayment;
+                stats.remaining += expectedPayment - (payments.reduce((sum, payment) => sum + (Number(payment) || 0), 0));
+            });
+
+            // حساب نسبة الحضور
+            stats.attendanceRate = totalPossibleDays > 0 
+                ? Math.round((totalAttendanceDays / totalPossibleDays) * 100) 
+                : 0;
+
+            return stats;
+        }
+
+        // تحديث دالة showSearchPage
+        function showSearchPage(searchTerm) {
+            const currentCursorPosition = document.getElementById('searchInput')?.selectionStart;
+            
+            if (!searchTerm || searchTerm.length < 2) {
+                alert('الرجاء إدخال كلمة بحث من حرفين على الأقل');
+                return;
+            }
+
+            searchTerm = searchTerm.trim().toLowerCase();
+            let allResults = [];
+
+            // البحث في جميع المجموعات
+            for (let i = 1; i <= 30; i++) {
+                const groupData = JSON.parse(localStorage.getItem(`group${i}`));
+                if (!groupData || !groupData.students) continue;
+
+                groupData.students.forEach(student => {
+                    if (student.name.toLowerCase().includes(searchTerm)) {
+                        // حساب الحضور والمتأخرات بنفس طريقة الإحصائيات
+                        let totalAttendanceDays = 0;
+                        const attendancePeriods = [];
+                        let currentPeriod = {
+                            startMonth: 0,
+                            count: 0,
+                            attended: []
+                        };
+
+                        const monthlyPayment = student.monthlyPayment || 150;
+                        const payments = student.payments || [];
+
+                        // حساب الفترات المكتملة (8 حصص)
+                        for (let monthIndex = 0; monthIndex < Math.floor(student.attendance?.length / 8); monthIndex++) {
+                            for (let day = 0; day < 8; day++) {
+                                const index = monthIndex * 8 + day;
+                                if (student.attendance && student.attendance[index]) {
+                                    const [isPresent] = student.attendance[index];
+                                    if (isPresent) {
+                                        totalAttendanceDays++;
+                                        currentPeriod.count++;
+                                        currentPeriod.attended.push(index);
+                                    }
+                                }
+                                
+                                // إذا وصلنا إلى 8 حصص، نعتبرها فترة مكتملة
+                                if (currentPeriod.count === 8) {
+                                    attendancePeriods.push(currentPeriod);
+                                    currentPeriod = {
+                                        startMonth: monthIndex + 1,
+                                        count: 0,
+                                        attended: []
+                                    };
+                                }
+                            }
+                        }
+
+                        const totalPaid = payments.reduce((sum, payment) => sum + (Number(payment) || 0), 0);
+                        const completePeriods = attendancePeriods.length;
+                        const totalExpected = completePeriods * monthlyPayment;
+                        const overdueAmount = Math.max(0, totalExpected - totalPaid);
+
+                        // حساب الشهور المتأخرة من الفترات غير المدفوعة بالكامل
+                        const unpaidPeriods = attendancePeriods
+                            .filter((period, idx) => (payments[Math.floor(period.attended[0] / 8)] || 0) < monthlyPayment);
+
+                        allResults.push({
+                            name: student.name,
+                            groupName: groupData.groupName,
+                            groupNumber: i,
+                            monthlyPayment: monthlyPayment,
+                            payments: payments,
+                            overdueAmount: overdueAmount,
+                            overdueMonths: unpaidPeriods.length,
+                            totalExpected: totalExpected,
+                            totalPaid: totalPaid,
+                            completePeriods: completePeriods
+                        });
+                    }
+                });
+            }
+
+            document.body.innerHTML = `
+                <div class="container">
+                    <nav class="nav-bar">
+                        <div class="nav-links">
+                            <a href="#" class="nav-link" onclick="navigateToMainPage()">الصفحة الرئيسية</a>
+                            <a href="#" class="nav-link" onclick="showGroups()">المجموعات</a>
+                            <a href="#" class="nav-link" onclick="showStatistics()">الإحصائيات</a>
+                            <a href="#" class="nav-link active" onclick="showSearchPage(document.getElementById('searchInput')?.value || '')">البحث</a>
+                            <a href="#" class="nav-link" onclick="showAboutPage()">عن البرنامج</a>
+                        </div>
+                    </nav>
+                    <h1>نتائج البحث</h1>
+                    
+                    <div class="search-box">
+                        <input type="text" id="searchInput" value="${searchTerm}" placeholder="ابحث عن اسم الطالب...">
+                        <button onclick="showSearchPage(document.getElementById('searchInput').value)">بحث</button>
+                    </div>
+
+                    ${allResults.length > 0 ? `
+                        <div class="search-results">
+                            ${allResults.map((result, index) => `
+                                <div class="student-card" onclick="toggleSearchDetails(${index})">
+                                    <div class="student-name">
+                                        <span>${result.name}</span>
+                                        <span class="group-badge">${result.groupName}</span>
+                                        ${result.overdueMonths > 0 ? 
+                                            `<span class="badge">${result.overdueMonths} شهر متأخر</span>` : 
+                                            ''
+                                        }
+                                    </div>
+                                    <div id="search-details-${index}" class="student-details">
+                                        <div><strong>المجموعة:</strong> ${result.groupName}</div>
+                                        <div><strong>قيمة السداد الشهرية:</strong> ${result.monthlyPayment} جنيه</div>
+                                        <div><strong>إجمالي المطلوب:</strong> ${result.totalExpected} جنيه</div>
+                                        <div><strong>إجمالي المدفوع:</strong> ${result.totalPaid} جنيه</div>
+                                        ${result.overdueAmount > 0 ? 
+                                            `<div style="color: #dc3545"><strong>المتأخرات:</strong> ${result.overdueAmount} جنيه</div>` : 
+                                            ''
+                                        }
+                                        <button onclick="loadGroup(${result.groupNumber}); event.stopPropagation();" class="action-button">
+                                            عرض التفاصيل الكاملة
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : `
+                        <div class="stats-card" style="margin-top: 2rem; text-align: center;">
+                            <h2 style="color: #856404;">لا توجد نتائج</h2>
+                            <p>لم يتم العثور على نتائج للبحث عن "${searchTerm}"</p>
+                        </div>
+                    `}
+                </div>
+            `;
+
+            // تفعيل البحث المباشر وإعادة وضع المؤشر
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.focus();
+                if (currentCursorPosition) {
+                    searchInput.setSelectionRange(currentCursorPosition, currentCursorPosition);
+                }
+                
+                searchInput.addEventListener('input', function(e) {
+                    const cursorPos = e.target.selectionStart;
+                    if (this.value.length >= 2) {
+                        showSearchPage(this.value);
+                        // إعادة وضع المؤشر بعد تحديث البحث
+                        setTimeout(() => {
+                            const newInput = document.getElementById('searchInput');
+                            if (newInput) {
+                                newInput.setSelectionRange(cursorPos, cursorPos);
+                            }
+                        }, 0);
+                    }
+                });
+            }
+
+            updateActiveNavLink('البحث');
+        }
+
+        // تحديث دالة initializeSearch
+        function initializeSearch() {
+            const searchInput = document.getElementById('searchInput');
+            if (!searchInput) return;
+
+            searchInput.addEventListener('input', function() {
+                if (this.value.trim().length >= 2) {
+                    showSearchPage(this.value);
+                }
+            });
         }
     </script>
 
