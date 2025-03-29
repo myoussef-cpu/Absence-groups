@@ -25,7 +25,7 @@
             direction: rtl;
             max-width: 1280px;
             margin: 0 auto;
-            padding: 1.5rem;
+            padding: 1rem;
             background-color: var(--background-color);
             color: var(--text-color);
             line-height: 1.5;
@@ -33,7 +33,7 @@
 
         .container {
             background: var(--surface-color);
-            padding: 2rem;
+            padding: 0rem;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-lg);
             border: 1px solid var(--border-color);
@@ -616,55 +616,6 @@
             transform: scale(1.1);
         }
 
-        .nav-bar {
-            background: var(--surface-color);
-            padding: 1rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .nav-link {
-            padding: 0.5rem 1rem;
-            color: var(--text-color);
-            text-decoration: none;
-            border-radius: var(--border-radius);
-            transition: all 0.3s ease;
-        }
-
-        .nav-link:hover {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .nav-link.active {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        @media (max-width: 768px) {
-            .nav-bar {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .nav-links {
-                flex-direction: column;
-                width: 100%;
-            }
-        }
-
         .groups-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -762,16 +713,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <nav class="nav-bar">
-            <div class="nav-links">
-                <a href="#" class="nav-link active" onclick="navigateToMainPage()">الصفحة الرئيسية</a>
-                <a href="#" class="nav-link" onclick="showGroups()">المجموعات</a>
-                <a href="#" class="nav-link" onclick="showStatistics()">الإحصائيات</a>
-                <a href="#" class="nav-link" onclick="showSearchPage(document.getElementById('searchInput')?.value || '')">البحث</a>
-                <a href="#" class="nav-link" onclick="showAboutPage()">عن البرنامج</a>
-            </div>
-        </nav>
+ <div class="container">
 
         <h1>إدارة حضور الطلاب</h1>
 
@@ -803,19 +745,10 @@
             return link;
         }
 
-        // تحديث دالة navigateToMainPage لإزالة المجموعات من الصفحة الرئيسية
+        // تحديث دالة navigateToMainPage لإزالة شريط التنقل
         function navigateToMainPage() {
             document.body.innerHTML = `
                 <div class="container">
-                    <nav class="nav-bar">
-                        <div class="nav-links">
-                            <a href="#" class="nav-link active" onclick="navigateToMainPage()">الصفحة الرئيسية</a>
-                            <a href="#" class="nav-link" onclick="showGroups()">المجموعات</a>
-                            <a href="#" class="nav-link" onclick="showStatistics()">الإحصائيات</a>
-                            <a href="#" class="nav-link" onclick="showSearchPage(document.getElementById('searchInput')?.value || '')">البحث</a>
-                            <a href="#" class="nav-link" onclick="showAboutPage()">عن البرنامج</a>
-                        </div>
-                    </nav>
                     <h1>إدارة حضور الطلاب</h1>
                     <div class="search-box">
                         <input type="text" id="searchInput" placeholder="ابحث عن اسم الطالب...">
@@ -836,7 +769,6 @@
 
             // إعادة تفعيل البحث
             initializeSearch();
-            updateActiveNavLink('الصفحة الرئيسية');
         }
 
         // تحديث دالة showGroups لعرض صفحة المجموعات
@@ -856,15 +788,6 @@
 
             document.body.innerHTML = `
                 <div class="container">
-                    <nav class="nav-bar">
-                        <div class="nav-links">
-                            <a href="#" class="nav-link" onclick="navigateToMainPage()">الصفحة الرئيسية</a>
-                            <a href="#" class="nav-link active" onclick="showGroups()">المجموعات</a>
-                            <a href="#" class="nav-link" onclick="showStatistics()">الإحصائيات</a>
-                            <a href="#" class="nav-link" onclick="showSearchPage(document.getElementById('searchInput')?.value || '')">البحث</a>
-                            <a href="#" class="nav-link" onclick="showAboutPage()">عن البرنامج</a>
-                        </div>
-                    </nav>
                     <h1>المجموعات</h1>
                     <button onclick="navigateToMainPage()" class="back-button">العودة إلى القائمة الرئيسية</button>
                     
@@ -912,7 +835,6 @@
                     </div>
                 </div>
             `;
-            updateActiveNavLink('المجموعات');
         }
 
         // إضافة دالة لتبديل عرض تفاصيل المجموعة
@@ -999,15 +921,6 @@
         function navigateToMainPage() {
             document.body.innerHTML = `
                 <div class="container">
-                    <nav class="nav-bar">
-                        <div class="nav-links">
-                            <a href="#" class="nav-link active" onclick="navigateToMainPage()">الصفحة الرئيسية</a>
-                            <a href="#" class="nav-link" onclick="showGroups()">المجموعات</a>
-                            <a href="#" class="nav-link" onclick="showStatistics()">الإحصائيات</a>
-                            <a href="#" class="nav-link" onclick="showSearchPage(document.getElementById('searchInput')?.value || '')">البحث</a>
-                            <a href="#" class="nav-link" onclick="showAboutPage()">عن البرنامج</a>
-                        </div>
-                    </nav>
                     <h1>إدارة حضور الطلاب</h1>
                     <div class="search-box">
                         <input type="text" id="searchInput" placeholder="ابحث عن اسم الطالب...">
@@ -1028,22 +941,12 @@
 
             // إعادة تفعيل البحث
             initializeSearch();
-            updateActiveNavLink('الصفحة الرئيسية');
         }
 
         // عرض صفحة "عن البرنامج"
         function showAboutPage() {
             document.body.innerHTML = `
                 <div class="container">
-                    <nav class="nav-bar">
-                        <div class="nav-links">
-                            <a href="#" class="nav-link" onclick="navigateToMainPage()">الصفحة الرئيسية</a>
-                            <a href="#" class="nav-link" onclick="showGroups()">المجموعات</a>
-                            <a href="#" class="nav-link" onclick="showStatistics()">الإحصائيات</a>
-                            <a href="#" class="nav-link" onclick="showSearchPage(document.getElementById('searchInput')?.value || '')">البحث</a>
-                            <a href="#" class="nav-link" onclick="showAboutPage()">عن البرنامج</a>
-                        </div>
-                    </nav>
                     <button onclick="navigateToMainPage()" class="back-button">العودة إلى القائمة الرئيسية</button>
                     <h1>عن البرنامج</h1>
 
@@ -1113,7 +1016,6 @@
                     </div>
                 </div>
             `;
-            updateActiveNavLink('عن البرنامج');
         }
 
         // تحميل المجموعة
@@ -1121,15 +1023,6 @@
             const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`)) || { students: [], dates: Array(40).fill(''), groupName: `المجموعة ${groupNumber}` };
             document.body.innerHTML = `
                 <div class="container">
-                    <nav class="nav-bar">
-                        <div class="nav-links">
-                            <a href="#" class="nav-link" onclick="navigateToMainPage()">الصفحة الرئيسية</a>
-                            <a href="#" class="nav-link" onclick="showGroups()">المجموعات</a>
-                            <a href="#" class="nav-link" onclick="showStatistics()">الإحصائيات</a>
-                            <a href="#" class="nav-link" onclick="showSearchPage(document.getElementById('searchInput')?.value || '')">البحث</a>
-                            <a href="#" class="nav-link" onclick="showAboutPage()">عن البرنامج</a>
-                        </div>
-                    </nav>
                     <h1>${groupData.groupName}</h1>
                     <button onclick="navigateToMainPage()" class="back-button">العودة إلى القائمة الرئيسية</button>
                     <div class="buttons-container">
@@ -1146,7 +1039,7 @@
                                 <tr>
                                     <th colspan="2">رقم الحصة</th>
                                     ${groupData.dates.map((_, index) => `
-                                        <th>${(index % 8) + 1}</th>
+                                        <th style="width: 40px;">${(index % 8) + 1}</th>
                                         ${(index + 1) % 8 === 0 ? `
                                             <th colspan="2">
                                                 نهاية الشهر ${Math.floor(index / 8) + 1}
@@ -1160,46 +1053,47 @@
                                             </th>
                                         ` : ''}
                                     `).join('')}
-                                    <th></th>
+                                    <th style="width: 80px;">ملاحظات</th>
                                 </tr>
                                 <tr>
-                                    <th style="width: 100px; min-width: 100px;">اسم الطالب كاملا</th>
-                                    <th style="width: 100px; min-width: 100px;">قيمة السداد الشهرية</th>
+                                    <th style="width: 80px; min-width: 100px;">اسم الطالب كاملا</th>
+                                    <th style="width: 50px; min-width: 50px;">قيمة السداد</th>
                                     ${groupData.dates.map((date, index) => `
-                                        <th>
-                                            <input style="width: 70px" type="date" value="${date}" onchange="updateDate(${groupNumber}, ${index}, this.value)">
+                                        <th style="width: 30px;">
+                                            <input style="width: 50px;font-size: 10px" type="date" value="${date}" onchange="updateDate(${groupNumber}, ${index}, this.value)">
                                         </th>
                                         ${(index + 1) % 8 === 0 ? `
-                                            <th style="width: 80px; min-width: 80px;">السداد</th>
-                                            <th style="width: 100px; min-width: 100px;">اسم الطالب كاملا</th>
+                                            <th style="width: 60px; min-width: 60px;">السداد</th>
+                                            <th style="width: 120px; min-width: 120px;">اسم الطالب</th>
                                         ` : ''}
                                     `).join('')}
-                                    <th>ملاحظات</th>
+                                    <th style="width: 80px;">ملاحظات</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 ${groupData.students.map((student, index) => `
                                     <tr>
-                                        <td>
+                                        <td style="width: 200px;">
                                             <button onclick="deleteStudent(${groupNumber}, ${index})" class="delete-student">حذف</button>
                                             <input type="text" value="${student.name}" onchange="updateStudentName(${groupNumber}, ${index}, this.value)">
                                         </td>
-                                        <td>
+                                        <td style="width: 80px;">
                                             <input type="number" class="monthly-payment-input" 
+                                                style="width: 60px;"
                                                 value="${student.monthlyPayment || 150}" 
                                                 onchange="updateMonthlyPayment(${groupNumber}, ${index}, this.value)">
                                         </td>
                                         ${student.attendance.map((att, i) => `
-                                            <td>
+                                            <td style="width: 30px;">
                                                 <input type="checkbox" ${att[0] ? 'checked' : ''} onchange="updateAttendance(${groupNumber}, ${index}, ${i}, 0, this.checked)">
                                                 <input type="checkbox" ${att[1] ? 'checked' : ''} onchange="updateAttendance(${groupNumber}, ${index}, ${i}, 1, this.checked)">
                                             </td>
                                             ${(i + 1) % 8 === 0 ? `
-                                                <td><input type="number" value="${student.payments?.[Math.floor(i/8)] || 0}" onchange="updatePayment(${groupNumber}, ${index}, ${Math.floor(i/8)}, this.value)" style="width: 80px"></td>
-                                                <td><input type="text" value="${student.name}" onchange="updateStudentName(${groupNumber}, ${index}, this.value)"></td>
+                                                <td style="width: 60px;"><input type="number" value="${student.payments?.[Math.floor(i/8)] || 0}" onchange="updatePayment(${groupNumber}, ${index}, ${Math.floor(i/8)}, this.value)" style="width: 50px"></td>
+                                                <td style="width: 120px;"><input type="text" value="${student.name}" onchange="updateStudentName(${groupNumber}, ${index}, this.value)"></td>
                                             ` : ''}
                                         `).join('')}
-                                        <td><input type="text" value="${student.notes}" onchange="updateStudentNotes(${groupNumber}, ${index}, this.value)"></td>
+                                        <td style="width: 80px;"><input type="text" value="${student.notes}" onchange="updateStudentNotes(${groupNumber}, ${index}, this.value)" style="width: 70px"></td>
                                     </tr>
                                 `).join('')}
                             </tbody>
@@ -1718,15 +1612,6 @@
 
             document.body.innerHTML = `
                 <div class="container">
-                    <nav class="nav-bar">
-                        <div class="nav-links">
-                            <a href="#" class="nav-link" onclick="navigateToMainPage()">الصفحة الرئيسية</a>
-                            <a href="#" class="nav-link" onclick="showGroups()">المجموعات</a>
-                            <a href="#" class="nav-link active" onclick="showStatistics()">الإحصائيات</a>
-                            <a href="#" class="nav-link" onclick="showSearchPage(document.getElementById('searchInput')?.value || '')">البحث</a>
-                            <a href="#" class="nav-link" onclick="showAboutPage()">عن البرنامج</a>
-                        </div>
-                    </nav>
                     <button onclick="navigateToMainPage()" class="back-button">
                         العودة إلى القائمة الرئيسية
                     </button>
@@ -1787,6 +1672,36 @@
                         </div>
 
                         <div class="stats-card">
+                            <h2>الإحصائيات الشهرية</h2>
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>الشهر</th>
+                                            <th>المبلغ المحصل</th>
+                                            <th>المبلغ المتوقع</th>
+                                            <th>نسبة التحصيل</th>
+                                            <th>عدد الحصص</th>
+                                            <th>نسبة الحضور</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${stats.monthlyStats.map((month, index) => `
+                                            <tr>
+                                                <td>الشهر ${index + 1}</td>
+                                                <td>${month.collected} جنيه</td>
+                                                <td>${month.expected} جنيه</td>
+                                                <td>${month.expected > 0 ? Math.round((month.collected / month.expected) * 100) : 0}%</td>
+                                                <td>${month.totalLessons}</td>
+                                                <td>${month.totalLessons > 0 ? Math.round((month.attendedLessons / month.totalLessons) * 100) : 0}%</td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="stats-card">
                             <h2>إحصائيات المجموعات النشطة</h2>
                             <div class="table-container">
                                 <table>
@@ -1837,7 +1752,6 @@
                 details.classList.toggle('show');
                 card.classList.toggle('active');
             };
-            updateActiveNavLink('الإحصائيات');
         }
 
         function initializeSearch() {
@@ -2149,16 +2063,8 @@
 
             document.body.innerHTML = `
                 <div class="container">
-                    <nav class="nav-bar">
-                        <div class="nav-links">
-                            <a href="#" class="nav-link" onclick="navigateToMainPage()">الصفحة الرئيسية</a>
-                            <a href="#" class="nav-link" onclick="showGroups()">المجموعات</a>
-                            <a href="#" class="nav-link" onclick="showStatistics()">الإحصائيات</a>
-                            <a href="#" class="nav-link active" onclick="showSearchPage(document.getElementById('searchInput')?.value || '')">البحث</a>
-                            <a href="#" class="nav-link" onclick="showAboutPage()">عن البرنامج</a>
-                        </div>
-                    </nav>
                     <h1>نتائج البحث</h1>
+                    <button onclick="navigateToMainPage()" class="back-button">العودة إلى القائمة الرئيسية</button>
                     
                     <div class="search-box">
                         <input type="text" id="searchInput" value="${searchTerm}" placeholder="ابحث عن اسم الطالب...">
@@ -2224,8 +2130,6 @@
                     }
                 });
             }
-
-            updateActiveNavLink('البحث');
         }
 
         // تحديث دالة initializeSearch
