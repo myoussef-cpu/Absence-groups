@@ -196,7 +196,7 @@
         th:first-child {
             right: 0;
             z-index: 2;
-            background: var(--surface-color);
+             background-color: rgba(248, 249, 250, 0.9); /* إضافة شفافية للعنوان أيضاً */
             border-left: 2px solid var(--primary-color);
             box-shadow: -2px 0 5px rgba(0,0,0,0.1);
         }
@@ -205,7 +205,7 @@
             position: sticky;
             right: 0;
             z-index: 2;
-            background: var(--surface-color);
+             background-color: rgba(255, 255, 255, 0.9); /* تغيير من background-color صلبة إلى شفافة */
             border-left: 2px solid var(--primary-color);
             box-shadow: -2px 0 5px rgba(0,0,0,0.1);
         }
@@ -1056,7 +1056,7 @@
                                     <th style="width: 80px;">ملاحظات</th>
                                 </tr>
                                 <tr>
-                                    <th style="width: 80px; min-width: 100px; background-color: rgba(0, 0, 0, 0.1);">اسم الطالب كاملا</th>
+                                    <th style="width: 60px; min-width: 60px;">اسم الطالب كاملا</th>
                                     <th style="width: 50px; min-width: 50px;">قيمة السداد</th>
                                     ${groupData.dates.map((date, index) => `
                                         <th style="width: 30px;">
