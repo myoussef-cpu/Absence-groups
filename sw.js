@@ -121,4 +121,4 @@ self.addEventListener('fetch', (event) => {
 });
 
 // تحديث دورياً كل ساعة
-setInterval(refreshCache, 60 * 60 * 1000);
+setInterval(refreshCache, 1 * 60 * 1000);
