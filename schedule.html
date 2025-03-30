@@ -417,15 +417,17 @@
             tomorrowContainer.innerHTML = '';
 
             const now = new Date();
-            const today = now.getDay();
-            const currentTime = now.getHours() * 60 + now.getMinutes();
+            // تحويل نظام الأيام ليبدأ من الأحد (0) بدلاً من السبت
+            const today = now.getDay(); // الأحد = 0، السبت = 6
+            const nextDay = (today + 1) % 7;
 
-            // تهيئة تاريخ الغد
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            const currentTimeInMinutes = (currentHour * 60) + currentMinute;
+
             const tomorrow = new Date(now);
             tomorrow.setDate(now.getDate() + 1);
-            const tomorrowDay = tomorrow.getDay();
 
-            // تنسيق التواريخ
             const dateFormatter = new Intl.DateTimeFormat('ar-SA', {
                 weekday: 'long',
                 year: 'numeric',
@@ -434,7 +436,6 @@
                 calendar: 'gregory'
             });
 
-            // عرض التواريخ
             dateDisplay.innerHTML = `
                 <div style="margin-bottom: 1rem">
                     <strong>اليوم:</strong> ${dateFormatter.format(now)}
@@ -447,7 +448,6 @@
             const todayLessons = [];
             const tomorrowLessons = [];
 
-            // جمع الدروس
             for (let i = 1; i <= 30; i++) {
                 const groupData = JSON.parse(localStorage.getItem(`group${i}`));
                 if (!groupData) continue;
@@ -457,36 +457,51 @@
                 const time1 = localStorage.getItem(`time1-${i}`);
                 const time2 = localStorage.getItem(`time2-${i}`);
 
-                // دروس اليوم
-                if (day1 === today || day2 === today) {
-                    if (day1 === today) addLesson(todayLessons, groupData, time1, currentTime);
-                    if (day2 === today) addLesson(todayLessons, groupData, time2, currentTime);
+                if (day1 === today) {
+                    const lessonTime = convertTimeToMinutes(time1);
+                    addLesson(todayLessons, groupData, time1, currentTimeInMinutes, lessonTime);
                 }
-
-                // دروس الغد
-                if (day1 === tomorrowDay || day2 === tomorrowDay) {
-                    if (day1 === tomorrowDay) addLesson(tomorrowLessons, groupData, time1);
-                    if (day2 === tomorrowDay) addLesson(tomorrowLessons, groupData, time2);
+                if (day2 === today) {
+                    const lessonTime = convertTimeToMinutes(time2);
+                    addLesson(todayLessons, groupData, time2, currentTimeInMinutes, lessonTime);
+                }
+                if (day1 === nextDay) {
+                    addLesson(tomorrowLessons, groupData, time1);
+                }
+                if (day2 === nextDay) {
+                    addLesson(tomorrowLessons, groupData, time2);
                 }
             }
 
-            // عرض دروس اليوم
-            displayLessons(todayContainer, todayLessons, 'اليوم');
+            todayLessons.sort((a, b) => a.timeValue - b.timeValue);
+            tomorrowLessons.sort((a, b) => a.timeValue - b.timeValue);
 
-            // عرض دروس الغد
+            displayLessons(todayContainer, todayLessons, 'اليوم');
             displayLessons(tomorrowContainer, tomorrowLessons, 'غداً');
         }
 
-        function addLesson(lessonsArray, groupData, time, currentTime = null) {
+        function convertTimeToMinutes(time) {
+            if (!time) return 0;
             const [hours, minutes] = time.split(':').map(Number);
-            const lessonTime = hours * 60 + minutes;
-            
+            return (hours * 60) + minutes;
+        }
+
+        function addLesson(lessonsArray, groupData, time, currentTime = null, timeValue = null) {
+            const formattedTime = convert24To12(time);
             lessonsArray.push({
                 group: groupData.groupName,
-                time: time,
-                timeValue: lessonTime,
-                isPast: currentTime ? currentTime > lessonTime : false
+                time: formattedTime,
+                timeValue: timeValue || convertTimeToMinutes(time),
+                isPast: currentTime ? currentTime > (timeValue || convertTimeToMinutes(time)) : false
             });
+        }
+
+        function convert24To12(time24) {
+            if (!time24) return "12:00 PM";
+            const [hours24, minutes] = time24.split(':').map(Number);
+            const period = hours24 >= 12 ? 'PM' : 'AM';
+            const hours12 = hours24 % 12 || 12;
+            return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
         }
 
         function displayLessons(container, lessons, timeLabel) {
@@ -584,26 +599,26 @@
                     <div class="day-select">
                         <label>اليوم الأول:</label>
                         <select id="day1-${group.number}">
-                            <option value="0" ${savedDay1 === "0" ? "selected" : ""}>السبت</option>
-                            <option value="1" ${savedDay1 === "1" ? "selected" : ""}>الأحد</option>
-                            <option value="2" ${savedDay1 === "2" ? "selected" : ""}>الاثنين</option>
-                            <option value="3" ${savedDay1 === "3" ? "selected" : ""}>الثلاثاء</option>
-                            <option value="4" ${savedDay1 === "4" ? "selected" : ""}>الأربعاء</option>
-                            <option value="5" ${savedDay1 === "5" ? "selected" : ""}>الخميس</option>
-                            <option value="6" ${savedDay1 === "6" ? "selected" : ""}>الجمعة</option>
+                            <option value="0" ${savedDay1 === "0" ? "selected" : ""}>الأحد</option>
+                            <option value="1" ${savedDay1 === "1" ? "selected" : ""}>الاثنين</option>
+                            <option value="2" ${savedDay1 === "2" ? "selected" : ""}>الثلاثاء</option>
+                            <option value="3" ${savedDay1 === "3" ? "selected" : ""}>الأربعاء</option>
+                            <option value="4" ${savedDay1 === "4" ? "selected" : ""}>الخميس</option>
+                            <option value="5" ${savedDay1 === "5" ? "selected" : ""}>الجمعة</option>
+                            <option value="6" ${savedDay1 === "6" ? "selected" : ""}>السبت</option>
                         </select>
                         <input type="time" id="time1-${group.number}" value="${savedTime1}">
                     </div>
                     <div class="day-select">
                         <label>اليوم الثاني:</label>
                         <select id="day2-${group.number}">
-                            <option value="0" ${savedDay2 === "0" ? "selected" : ""}>السبت</option>
-                            <option value="1" ${savedDay2 === "1" ? "selected" : ""}>الأحد</option>
-                            <option value="2" ${savedDay2 === "2" ? "selected" : ""}>الاثنين</option>
-                            <option value="3" ${savedDay2 === "3" ? "selected" : ""}>الثلاثاء</option>
-                            <option value="4" ${savedDay2 === "4" ? "selected" : ""}>الأربعاء</option>
-                            <option value="5" ${savedDay2 === "5" ? "selected" : ""}>الخميس</option>
-                            <option value="6" ${savedDay2 === "6" ? "selected" : ""}>الجمعة</option>
+                            <option value="0" ${savedDay2 === "0" ? "selected" : ""}>الأحد</option>
+                            <option value="1" ${savedDay2 === "1" ? "selected" : ""}>الاثنين</option>
+                            <option value="2" ${savedDay2 === "2" ? "selected" : ""}>الثلاثاء</option>
+                            <option value="3" ${savedDay2 === "3" ? "selected" : ""}>الأربعاء</option>
+                            <option value="4" ${savedDay2 === "4" ? "selected" : ""}>الخميس</option>
+                            <option value="5" ${savedDay2 === "5" ? "selected" : ""}>الجمعة</option>
+                            <option value="6" ${savedDay2 === "6" ? "selected" : ""}>السبت</option>
                         </select>
                         <input type="time" id="time2-${group.number}" value="${savedTime2}">
                     </div>
@@ -611,7 +626,6 @@
 
                 container.appendChild(groupDiv);
 
-                // إضافة مستمعات الأحداث للحفظ التلقائي
                 ['day1', 'day2', 'time1', 'time2'].forEach(id => {
                     const element = groupDiv.querySelector(`#${id}-${group.number}`);
                     element.addEventListener('change', () => autoSave(group.number));
@@ -631,7 +645,6 @@
                 localStorage.setItem(`time1-${groupId}`, time1Input.value);
                 localStorage.setItem(`time2-${groupId}`, time2Input.value);
                 
-                // تحديث العرض مباشرة
                 updateTodayLessons();
             }
         }
@@ -642,7 +655,6 @@
                 autoSave(group.number);
             });
 
-            // عرض رسالة النجاح
             const toast = document.createElement('div');
             toast.style.cssText = `
                 position: fixed;
