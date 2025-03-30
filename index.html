@@ -779,6 +779,40 @@
     </footer>
 
     <script>
+        // تأكد من تحميل المستند قبل تنفيذ أي كود
+        function init() {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeApp);
+            } else {
+                initializeApp();
+            }
+        }
+
+        // دالة التهيئة الرئيسية
+        function initializeApp() {
+            try {
+                isOnline = navigator.onlineState;
+                updateConnectionStatus();
+                initializeSearch();
+
+                // تجنب تداخل الإضافات المتصفح
+                if (window.preventExtensionConflict) {
+                    window.preventExtensionConflict();
+                }
+            } catch (error) {
+                console.error('خطأ في تهيئة التطبيق:', error);
+            }
+        }
+
+        // إضافة معالج الأخطاء العام
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.log('خطأ: ', msg);
+            return false;
+        };
+
+        // بدء التطبيق
+        init();
+
         // إضافة كود مراقبة حالة الاتصال
         let isOnline = navigator.onlineState;
         const pendingChanges = new Set();
@@ -2291,7 +2325,7 @@
         }
     </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js" async defer></script>
 
 </body>
 </html>
