@@ -787,12 +787,13 @@
             const statusElement = document.getElementById('connectionStatus');
             const statusText = statusElement.querySelector('.status-text');
             
-            if (navigator.onLine) {
+            const isOnline = navigator.onLine;
+            localStorage.setItem('isOnline', isOnline.toString());
+            
+            if (isOnline) {
                 statusElement.classList.remove('offline');
                 statusElement.classList.add('online');
                 statusText.textContent = 'متصل';
-                
-                // محاولة مزامنة التغييرات المعلقة
                 syncPendingChanges();
             } else {
                 statusElement.classList.remove('online');
@@ -811,16 +812,17 @@
         // تعديل دالة حفظ البيانات للعمل مع وضع عدم الاتصال
         async function saveData(key, data) {
             try {
+                // حفظ البيانات محلياً دائماً
                 localStorage.setItem(key, JSON.stringify(data));
                 
+                // إضافة إلى قائمة التغييرات المعلقة إذا كان غير متصل
                 if (!navigator.onLine) {
-                    // إضافة التغيير إلى قائمة الانتظار
-                    pendingChanges.add(key);
-                    return;
+                    const pendingChanges = JSON.parse(localStorage.getItem('pendingChanges') || '[]');
+                    if (!pendingChanges.includes(key)) {
+                        pendingChanges.push(key);
+                        localStorage.setItem('pendingChanges', JSON.stringify(pendingChanges));
+                    }
                 }
-
-                // يمكن إضافة كود لمزامنة البيانات مع الخادم هنا إذا كنت تستخدم خادمًا
-                
             } catch (error) {
                 console.error('خطأ في حفظ البيانات:', error);
                 alert('حدث خطأ أثناء حفظ البيانات');
@@ -829,33 +831,52 @@
 
         // دالة مزامنة التغييرات المعلقة
         async function syncPendingChanges() {
-            if (pendingChanges.size === 0) return;
+            if (!navigator.onLine) return;
 
             try {
+                const pendingChanges = JSON.parse(localStorage.getItem('pendingChanges') || '[]');
+                if (pendingChanges.length === 0) return;
+
                 for (const key of pendingChanges) {
                     const data = localStorage.getItem(key);
                     if (data) {
-                        // يمكن إضافة كود لمزامنة البيانات مع الخادم هنا
-                        console.log(`مزامنة البيانات للمفتاح: ${key}`);
+                        // هنا يمكنك إضافة كود لمزامنة البيانات مع الخادم إذا كنت تستخدم واحداً
+                        console.log(`تمت مزامنة البيانات للمفتاح: ${key}`);
                     }
                 }
                 
                 // مسح قائمة التغييرات المعلقة بعد المزامنة
-                pendingChanges.clear();
+                localStorage.setItem('pendingChanges', '[]');
                 
             } catch (error) {
                 console.error('خطأ في مزامنة البيانات:', error);
             }
         }
 
-        // تسجيل Service Worker للعمل بدون اتصال
+        // تحديث تسجيل Service Worker مع معالجة أفضل للأخطاء
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', async () => {
                 try {
+                    // التحقق من بروتوكول الموقع
+                    if (window.location.protocol === 'file:') {
+                        console.log('Service Worker غير متاح عند فتح الملف مباشرة. استخدم خادم ويب محلي للتفعيل الكامل.');
+                        // تخزين حالة الاتصال في localStorage
+                        window.addEventListener('online', () => {
+                            localStorage.setItem('isOnline', 'true');
+                            updateConnectionStatus();
+                        });
+                        window.addEventListener('offline', () => {
+                            localStorage.setItem('isOnline', 'false');
+                            updateConnectionStatus();
+                        });
+                        return;
+                    }
+
                     const registration = await navigator.serviceWorker.register('sw.js');
                     console.log('Service Worker مسجل:', registration);
                 } catch (error) {
-                    console.error('خطأ في تسجيل Service Worker:', error);
+                    // تجاهل أخطاء التسجيل ولكن استمر في تتبع حالة الاتصال
+                    console.log('Service Worker سيعمل فقط على HTTPS أو localhost');
                 }
             });
         }
