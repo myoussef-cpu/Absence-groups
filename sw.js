@@ -10,6 +10,46 @@ const CACHE_ALLOWED_HOSTS = [
     'cdnjs.cloudflare.com'
 ];
 
+// إضافة متغير لتتبع حالة الاتصال
+let isOnline = true;
+
+// إضافة مستمع لحدث الاتصال
+self.addEventListener('online', () => {
+    isOnline = true;
+    refreshCache();
+});
+
+// إضافة مستمع لحدث قطع الاتصال
+self.addEventListener('offline', () => {
+    isOnline = false;
+});
+
+// دالة لتحديث الكاش
+async function refreshCache() {
+    if (!isOnline) return;
+
+    try {
+        const cache = await caches.open(CACHE_NAME);
+        
+        // تحديث جميع الأصول المخزنة
+        const keys = await cache.keys();
+        const refreshPromises = keys.map(async (request) => {
+            try {
+                const response = await fetch(request);
+                if (response && response.status === 200) {
+                    await cache.put(request, response);
+                }
+            } catch (error) {
+                console.warn(`Failed to refresh: ${request.url}`, error);
+            }
+        });
+
+        await Promise.allSettled(refreshPromises);
+    } catch (error) {
+        console.error('Cache refresh failed:', error);
+    }
+}
+
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME)
@@ -42,49 +82,43 @@ self.addEventListener('activate', (event) => {
     );
 });
 
+// تحديث مستمع الـ fetch
 self.addEventListener('fetch', (event) => {
-    // تجاهل الطلبات غير HTTP/HTTPS
-    if (!event.request.url.startsWith('http')) return;
-
-    // تجاهل طلبات chrome-extension
-    if (event.request.url.startsWith('chrome-extension://')) return;
+    // Only handle HTTP(S) requests
+    if (!event.request.url.startsWith('http')) {
+        return;
+    }
 
     const url = new URL(event.request.url);
     
-    // التحقق من مصدر الطلب
     const isAllowedHost = CACHE_ALLOWED_HOSTS.some(host => url.hostname.includes(host));
     const isSameOrigin = url.origin === location.origin;
     
-    if (!isSameOrigin && !isAllowedHost) return;
+    if (!isSameOrigin && !isAllowedHost) {
+        return;
+    }
+
+    if (event.request.method !== 'GET') {
+        return;
+    }
 
     event.respondWith(
-        caches.match(event.request)
+        fetch(event.request)
             .then(response => {
-                if (response) {
-                    return response;
-                }
-
-                return fetch(event.request.clone())
-                    .then(response => {
-                        if (!response || response.status !== 200) {
-                            return response;
-                        }
-
-                        const responseToCache = response.clone();
-                        caches.open(CACHE_NAME)
-                            .then(cache => {
-                                cache.put(event.request, responseToCache)
-                                    .catch(err => console.warn('Cache put error:', err));
-                            });
-
-                        return response;
-                    })
-                    .catch(() => {
-                        // في حالة فشل الطلب، نعيد استجابة "غير متصل"
-                        return new Response('{"offline": true}', {
-                            headers: { 'Content-Type': 'application/json' }
+                if (response && response.status === 200) {
+                    const responseToCache = response.clone();
+                    caches.open(CACHE_NAME)
+                        .then(cache => {
+                            cache.put(event.request, responseToCache);
                         });
-                    });
+                }
+                return response;
+            })
+            .catch(() => {
+                return caches.match(event.request);
             })
     );
 });
+
+// تحديث دورياً كل ساعة
+setInterval(refreshCache, 60 * 60 * 1000);
