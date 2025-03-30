@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جدول المواعيد</title>
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary-color: #06b6d4;
+            --text-color: #1e293b;
+            --background-color: #f1f5f9;
+            --surface-color: #ffffff;
+            --border-color: #e2e8f0;
+            --past-lesson: #ef4444;
+            --upcoming-lesson: #10b981;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+            direction: rtl;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            background: var(--surface-color);
+            padding: 4rem 2rem 2rem 2rem;
+            border-radius: 1.5rem;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            text-align: center;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--secondary-color);
+            border-radius: 2px;
+        }
+
+        .schedule-form {
+            background: linear-gradient(to bottom right, #f8fafc, #f1f5f9);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .group-schedule {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .group-schedule:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow);
+        }
+
+        select, input {
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .lesson {
+            padding: 1.25rem;
+            margin: 0.75rem 0;
+            border-radius: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .lesson.past {
+            background: linear-gradient(to right, #fee2e2, #fecaca);
+            color: var(--past-lesson);
+        }
+
+        .lesson.upcoming {
+            background: linear-gradient(to right, #dcfce7, #bbf7d0);
+            color: var(--upcoming-lesson);
+        }
+
+        .nav-buttons {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 1000;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-buttons button {
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(8px);
+            background: rgba(79, 70, 229, 0.9);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 3rem 1rem 1rem;
+            }
+
+            .group-schedule {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-buttons">
+            <button onclick="window.location.href='index.html'">العودة للصفحة الرئيسية</button>
+        </div>
+        <div class="today-schedule">
+            <h2>دروس اليوم</h2>
+            <div id="todayLessons"></div>
+        </div>
+
+        <h1>جدول المواعيد</h1>
+
+        <div class="schedule-form">
+            <h2>تعيين المواعيد</h2>
+            <div id="groupSchedules"></div>
+            <button onclick="saveSchedules()">حفظ المواعيد</button>
+        </div>
+    </div>
+
+    <script>
+        function createGroupScheduleInputs() {
+            const container = document.getElementById('groupSchedules');
+            container.innerHTML = '';
+
+            for (let i = 1; i <= 30; i++) {
+                const groupData = JSON.parse(localStorage.getItem(`group${i}`));
+                if (!groupData) continue;
+
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'group-schedule';
+                groupDiv.innerHTML = `
+                    <h3>${groupData.groupName}</h3>
+                    <div class="day-select">
+                        <label>اليوم الأول:</label>
+                        <select id="day1-${i}">
+                            <option value="0">السبت</option>
+                            <option value="1">الأحد</option>
+                            <option value="2">الاثنين</option>
+                            <option value="3">الثلاثاء</option>
+                            <option value="4">الأربعاء</option>
+                            <option value="5">الخميس</option>
+                            <option value="6">الجمعة</option>
+                        </select>
+                        <input type="time" id="time1-${i}" value="${localStorage.getItem(`time1-${i}`) || '14:00'}">
+                    </div>
+                    <div class="day-select">
+                        <label>اليوم الثاني:</label>
+                        <select id="day2-${i}">
+                            <option value="0">السبت</option>
+                            <option value="1">الأحد</option>
+                            <option value="2">الاثنين</option>
+                            <option value="3">الثلاثاء</option>
+                            <option value="4">الأربعاء</option>
+                            <option value="5">الخميس</option>
+                            <option value="6">الجمعة</option>
+                        </select>
+                        <input type="time" id="time2-${i}" value="${localStorage.getItem(`time2-${i}`) || '14:00'}">
+                    </div>
+                `;
+
+                // استعادة القيم المحفوظة
+                const day1 = localStorage.getItem(`day1-${i}`);
+                const day2 = localStorage.getItem(`day2-${i}`);
+                if (day1) groupDiv.querySelector(`#day1-${i}`).value = day1;
+                if (day2) groupDiv.querySelector(`#day2-${i}`).value = day2;
+
+                container.appendChild(groupDiv);
+            }
+        }
+
+        function saveSchedules() {
+            for (let i = 1; i <= 30; i++) {
+                const day1Select = document.getElementById(`day1-${i}`);
+                const day2Select = document.getElementById(`day2-${i}`);
+                const time1Input = document.getElementById(`time1-${i}`);
+                const time2Input = document.getElementById(`time2-${i}`);
+
+                if (day1Select && day2Select && time1Input && time2Input) {
+                    localStorage.setItem(`day1-${i}`, day1Select.value);
+                    localStorage.setItem(`day2-${i}`, day2Select.value);
+                    localStorage.setItem(`time1-${i}`, time1Input.value);
+                    localStorage.setItem(`time2-${i}`, time2Input.value);
+                }
+            }
+            alert('تم حفظ المواعيد بنجاح');
+            updateTodayLessons();
+        }
+
+        function updateTodayLessons() {
+            const container = document.getElementById('todayLessons');
+            container.innerHTML = '';
+
+            const now = new Date();
+            const today = now.getDay();
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+
+            const todayLessons = [];
+
+            for (let i = 1; i <= 30; i++) {
+                const groupData = JSON.parse(localStorage.getItem(`group${i}`));
+                if (!groupData) continue;
+
+                const day1 = parseInt(localStorage.getItem(`day1-${i}`));
+                const day2 = parseInt(localStorage.getItem(`day2-${i}`));
+                const time1 = localStorage.getItem(`time1-${i}`);
+                const time2 = localStorage.getItem(`time2-${i}`);
+
+                if (day1 === today || day2 === today) {
+                    if (day1 === today) {
+                        const [hours, minutes] = time1.split(':').map(Number);
+                        const lessonTime = hours * 60 + minutes;
+                        todayLessons.push({
+                            group: groupData.groupName,
+                            time: time1,
+                            timeValue: lessonTime,
+                            isPast: currentTime > lessonTime
+                        });
+                    }
+                    if (day2 === today) {
+                        const [hours, minutes] = time2.split(':').map(Number);
+                        const lessonTime = hours * 60 + minutes;
+                        todayLessons.push({
+                            group: groupData.groupName,
+                            time: time2,
+                            timeValue: lessonTime,
+                            isPast: currentTime > lessonTime
+                        });
+                    }
+                }
+            }
+
+            // ترتيب الدروس حسب الوقت
+            todayLessons.sort((a, b) => a.timeValue - b.timeValue);
+
+            if (todayLessons.length === 0) {
+                container.innerHTML = '<p>لا توجد دروس اليوم</p>';
+                return;
+            }
+
+            todayLessons.forEach(lesson => {
+                const lessonDiv = document.createElement('div');
+                lessonDiv.className = `lesson ${lesson.isPast ? 'past' : 'upcoming'}`;
+                lessonDiv.innerHTML = `
+                    <span>${lesson.group}</span>
+                    <span>${lesson.time}</span>
+                `;
+                container.appendChild(lessonDiv);
+            });
+        }
+
+        // تحديث الدروس كل دقيقة
+        setInterval(updateTodayLessons, 60000);
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', () => {
+            createGroupScheduleInputs();
+            updateTodayLessons();
+        });
+    </script>
+</body>
+</html>
