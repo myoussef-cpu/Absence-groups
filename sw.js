@@ -24,17 +24,26 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
     event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames
-                    .filter(name => name !== CACHE_NAME)
-                    .map(name => caches.delete(name))
-            );
-        })
+        caches.keys()
+            .then(cacheNames => {
+                return Promise.all(
+                    cacheNames
+                        .filter(name => name !== CACHE_NAME)
+                        .map(name => caches.delete(name))
+                );
+            })
+            .catch(error => {
+                console.warn('Cache cleanup error:', error);
+            })
     );
 });
 
 self.addEventListener('fetch', (event) => {
+    // Skip non-HTTP/HTTPS requests
+    if (!event.request.url.startsWith('http')) {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then(response => {
@@ -42,34 +51,42 @@ self.addEventListener('fetch', (event) => {
                     return response;
                 }
                 
-                // Clone the request because it can only be used once
+                // Only clone and cache HTTP/HTTPS requests
                 const fetchRequest = event.request.clone();
-
+                
                 return fetch(fetchRequest)
                     .then(response => {
-                        // Check if response is valid
-                        if (!response || response.status !== 200) {
+                        // Check if valid response and is HTTP/HTTPS
+                        if (!response || response.status !== 200 || 
+                            !response.url.startsWith('http')) {
                             return response;
                         }
 
-                        // Clone the response because it can only be used once
-                        const responseToCache = response.clone();
+                        try {
+                            const responseToCache = response.clone();
+                            caches.open(CACHE_NAME)
+                                .then(cache => {
+                                    // Only cache same-origin and whitelisted CDN resources
+                                    const url = new URL(event.request.url);
+                                    const isSameOrigin = url.origin === location.origin;
+                                    const isWhitelistedCDN = ASSETS_TO_CACHE.some(asset => 
+                                        event.request.url.includes(asset));
 
-                        // Try to cache the new response
-                        caches.open(CACHE_NAME)
-                            .then(cache => {
-                                try {
-                                    cache.put(event.request, responseToCache);
-                                } catch (error) {
-                                    console.warn('Failed to cache response:', error);
-                                }
-                            });
+                                    if (isSameOrigin || isWhitelistedCDN) {
+                                        cache.put(event.request, responseToCache)
+                                            .catch(err => console.warn('Cache put error:', err));
+                                    }
+                                })
+                                .catch(err => console.warn('Cache open error:', err));
+                        } catch (error) {
+                            console.warn('Cache operation error:', error);
+                        }
 
                         return response;
                     })
                     .catch(error => {
                         console.warn('Fetch failed:', error);
-                        return caches.match('./offline.html') || new Response('Offline');
+                        return new Response('Offline');
                     });
             })
     );
