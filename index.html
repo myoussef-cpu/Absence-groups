@@ -2272,6 +2272,27 @@
                                             `<div style="color: #dc3545"><strong>المتأخرات:</strong> ${result.overdueAmount} جنيه</div>` : 
                                             ''
                                         }
+                                        <div class="attendance-summary">
+                                            <h4 style="margin: 1rem 0 0.5rem 0;">تفاصيل الحضور والسداد:</h4>
+                                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.5rem;">
+                                                ${result.completePeriods > 0 ? 
+                                                    Array(result.completePeriods).fill().map((_, idx) => `
+                                                        <div class="month-item" style="background: #f8f9fa; padding: 0.75rem; border-radius: 0.5rem;">
+                                                            <div style="font-weight: bold; margin-bottom: 0.5rem;">الشهر ${idx + 1}</div>
+                                                            <div>المدفوع: ${result.payments[idx] || 0} جنيه</div>
+                                                            <div>المطلوب: ${result.monthlyPayment} جنيه</div>
+                                                            <div style="color: ${(result.payments[idx] || 0) >= result.monthlyPayment ? '#198754' : '#dc3545'}">
+                                                                ${(result.payments[idx] || 0) >= result.monthlyPayment ? 
+                                                                    'تم السداد ✓' : 
+                                                                    `متأخرات: ${result.monthlyPayment - (result.payments[idx] || 0)} جنيه`
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    `).join('') :
+                                                    '<div>لا توجد فترات حضور مكتملة</div>'
+                                                }
+                                            </div>
+                                        </div>
                                         <button onclick="loadGroup(${result.groupNumber}); event.stopPropagation();" class="action-button">
                                             عرض التفاصيل الكاملة
                                         </button>
