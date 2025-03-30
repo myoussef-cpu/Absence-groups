@@ -2325,7 +2325,22 @@
         }
     </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js" async defer></script>
+    <!-- Replace the old XLSX script with these -->
+    <script>
+        // Fallback function if primary CDN fails
+        function loadXLSXFallback() {
+            const fallbackScript = document.createElement('script');
+            fallbackScript.src = 'https://unpkg.com/xlsx/dist/xlsx.full.min.js';
+            fallbackScript.async = true;
+            fallbackScript.onerror = function() {
+                alert('فشل تحميل مكتبة Excel. يرجى التحقق من اتصال الإنترنت الخاص بك.');
+            };
+            document.body.appendChild(fallbackScript);
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" 
+            onerror="loadXLSXFallback()" 
+            async defer></script>
 
 </body>
 </html>
