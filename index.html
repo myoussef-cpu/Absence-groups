@@ -2225,6 +2225,79 @@
                         const unpaidPeriods = attendancePeriods
                             .filter((period, idx) => (payments[Math.floor(period.attended[0] / 8)] || 0) < monthlyPayment);
 
+                        // تحليل الحضور لكل 8 حصص
+                        const attendanceAnalysis = [];
+                        const totalDays = student.attendance?.length || 0;
+                        const remainingDays = totalDays % 8;
+
+                        // تحليل الفترات المكتملة
+                        for (let periodIndex = 0; periodIndex < completePeriods; periodIndex++) {
+                            const startIdx = periodIndex * 8;
+                            const periodAttendance = {
+                                present: 0,
+                                absent: 0,
+                                dates: []
+                            };
+
+                            // حساب الحضور والغياب للفترة الحالية
+                            for (let day = 0; day < 8; day++) {
+                                const idx = startIdx + day;
+                                const date = groupData.dates[idx] || '';
+                                if (student.attendance[idx]) {
+                                    const [isPresent] = student.attendance[idx];
+                                    if (isPresent) {
+                                        periodAttendance.present++;
+                                    } else {
+                                        periodAttendance.absent++;
+                                    }
+                                    periodAttendance.dates.push({
+                                        date: date,
+                                        status: isPresent ? 'حاضر' : 'غائب'
+                                    });
+                                }
+                            }
+
+                            attendanceAnalysis.push({
+                                period: periodIndex + 1,
+                                ...periodAttendance,
+                                attendanceRate: ((periodAttendance.present / 8) * 100).toFixed(1)
+                            });
+                        }
+
+                        // إضافة الفترة غير المكتملة إذا وجدت
+                        if (remainingDays > 0) {
+                            const startIdx = completePeriods * 8;
+                            const periodAttendance = {
+                                present: 0,
+                                absent: 0,
+                                dates: [],
+                                isIncomplete: true,
+                                daysCount: remainingDays
+                            };
+
+                            // حساب الحضور والغياب للفترة غير المكتملة
+                            for (let day = 0; day < remainingDays; day++) {
+                                const idx = startIdx + day;
+                                const date = groupData.dates[idx] || '';
+                                if (student.attendance[idx]) {
+                                    const [isPresent] = student.attendance[idx];
+                                    if (isPresent) {
+                                        periodAttendance.present++;
+                                    } else {
+                                        periodAttendance.absent++;
+                                    }
+                                    periodAttendance.dates.push({
+                                        date: date,
+                                        status: isPresent ? 'حاضر' : 'غائب'
+                                    });
+                                }
+                            }
+
+                            periodAttendance.period = completePeriods + 1;
+                            periodAttendance.attendanceRate = ((periodAttendance.present / remainingDays) * 100).toFixed(1);
+                            attendanceAnalysis.push(periodAttendance);
+                        }
+
                         allResults.push({
                             name: student.name,
                             groupName: groupData.groupName,
@@ -2235,12 +2308,14 @@
                             overdueMonths: unpaidPeriods.length,
                             totalExpected: totalExpected,
                             totalPaid: totalPaid,
-                            completePeriods: completePeriods
+                            completePeriods: completePeriods,
+                            attendanceAnalysis: attendanceAnalysis
                         });
                     }
                 });
             }
 
+            // تحديث طريقة عرض النتائج
             document.body.innerHTML = `
                 <div class="container">
                     <h1>نتائج البحث</h1>
@@ -2273,24 +2348,46 @@
                                             ''
                                         }
                                         <div class="attendance-summary">
-                                            <h4 style="margin: 1rem 0 0.5rem 0;">تفاصيل الحضور والسداد:</h4>
-                                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.5rem;">
-                                                ${result.completePeriods > 0 ? 
-                                                    Array(result.completePeriods).fill().map((_, idx) => `
-                                                        <div class="month-item" style="background: #f8f9fa; padding: 0.75rem; border-radius: 0.5rem;">
-                                                            <div style="font-weight: bold; margin-bottom: 0.5rem;">الشهر ${idx + 1}</div>
-                                                            <div>المدفوع: ${result.payments[idx] || 0} جنيه</div>
-                                                            <div>المطلوب: ${result.monthlyPayment} جنيه</div>
-                                                            <div style="color: ${(result.payments[idx] || 0) >= result.monthlyPayment ? '#198754' : '#dc3545'}">
-                                                                ${(result.payments[idx] || 0) >= result.monthlyPayment ? 
-                                                                    'تم السداد ✓' : 
-                                                                    `متأخرات: ${result.monthlyPayment - (result.payments[idx] || 0)} جنيه`
-                                                                }
+                                            <h4 style="margin: 1rem 0 0.5rem 0;">تحليل الحضور والسداد:</h4>
+                                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
+                                                ${result.attendanceAnalysis.map(period => `
+                                                    <div class="month-item" style="background: #f8f9fa; padding: 1rem; border-radius: 0.5rem; ${period.isIncomplete ? 'border: 2px dashed #ffd700;' : ''}">
+                                                        <div style="font-weight: bold; margin-bottom: 0.5rem; color: var(--primary-color);">
+                                                            ${period.isIncomplete ? 
+                                                                `الفترة ${period.period} (غير مكتملة - ${period.daysCount} أيام)` : 
+                                                                `الفترة ${period.period}`
+                                                            }
+                                                        </div>
+                                                        <div style="margin-bottom: 0.5rem;">
+                                                            <div>عدد مرات الحضور: <strong>${period.present}</strong></div>
+                                                            <div>عدد مرات الغياب: <strong>${period.absent}</strong></div>
+                                                            <div>نسبة الحضور: <strong>${period.attendanceRate}%</strong></div>
+                                                            ${period.isIncomplete ? 
+                                                                `<div style="color: #856404;">متبقي ${8 - period.daysCount} أيام لإكمال الفترة</div>` : 
+                                                                ''
+                                                            }
+                                                        </div>
+                                                        <div>المدفوع: ${result.payments[period.period - 1] || 0} جنيه</div>
+                                                        <div>المطلوب: ${result.monthlyPayment} جنيه</div>
+                                                        <div style="color: ${(result.payments[period.period - 1] || 0) >= result.monthlyPayment ? '#198754' : '#dc3545'}">
+                                                            ${(result.payments[period.period - 1] || 0) >= result.monthlyPayment ? 
+                                                                'تم السداد ✓' : 
+                                                                `متأخرات: ${result.monthlyPayment - (result.payments[period.period - 1] || 0)} جنيه`
+                                                            }
+                                                        </div>
+                                                        <div style="margin-top: 0.75rem;">
+                                                            <strong>تفاصيل الحضور:</strong>
+                                                            <div style="max-height: 150px; overflow-y: auto; margin-top: 0.5rem;">
+                                                                ${period.dates.map(d => `
+                                                                    <div style="padding: 0.25rem; border-bottom: 1px solid #eee;">
+                                                                        ${d.date ? new Date(d.date).toLocaleDateString('ar-EG') : 'لا يوجد تاريخ'}: 
+                                                                        <span style="color: ${d.status === 'حاضر' ? '#198754' : '#dc3545'}">${d.status}</span>
+                                                                    </div>
+                                                                `).join('')}
                                                             </div>
                                                         </div>
-                                                    `).join('') :
-                                                    '<div>لا توجد فترات حضور مكتملة</div>'
-                                                }
+                                                    </div>
+                                                `).join('')}
                                             </div>
                                         </div>
                                         <button onclick="loadGroup(${result.groupNumber}); event.stopPropagation();" class="action-button">
