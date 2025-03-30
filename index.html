@@ -780,6 +780,12 @@
     </footer>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    if (!localStorage.getItem("firstVisit")) {
+        localStorage.setItem("firstVisit", "done");
+        location.reload();
+    }
+});
         // تأكد من تحميل المستند قبل تنفيذ أي كود
         function init() {
             if (document.readyState === 'loading') {
