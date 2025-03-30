@@ -194,28 +194,21 @@
         }
 
         th:first-child {
+            position: sticky;
             right: 0;
-            z-index: 2;
-            background-color: rgba(0, 0, 0, 0.1); /* إضافة شفافية للعنوان أيضاً */
-            border-left: 2px solid var(--primary-color);
-            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+            z-index: 3;
+            background-color: rgba(0, 0, 0, 0); /* تغيير خلفية العنوان لتكون شفافة */
+            backdrop-filter: blur(0px);
         }
 
         td:first-child {
             position: sticky;
             right: 0;
             z-index: 2;
-            background-color: rgba(0, 0, 0, 0.1); /* تغيير من background-color صلبة إلى شفافة */
+            background-color: rgba(0, 0, 0, 0); /* تغيير الخلفية لتكون شفافة */
+            backdrop-filter: blur(0px); /* إضافة تأثير الضبابية */
             border-left: 2px solid var(--primary-color);
             box-shadow: -2px 0 5px rgba(0,0,200,0.1);
-        }
-
-        th:first-child {
-            z-index: 3;
-        }
-
-        td:first-child {
-             background-color: rgba(0, 0, 0, 0.9); /* إضافة شفافية للعنوان أيضاً */;
         }
 
         td:first-child:hover {
@@ -710,10 +703,57 @@
         .student-list li:last-child {
             border-bottom: none;
         }
+
+        .copyright {
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* إضافة ستايل مؤشر الاتصال */
+        .connection-status {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .connection-status.online {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .connection-status.offline {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .connection-status .icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: currentColor;
+        }
     </style>
 </head>
 <body>
- <div class="container">
+    <!-- إضافة مؤشر حالة الاتصال -->
+    <div id="connectionStatus" class="connection-status">
+        <span class="icon"></span>
+        <span class="status-text"></span>
+    </div>
+
+    <div class="container">
 
         <h1>إدارة حضور الطلاب</h1>
 
@@ -734,7 +774,92 @@
         </div>
     </div>
 
+    <footer class="copyright">
+        جميع الحقوق محفوظة &copy; 2024 - الأستاذ يوسف الزغبي
+    </footer>
+
     <script>
+        // إضافة كود مراقبة حالة الاتصال
+        let isOnline = navigator.onlineState;
+        const pendingChanges = new Set();
+
+        function updateConnectionStatus() {
+            const statusElement = document.getElementById('connectionStatus');
+            const statusText = statusElement.querySelector('.status-text');
+            
+            if (navigator.onLine) {
+                statusElement.classList.remove('offline');
+                statusElement.classList.add('online');
+                statusText.textContent = 'متصل';
+                
+                // محاولة مزامنة التغييرات المعلقة
+                syncPendingChanges();
+            } else {
+                statusElement.classList.remove('online');
+                statusElement.classList.add('offline');
+                statusText.textContent = 'غير متصل';
+            }
+        }
+
+        // مراقبة حالة الاتصال
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+
+        // تحديث الحالة عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', updateConnectionStatus);
+
+        // تعديل دالة حفظ البيانات للعمل مع وضع عدم الاتصال
+        async function saveData(key, data) {
+            try {
+                localStorage.setItem(key, JSON.stringify(data));
+                
+                if (!navigator.onLine) {
+                    // إضافة التغيير إلى قائمة الانتظار
+                    pendingChanges.add(key);
+                    return;
+                }
+
+                // يمكن إضافة كود لمزامنة البيانات مع الخادم هنا إذا كنت تستخدم خادمًا
+                
+            } catch (error) {
+                console.error('خطأ في حفظ البيانات:', error);
+                alert('حدث خطأ أثناء حفظ البيانات');
+            }
+        }
+
+        // دالة مزامنة التغييرات المعلقة
+        async function syncPendingChanges() {
+            if (pendingChanges.size === 0) return;
+
+            try {
+                for (const key of pendingChanges) {
+                    const data = localStorage.getItem(key);
+                    if (data) {
+                        // يمكن إضافة كود لمزامنة البيانات مع الخادم هنا
+                        console.log(`مزامنة البيانات للمفتاح: ${key}`);
+                    }
+                }
+                
+                // مسح قائمة التغييرات المعلقة بعد المزامنة
+                pendingChanges.clear();
+                
+            } catch (error) {
+                console.error('خطأ في مزامنة البيانات:', error);
+            }
+        }
+
+        // تسجيل Service Worker للعمل بدون اتصال
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('sw.js');
+                    console.log('Service Worker مسجل:', registration);
+                } catch (error) {
+                    console.error('خطأ في تسجيل Service Worker:', error);
+                }
+            });
+        }
+
         // دالة لإنشاء رابط المجموعة
         function createGroupLink(groupNumber, groupName) {
             const link = document.createElement('a');
@@ -1214,28 +1339,28 @@
         async function updateStudentName(groupNumber, studentIndex, newName) {
             const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
             groupData.students[studentIndex].name = newName;
-            localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+            await saveData(`group${groupNumber}`, groupData);
         }
 
         // تحديث الحضور
         async function updateAttendance(groupNumber, studentIndex, dayIndex, checkboxIndex, isPresent) {
             const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
             groupData.students[studentIndex].attendance[dayIndex][checkboxIndex] = isPresent;
-            localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+            await saveData(`group${groupNumber}`, groupData);
         }
 
         // تحديث التاريخ
         async function updateDate(groupNumber, dateIndex, newDate) {
             const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
             groupData.dates[dateIndex] = newDate;
-            localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+            await saveData(`group${groupNumber}`, groupData);
         }
 
         // تحديث ملاحظات الطالب
         async function updateStudentNotes(groupNumber, studentIndex, newNotes) {
             const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
             groupData.students[studentIndex].notes = newNotes;
-            localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
+            await saveData(`group${groupNumber}`, groupData);
         }
 
         // تحسين دالة النسخ الاحتياطي
