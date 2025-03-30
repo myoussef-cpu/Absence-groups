@@ -2416,6 +2416,14 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" 
             onerror="loadXLSXFallback()" 
             async defer></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (!localStorage.getItem("firstVisit")) {
+            localStorage.setItem("firstVisit", "done");
+            location.reload();
+        }
+    });
+</script>
 
 </body>
 </html>
