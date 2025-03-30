@@ -1,20 +1,27 @@
 const CACHE_NAME = 'student-attendance-v1';
 const ASSETS_TO_CACHE = [
-    '/',
-    '/index.html',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-    'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js'
+    './index.html',
+    'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];
 
-// تثبيت Service Worker وتخزين الملفات المطلوبة
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(cache => cache.addAll(ASSETS_TO_CACHE))
+            .then(cache => {
+                // Try to cache each asset individually
+                return Promise.allSettled(
+                    ASSETS_TO_CACHE.map(url => 
+                        cache.add(url).catch(error => {
+                            console.warn(`Failed to cache ${url}:`, error);
+                            return null;
+                        })
+                    )
+                );
+            })
     );
 });
 
-// تنظيف الكاش القديم
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then(cacheNames => {
@@ -27,7 +34,6 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// اعتراض الطلبات وتقديم الردود من الكاش
 self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request)
@@ -35,21 +41,36 @@ self.addEventListener('fetch', (event) => {
                 if (response) {
                     return response;
                 }
-                return fetch(event.request).then(
-                    response => {
-                        if(!response || response.status !== 200 || response.type !== 'basic') {
+                
+                // Clone the request because it can only be used once
+                const fetchRequest = event.request.clone();
+
+                return fetch(fetchRequest)
+                    .then(response => {
+                        // Check if response is valid
+                        if (!response || response.status !== 200) {
                             return response;
                         }
-                        
+
+                        // Clone the response because it can only be used once
                         const responseToCache = response.clone();
+
+                        // Try to cache the new response
                         caches.open(CACHE_NAME)
                             .then(cache => {
-                                cache.put(event.request, responseToCache);
+                                try {
+                                    cache.put(event.request, responseToCache);
+                                } catch (error) {
+                                    console.warn('Failed to cache response:', error);
+                                }
                             });
-                        
+
                         return response;
-                    }
-                );
+                    })
+                    .catch(error => {
+                        console.warn('Fetch failed:', error);
+                        return caches.match('./offline.html') || new Response('Offline');
+                    });
             })
     );
 });
