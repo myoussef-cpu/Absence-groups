@@ -1400,8 +1400,27 @@
         // تحديث الحضور
         async function updateAttendance(groupNumber, studentIndex, dayIndex, checkboxIndex, isPresent) {
             const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
-            groupData.students[studentIndex].attendance[dayIndex][checkboxIndex] = isPresent;
-            await saveData(`group${groupNumber}`, groupData);
+            const attendance = groupData.students[studentIndex].attendance[dayIndex];
+            
+            if (checkboxIndex === 0) {
+                // الصندوق الأول يمثل ما إذا كانت الحصة محتسبة
+                attendance[0] = isPresent;
+                if (!isPresent) {
+                    // إذا كانت الحصة غير محتسبة، يجب أن يكون الطالب غائباً
+                    attendance[1] = false;
+                }
+            } else if (checkboxIndex === 1) {
+                // الصندوق الثاني يمثل الحضور، ولكن يمكن تحديده فقط إذا كانت الحصة محتسبة
+                if (attendance[0]) {
+                    attendance[1] = isPresent;
+                } else {
+                    alert('يجب تحديد الحصة كمحتسبة أولاً قبل تسجيل الحضور');
+                    return;
+                }
+            }
+            
+            groupData.students[studentIndex].attendance[dayIndex] = attendance;
+            saveData(`group${groupNumber}`, groupData);
         }
 
         // تحديث التاريخ
@@ -1646,78 +1665,51 @@
                         groupData.students.forEach((student) => {
                             if (!student) return;
 
-                            const monthlyAttendance = Array(maxMonths).fill().map(() => ({
-                                counted: 0,
-                                attended: 0,
-                                absent: 0
-                            }));
-
-                            // حساب الحضور الكلي للطالب
-                            let totalAttendanceDays = 0;
-                            const attendancePeriods = [];
-                            let currentPeriod = {
-                                startMonth: 0,
-                                count: 0,
-                                attended: []
-                            };
-
-                            for (let monthIndex = 0; monthIndex < maxMonths; monthIndex++) {
-                                for (let day = 0; day < 8; day++) {
-                                    const index = monthIndex * 8 + day;
-                                    if (student.attendance && student.attendance[index]) {
-                                        const [isPresent] = student.attendance[index];
-                                        if (isPresent) {
-                                            totalAttendanceDays++;
-                                            currentPeriod.count++;
-                                            currentPeriod.attended.push(index);
-                                        }
-                                        
-                                        // إذا وصلنا إلى 8 حصص، نعتبرها فترة مكتملة
-                                        if (currentPeriod.count === 8) {
-                                            attendancePeriods.push(currentPeriod);
-                                            currentPeriod = {
-                                                startMonth: monthIndex,
-                                                count: 0,
-                                                attended: []
-                                            };
-                                        }
-                                    }
+                            // حساب الحصص المحتسبة فقط
+                            let countedLessons = [];
+                            student.attendance?.forEach((att, idx) => {
+                                const isPresent = att[0] && att[1];     // حضور (علامتين)
+                                const isCounted = att[0];               // محتسب (علامة واحدة)
+                                if (isCounted) {
+                                    countedLessons.push({
+                                        index: idx,
+                                        present: isPresent,
+                                        monthIndex: Math.floor(idx / 8)
+                                    });
                                 }
-                            }
+                            });
 
-                            // إضافة الفترة الأخيرة إذا كانت غير مكتملة
-                            if (currentPeriod.count > 0) {
-                                monthlyAttendance[Math.floor(currentPeriod.attended[0] / 8)].partial = true;
-                            }
-
+                            // تجميع الحصص في مجموعات من 8
+                            const completePeriods = Math.floor(countedLessons.length / 8);
+                            const expectedMonthlyPayment = student.monthlyPayment || 150;
                             const payments = student.payments || [];
                             const totalPaid = payments.reduce((sum, payment) => sum + (Number(payment) || 0), 0);
-                            const expectedMonthlyPayment = student.monthlyPayment || 150;
-
-                            // حساب المتأخرات بناءً على عدد الفترات المكتملة (كل 8 حصص)
-                            const completePeriods = attendancePeriods.length;
                             const totalExpected = completePeriods * expectedMonthlyPayment;
 
+                            // تحديث إحصائيات المجموعة
+                            groupStats.collected += totalPaid;
+                            groupStats.expected += totalExpected;
+
+                            // إضافة معلومات الطالب للمتأخرين إذا كان عليه متأخرات
                             if (totalExpected > totalPaid && completePeriods > 0) {
                                 const unpaidAmount = totalExpected - totalPaid;
+                                
+                                // تجميع الفترات المكتملة (كل 8 حصص محتسبة)
+                                const periods = [];
+                                for (let p = 0; p < completePeriods; p++) {
+                                    const periodLessons = countedLessons.slice(p * 8, (p + 1) * 8);
+                                    periods.push({
+                                        period: p + 1,
+                                        startMonth: Math.floor(periodLessons[0].index / 8),
+                                        present: periodLessons.filter(l => l.present).length,
+                                        absent: periodLessons.filter(l => !l.present).length,
+                                        payment: payments[p] || 0,
+                                        expected: expectedMonthlyPayment
+                                    });
+                                }
 
-                                // تجميع معلومات الفترات المتأخرة
-                                const unpaidPeriods = attendancePeriods.map((period, idx) => {
-                                    const monthIndex = Math.floor(period.attended[0] / 8);
-                                    return {
-                                        period: idx + 1,
-                                        hasAttendance: true,
-                                        expectedAmount: expectedMonthlyPayment,
-                                        paidAmount: payments[monthIndex] || 0,
-                                        startMonth: period.startMonth,
-                                        attendance: {
-                                            counted: 8,
-                                            attended: 8,
-                                            absent: 0
-                                        }
-                                    };
-                                }).filter(p => p.paidAmount < p.expectedAmount);
-
+                                const unpaidPeriods = periods.filter(p => p.payment < expectedMonthlyPayment);
+                                
                                 if (unpaidPeriods.length > 0) {
                                     stats.unpaidStudents.push({
                                         name: student.name || 'طالب بدون اسم',
@@ -1731,31 +1723,45 @@
                                         attendanceDetails: unpaidPeriods.map(period => ({
                                             periodNumber: period.period,
                                             startMonth: period.startMonth + 1,
-                                            countedLessons: period.attendance.counted,
-                                            attendedLessons: period.attendance.attended,
-                                            absentLessons: period.attendance.absent,
-                                            paid: period.paidAmount,
-                                            expected: period.expectedAmount,
-                                            isUnpaid: period.paidAmount < period.expectedAmount
+                                            countedLessons: 8,
+                                            attendedLessons: period.present,
+                                            absentLessons: period.absent,
+                                            paid: period.payment,
+                                            expected: period.expected
                                         }))
                                     });
                                 }
                             }
 
-                            // تحديث إحصائيات المجموعة
-                            groupStats.collected += totalPaid;
-                            groupStats.expected += totalExpected;
-
                             // تحديث الإحصائيات الشهرية
-                            monthlyAttendance.forEach((month, idx) => {
+                            const monthlyStats = Array(maxMonths).fill().map(() => ({
+                                counted: 0,
+                                present: 0,
+                                absent: 0
+                            }));
+
+                            countedLessons.forEach(lesson => {
+                                const monthIndex = lesson.monthIndex;
+                                if (monthIndex < maxMonths) {
+                                    monthlyStats[monthIndex].counted++;
+                                    if (lesson.present) {
+                                        monthlyStats[monthIndex].present++;
+                                    } else {
+                                        monthlyStats[monthIndex].absent++;
+                                    }
+                                }
+                            });
+
+                            monthlyStats.forEach((month, idx) => {
                                 if (month.counted > 0) {
                                     stats.monthlyStats[idx].totalLessons += month.counted;
-                                    stats.monthlyStats[idx].attendedLessons += month.attended;
+                                    stats.monthlyStats[idx].attendedLessons += month.present;
                                     stats.monthlyStats[idx].absentLessons += month.absent;
                                 }
                             });
                         });
 
+                        // تحديث إجماليات المجموعة
                         groupStats.remaining = groupStats.expected - groupStats.collected;
                         if (groupStats.expected > 0) {
                             stats.groupStats.push(groupStats);
@@ -2179,124 +2185,72 @@
 
                 groupData.students.forEach(student => {
                     if (student.name.toLowerCase().includes(searchTerm)) {
-                        // حساب الحضور والمتأخرات بنفس طريقة الإحصائيات
-                        let totalAttendanceDays = 0;
-                        const attendancePeriods = [];
-                        let currentPeriod = {
-                            startMonth: 0,
-                            count: 0,
-                            attended: []
-                        };
-
                         const monthlyPayment = student.monthlyPayment || 150;
                         const payments = student.payments || [];
-
-                        // حساب الفترات المكتملة (8 حصص)
-                        for (let monthIndex = 0; monthIndex < Math.floor(student.attendance?.length / 8); monthIndex++) {
-                            for (let day = 0; day < 8; day++) {
-                                const index = monthIndex * 8 + day;
-                                if (student.attendance && student.attendance[index]) {
-                                    const [isPresent] = student.attendance[index];
-                                    if (isPresent) {
-                                        totalAttendanceDays++;
-                                        currentPeriod.count++;
-                                        currentPeriod.attended.push(index);
-                                    }
-                                }
-                                
-                                // إذا وصلنا إلى 8 حصص، نعتبرها فترة مكتملة
-                                if (currentPeriod.count === 8) {
-                                    attendancePeriods.push(currentPeriod);
-                                    currentPeriod = {
-                                        startMonth: monthIndex + 1,
-                                        count: 0,
-                                        attended: []
-                                    };
-                                }
-                            }
-                        }
-
                         const totalPaid = payments.reduce((sum, payment) => sum + (Number(payment) || 0), 0);
-                        const completePeriods = attendancePeriods.length;
-                        const totalExpected = completePeriods * monthlyPayment;
-                        const overdueAmount = Math.max(0, totalExpected - totalPaid);
+                        
+                        // حساب الحصص المحتسبة وتحليلها
+                        let countedLessons = [];
+                        student.attendance?.forEach((att, idx) => {
+                            const isPresent = att[0] && att[1];     // حضور (علامتين)
+                            const isCounted = att[0];               // محتسب (علامة واحدة على الأقل)
+                            if (isCounted) {
+                                countedLessons.push({
+                                    index: idx,
+                                    present: isPresent,
+                                    date: groupData.dates[idx]
+                                });
+                            }
+                        });
 
-                        // حساب الشهور المتأخرة من الفترات غير المدفوعة بالكامل
-                        const unpaidPeriods = attendancePeriods
-                            .filter((period, idx) => (payments[Math.floor(period.attended[0] / 8)] || 0) < monthlyPayment);
-
-                        // تحليل الحضور لكل 8 حصص
+                        // تقسيم الحصص المحتسبة إلى فترات من 8 حصص
+                        const completePeriods = Math.floor(countedLessons.length / 8);
+                        const remainingLessons = countedLessons.length % 8;
                         const attendanceAnalysis = [];
-                        const totalDays = student.attendance?.length || 0;
-                        const remainingDays = totalDays % 8;
 
-                        // تحليل الفترات المكتملة
+                        // تحليل الفترات المكتملة (كل 8 حصص)
                         for (let periodIndex = 0; periodIndex < completePeriods; periodIndex++) {
                             const startIdx = periodIndex * 8;
+                            const periodLessons = countedLessons.slice(startIdx, startIdx + 8);
+                            
                             const periodAttendance = {
-                                present: 0,
-                                absent: 0,
-                                dates: []
+                                period: periodIndex + 1,
+                                present: periodLessons.filter(l => l.present).length,
+                                absent: periodLessons.filter(l => !l.present).length,
+                                dates: periodLessons.map(l => ({
+                                    date: l.date,
+                                    status: l.present ? 'حاضر' : 'غائب'
+                                }))
                             };
 
-                            // حساب الحضور والغياب للفترة الحالية
-                            for (let day = 0; day < 8; day++) {
-                                const idx = startIdx + day;
-                                const date = groupData.dates[idx] || '';
-                                if (student.attendance[idx]) {
-                                    const [isPresent] = student.attendance[idx];
-                                    if (isPresent) {
-                                        periodAttendance.present++;
-                                    } else {
-                                        periodAttendance.absent++;
-                                    }
-                                    periodAttendance.dates.push({
-                                        date: date,
-                                        status: isPresent ? 'حاضر' : 'غائب'
-                                    });
-                                }
-                            }
-
-                            attendanceAnalysis.push({
-                                period: periodIndex + 1,
-                                ...periodAttendance,
-                                attendanceRate: ((periodAttendance.present / 8) * 100).toFixed(1)
-                            });
+                            periodAttendance.attendanceRate = ((periodAttendance.present / 8) * 100).toFixed(1);
+                            attendanceAnalysis.push(periodAttendance);
                         }
 
                         // إضافة الفترة غير المكتملة إذا وجدت
-                        if (remainingDays > 0) {
+                        if (remainingLessons > 0) {
                             const startIdx = completePeriods * 8;
+                            const remainingPeriodLessons = countedLessons.slice(startIdx);
+                            
                             const periodAttendance = {
-                                present: 0,
-                                absent: 0,
-                                dates: [],
+                                period: completePeriods + 1,
+                                present: remainingPeriodLessons.filter(l => l.present).length,
+                                absent: remainingPeriodLessons.filter(l => !l.present).length,
+                                dates: remainingPeriodLessons.map(l => ({
+                                    date: l.date,
+                                    status: l.present ? 'حاضر' : 'غائب'
+                                })),
                                 isIncomplete: true,
-                                daysCount: remainingDays
+                                daysCount: remainingLessons
                             };
 
-                            // حساب الحضور والغياب للفترة غير المكتملة
-                            for (let day = 0; day < remainingDays; day++) {
-                                const idx = startIdx + day;
-                                const date = groupData.dates[idx] || '';
-                                if (student.attendance[idx]) {
-                                    const [isPresent] = student.attendance[idx];
-                                    if (isPresent) {
-                                        periodAttendance.present++;
-                                    } else {
-                                        periodAttendance.absent++;
-                                    }
-                                    periodAttendance.dates.push({
-                                        date: date,
-                                        status: isPresent ? 'حاضر' : 'غائب'
-                                    });
-                                }
-                            }
-
-                            periodAttendance.period = completePeriods + 1;
-                            periodAttendance.attendanceRate = ((periodAttendance.present / remainingDays) * 100).toFixed(1);
+                            periodAttendance.attendanceRate = ((periodAttendance.present / remainingLessons) * 100).toFixed(1);
                             attendanceAnalysis.push(periodAttendance);
                         }
+
+                        // حساب المتأخرات بناءً على عدد الفترات المكتملة من الحصص المحتسبة
+                        const totalExpected = completePeriods * monthlyPayment;
+                        const overdueAmount = Math.max(0, totalExpected - totalPaid);
 
                         allResults.push({
                             name: student.name,
@@ -2305,7 +2259,7 @@
                             monthlyPayment: monthlyPayment,
                             payments: payments,
                             overdueAmount: overdueAmount,
-                            overdueMonths: unpaidPeriods.length,
+                            overdueMonths: Math.max(0, completePeriods - payments.length),
                             totalExpected: totalExpected,
                             totalPaid: totalPaid,
                             completePeriods: completePeriods,
