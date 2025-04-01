@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>جدول المواعيد</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #4f46e5;
@@ -70,48 +71,44 @@
 
         .navbar {
             position: fixed;
-            top: 0;
+            bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(10px);
             padding: 1rem;
             display: flex;
             justify-content: center;
             gap: 2rem;
             z-index: 1000;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
             color: var(--text-color);
             text-decoration: none;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem;
             border-radius: 0.5rem;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            font-size: 0.8rem;
         }
 
-        .nav-link::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 2px;
-            background: var(--primary-color);
-            transition: width 0.3s ease;
-        }
-
-        .nav-link:hover::before {
-            width: 100%;
+        .nav-link i {
+            font-size: 1.5rem;
         }
 
         .nav-link.active {
-            background: var(--primary-color);
-            color: white;
+            color: var(--primary-color);
+            background: transparent;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-3px);
         }
 
         .container {
@@ -123,6 +120,7 @@
             border: 1px solid rgba(255, 255, 255, 0.18);
             transition: all 0.3s ease;
             margin-top: 5rem;
+            margin-bottom: 5rem; /* إضافة مسافة في الأسفل لشريط التنقل */
         }
 
         h1, h2, h3 {
@@ -246,40 +244,46 @@
         .settings-grid {
             display: flex;
             flex-direction: column;
-            gap: 2rem;
-            padding: 1rem;
+            gap: 1rem;  /* تقليل المسافة بين المجموعات */
+            padding: 0.5rem;  /* تقليل الهامش الداخلي */
         }
 
         .group-schedule {
             background: #fff;
-            padding: 2rem;
+            padding: 1rem;  /* تقليل الهامش الداخلي */
             border-radius: 0.5rem;
             border: 1px solid var(--border-color);
         }
 
         .group-schedule h3 {
             color: var(--primary-color);
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;  /* تقليل المسافة أسفل العنوان */
             border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 0.5rem;
+            padding-bottom: 0.25rem;  /* تقليل المسافة أسفل الخط */
         }
 
         .day-select {
             background: #f8fafc;
-            padding: 1rem;
+            padding: 0.5rem;  /* تقليل الهامش الداخلي */
             border-radius: 0.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;  /* تقليل المسافة بين حقول اليوم */
         }
 
         .day-select select,
         .day-select input {
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.5rem;  /* تقليل الهامش الداخلي */
             border: 1px solid var(--border-color);
             border-radius: 0.5rem;
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
+            font-size: 0.9rem;  /* تقليل حجم الخط */
+            margin-bottom: 0.25rem;  /* تقليل المسافة بين الحقول */
             background: white;
+        }
+
+        .day-select label {
+            font-size: 0.9rem;  /* تقليل حجم خط التسمية */
+            margin-bottom: 0.25rem;
+            display: inline-block;
         }
 
         .save-button {
@@ -370,8 +374,11 @@
             }
 
             .nav-link {
-                padding: 0.5rem;
-                font-size: 0.9rem;
+                padding: 0.3rem;
+            }
+
+            .nav-link i {
+                font-size: 1.2rem;
             }
 
             .date-display {
@@ -383,11 +390,6 @@
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <a href="#schedule" onclick="showPage('schedule')" class="nav-link active">المواعيد</a>
-        <a href="#settings" onclick="showPage('settings')" class="nav-link">تعيين المواعيد</a>
-    </nav>
-
     <div class="animated-background">
         <div class="floating-shapes"></div>
     </div>
@@ -411,6 +413,26 @@
             </div>
         </section>
 
+        <section id="search-page" class="page-section">
+            <h1>البحث في المواعيد</h1>
+            <div class="search-container" style="text-align: center; margin-bottom: 2rem;">
+                <input type="date" id="searchDate" style="padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                <button onclick="searchLessons()" style="
+                    padding: 0.75rem 1.5rem;
+                    background: var(--primary-color);
+                    color: white;
+                    border: none;
+                    border-radius: 0.5rem;
+                    margin-right: 1rem;
+                    cursor: pointer;
+                ">بحث</button>
+            </div>
+            <div class="schedule-section">
+                <h2>نتائج البحث</h2>
+                <div id="searchResults" class="lessons-grid"></div>
+            </div>
+        </section>
+
         <section id="settings-page" class="page-section">
             <h1>تعيين مواعيد المجموعات</h1>
             
@@ -420,6 +442,25 @@
             </button>
         </section>
     </div>
+
+    <nav class="navbar">
+        <a href="#home" onclick="goHome()" class="nav-link">
+            <i class="fas fa-home"></i>
+            <span>الرئيسية</span>
+        </a>
+        <a href="#schedule" onclick="showPage('schedule')" class="nav-link active">
+            <i class="fas fa-calendar-alt"></i>
+            <span>المواعيد</span>
+        </a>
+        <a href="#search" onclick="showPage('search')" class="nav-link">
+            <i class="fas fa-search"></i>
+            <span>البحث</span>
+        </a>
+        <a href="#settings" onclick="showPage('settings')" class="nav-link">
+            <i class="fas fa-cog"></i>
+            <span>الإعدادات</span>
+        </a>
+    </nav>
 
     <script>
         function createFloatingShapes() {
@@ -519,13 +560,14 @@
             return (hours * 60) + minutes;
         }
 
-        function addLesson(lessonsArray, groupData, time, currentTime = null, timeValue = null) {
+        function addLesson(lessonsArray, groupData, time, currentTime = null, timeValue = null, daysRemaining = null) {
             const formattedTime = convert24To12(time);
             lessonsArray.push({
                 group: groupData.groupName,
                 time: formattedTime,
                 timeValue: timeValue || convertTimeToMinutes(time),
-                isPast: currentTime ? currentTime > (timeValue || convertTimeToMinutes(time)) : false
+                isPast: currentTime ? currentTime > (timeValue || convertTimeToMinutes(time)) : false,
+                daysRemaining: daysRemaining
             });
         }
 
@@ -548,6 +590,21 @@
             lessons.forEach(lesson => {
                 const lessonDiv = document.createElement('div');
                 lessonDiv.className = `lesson ${lesson.isPast ? 'past' : 'upcoming'}`;
+                
+                // تحديد النص المناسب للحالة
+                let statusText;
+                if (timeLabel === 'نتائج البحث') {
+                    if (lesson.daysRemaining === 0) {
+                        statusText = 'اليوم';
+                    } else if (lesson.daysRemaining === 1) {
+                        statusText = 'غداً';
+                    } else {
+                        statusText = `بعد ${lesson.daysRemaining} أيام`;
+                    }
+                } else {
+                    statusText = lesson.isPast ? 'انتهى' : timeLabel === 'اليوم' ? 'قادم' : 'غداً';
+                }
+
                 const remainingTime = timeLabel === 'اليوم' && !lesson.isPast ? 
                     calculateRemainingTime(lesson.timeValue) : '';
 
@@ -555,7 +612,7 @@
                     <div class="lesson-header">
                         <div class="lesson-time">${lesson.time}</div>
                         <span class="lesson-status">
-                            ${lesson.isPast ? 'انتهى' : timeLabel === 'اليوم' ? 'قادم' : 'غداً'}
+                            ${statusText}
                         </span>
                     </div>
                     <div class="lesson-details">
@@ -590,6 +647,10 @@
             });
             document.getElementById(`${pageId}-page`).classList.add('active');
             document.querySelector(`[href="#${pageId}"]`).classList.add('active');
+        }
+
+        function goHome() {
+            window.location.href = './index.html'; // تغيير هذا المسار حسب موقع الصفحة الرئيسية
         }
 
         function getAllGroups() {
@@ -703,6 +764,60 @@
             toast.textContent = 'تم حفظ المواعيد بنجاح';
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
+        }
+
+        function searchLessons() {
+            const searchDate = new Date(document.getElementById('searchDate').value);
+            const searchDay = searchDate.getDay();
+            const resultsContainer = document.getElementById('searchResults');
+            resultsContainer.innerHTML = '';
+
+            const lessons = [];
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            searchDate.setHours(0, 0, 0, 0);
+            
+            // حساب الفرق بالأيام
+            const diffTime = searchDate.getTime() - today.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            for (let i = 1; i <= 30; i++) {
+                const groupData = JSON.parse(localStorage.getItem(`group${i}`));
+                if (!groupData) continue;
+
+                const day1 = parseInt(localStorage.getItem(`day1-${i}`));
+                const day2 = parseInt(localStorage.getItem(`day2-${i}`));
+                const time1 = localStorage.getItem(`time1-${i}`);
+                const time2 = localStorage.getItem(`time2-${i}`);
+
+                if (day1 === searchDay) {
+                    addLesson(lessons, groupData, time1, null, null, diffDays);
+                }
+                if (day2 === searchDay) {
+                    addLesson(lessons, groupData, time2, null, null, diffDays);
+                }
+            }
+
+            if (lessons.length === 0) {
+                resultsContainer.innerHTML = '<p>لا توجد دروس في هذا اليوم</p>';
+                return;
+            }
+
+            const dateFormatter = new Intl.DateTimeFormat('ar-SA', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                calendar: 'gregory'
+            });
+
+            const dateHeader = document.createElement('div');
+            dateHeader.className = 'date-display';
+            dateHeader.style.marginBottom = '2rem';
+            dateHeader.textContent = dateFormatter.format(searchDate);
+            resultsContainer.before(dateHeader);
+
+            displayLessons(resultsContainer, lessons, 'نتائج البحث');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
