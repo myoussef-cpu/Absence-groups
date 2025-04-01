@@ -349,7 +349,7 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             max-width: 280px;
             margin: 0 auto;
-            width: 50%;
+            width: 90%;
         }
 
         .stat-card i {
@@ -429,7 +429,7 @@
 </head>
 <body>
     <nav class="navbar">
-        <a href="index.html" class="nav-link">
+        <a href="#home" onclick="goHome()" class="nav-link">
             <i class="fas fa-home"></i>
             <span>الرئيسية</span>
         </a>
@@ -448,7 +448,7 @@
     </nav>
 
     <div class="container">
-        <section id="home-page" class="page-section active">
+        <section id="home" class="page-section active">
             <h1>لوحة المعلومات</h1>
             <div class="stats-grid">
                 <div class="stat-card">
@@ -703,8 +703,16 @@
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('active');
             });
-            document.getElementById(`${pageId}-page`).classList.add('active');
-            document.querySelector(`[href="#${pageId}"]`).classList.add('active');
+            
+            // Handle home page special case
+            const targetId = pageId === 'home' ? 'home' : `${pageId}-page`;
+            document.getElementById(targetId).classList.add('active');
+            
+            // Update nav link
+            const navLink = document.querySelector(`[href="#${pageId}"]`);
+            if (navLink) {
+                navLink.classList.add('active');
+            }
 
             if (pageId === 'home') {
                 updateDashboardStats();
@@ -712,7 +720,14 @@
         }
 
         function goHome() {
-            window.location.href = './index.html';
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('home').classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`[href="#home"]`).classList.add('active');
         }
 
         function getAllGroups() {
