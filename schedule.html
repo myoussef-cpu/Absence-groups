@@ -71,44 +71,92 @@
 
         .navbar {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.9);
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            padding: 1rem;
+            padding: 0.75rem 2rem;
             display: flex;
             justify-content: center;
             gap: 2rem;
             z-index: 1000;
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 10px 15px rgba(0, 0, 0, 0.1);
+            width: auto;
+            max-width: 90%;
         }
 
         .nav-link {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.3rem;
             color: var(--text-color);
             text-decoration: none;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
             transition: all 0.3s ease;
             font-size: 0.8rem;
+            position: relative;
+            min-width: 60px;
         }
 
         .nav-link i {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link span {
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
         }
 
         .nav-link.active {
             color: var(--primary-color);
-            background: transparent;
+            background: rgba(79, 70, 229, 0.1);
+        }
+
+        .nav-link.active i {
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active span {
+            opacity: 1;
         }
 
         .nav-link:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
+            background: rgba(79, 70, 229, 0.05);
+        }
+
+        .nav-link:hover i {
+            transform: translateY(-2px);
+        }
+
+        .nav-link:hover span {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                bottom: 0.5rem;
+                padding: 0.5rem 1rem;
+                gap: 0.5rem;
+            }
+
+            .nav-link {
+                padding: 0.4rem 0.6rem;
+                min-width: 50px;
+            }
+
+            .nav-link i {
+                font-size: 1.2rem;
+            }
+
+            .nav-link span {
+                font-size: 0.7rem;
+            }
         }
 
         .container {
@@ -242,24 +290,31 @@
 
         /* تعديل أنماط المجموعات */
         .settings-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;  /* تقليل المسافة بين المجموعات */
-            padding: 0.5rem;  /* تقليل الهامش الداخلي */
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* تعيين عمودين ثابتين */
+            gap: 0.75rem;
+            padding: 0.5rem;
+        }
+
+        @media (min-width: 1024px) {
+            .settings-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* للشاشات الكبيرة */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .settings-grid {
+                grid-template-columns: 1fr; /* للشاشات الصغيرة جداً فقط */
+            }
         }
 
         .group-schedule {
             background: #fff;
-            padding: 1rem;  /* تقليل الهامش الداخلي */
+            padding: 0.75rem;
             border-radius: 0.5rem;
             border: 1px solid var(--border-color);
-        }
-
-        .group-schedule h3 {
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;  /* تقليل المسافة أسفل العنوان */
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 0.25rem;  /* تقليل المسافة أسفل الخط */
+            display: flex;
+            flex-direction: column;
         }
 
         .day-select {
@@ -320,6 +375,49 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card i {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+
+        .stat-info h3 {
+            font-size: 0.9rem;
+            margin: 0;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        .stat-info p {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0.25rem 0 0 0;
+            color: var(--primary-color);
+        }
+
+        .weekly-stats {
+            background: white;
+            padding: 1rem;
+            border-radius: 1rem;
+            height: 300px;
+        }
+
         @keyframes gradientAnimation {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -368,23 +466,14 @@
                 margin: 0;
             }
 
-            .navbar {
-                padding: 0.75rem;
-                gap: 1rem;
-            }
-
-            .nav-link {
-                padding: 0.3rem;
-            }
-
-            .nav-link i {
-                font-size: 1.2rem;
-            }
-
             .date-display {
                 font-size: 1rem;
                 padding: 0.75rem;
                 margin: 1rem 0;
+            }
+
+            .settings-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -395,7 +484,53 @@
     </div>
 
     <div class="container">
-        <section id="schedule-page" class="page-section active">
+        <section id="home-page" class="page-section active">
+            <h1>لوحة المعلومات</h1>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-users"></i>
+                    <div class="stat-info">
+                        <h3>المجموعات</h3>
+                        <p id="totalGroups">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-calendar-check"></i>
+                    <div class="stat-info">
+                        <h3>دروس اليوم</h3>
+                        <p id="todayTotal">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="stat-info">
+                        <h3>تم الانتهاء</h3>
+                        <p id="completedToday">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-clock"></i>
+                    <div class="stat-info">
+                        <h3>متبقي اليوم</h3>
+                        <p id="remainingToday">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="schedule-section">
+                <h2>الدروس القادمة</h2>
+                <div id="upcomingLessons" class="lessons-grid"></div>
+            </div>
+
+            <div class="schedule-section">
+                <h2>إحصائيات الأسبوع</h2>
+                <div class="weekly-stats">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="schedule-page" class="page-section">
             <div id="currentDate" class="date-display"></div>
             
             <div class="today-schedule">
@@ -444,11 +579,11 @@
     </div>
 
     <nav class="navbar">
-        <a href="#home" onclick="goHome()" class="nav-link">
+        <a href="#home" onclick="showPage('home')" class="nav-link active">
             <i class="fas fa-home"></i>
             <span>الرئيسية</span>
         </a>
-        <a href="#schedule" onclick="showPage('schedule')" class="nav-link active">
+        <a href="#schedule" onclick="showPage('schedule')" class="nav-link">
             <i class="fas fa-calendar-alt"></i>
             <span>المواعيد</span>
         </a>
@@ -647,6 +782,10 @@
             });
             document.getElementById(`${pageId}-page`).classList.add('active');
             document.querySelector(`[href="#${pageId}"]`).classList.add('active');
+
+            if (pageId === 'home') {
+                updateDashboardStats();
+            }
         }
 
         function goHome() {
@@ -820,12 +959,100 @@
             displayLessons(resultsContainer, lessons, 'نتائج البحث');
         }
 
+        function updateDashboardStats() {
+            const groups = getAllGroups();
+            const now = new Date();
+            const today = now.getDay();
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+
+            // تحديث إجمالي المجموعات
+            document.getElementById('totalGroups').textContent = groups.length;
+
+            // حساب دروس اليوم
+            let todayLessons = 0;
+            let completedLessons = 0;
+            let remainingLessons = 0;
+
+            groups.forEach(group => {
+                const day1 = parseInt(localStorage.getItem(`day1-${group.number}`));
+                const day2 = parseInt(localStorage.getItem(`day2-${group.number}`));
+                
+                if (day1 === today || day2 === today) {
+                    const time = day1 === today ? 
+                        convertTimeToMinutes(localStorage.getItem(`time1-${group.number}`)) :
+                        convertTimeToMinutes(localStorage.getItem(`time2-${group.number}`));
+                    
+                    todayLessons++;
+                    if (currentTime > time) {
+                        completedLessons++;
+                    } else {
+                        remainingLessons++;
+                    }
+                }
+            });
+
+            document.getElementById('todayTotal').textContent = todayLessons;
+            document.getElementById('completedToday').textContent = completedLessons;
+            document.getElementById('remainingToday').textContent = remainingLessons;
+
+            // تحديث الدروس القادمة
+            updateUpcomingLessons();
+        }
+
+        function updateUpcomingLessons() {
+            const container = document.getElementById('upcomingLessons');
+            const now = new Date();
+            const lessons = [];
+
+            getAllGroups().forEach(group => {
+                const day1 = parseInt(localStorage.getItem(`day1-${group.number}`));
+                const day2 = parseInt(localStorage.getItem(`day2-${group.number}`));
+                const time1 = localStorage.getItem(`time1-${group.number}`);
+                const time2 = localStorage.getItem(`time2-${group.number}`);
+
+                [
+                    { day: day1, time: time1 },
+                    { day: day2, time: time2 }
+                ].forEach(schedule => {
+                    if (schedule.day >= now.getDay()) {
+                        lessons.push({
+                            group: group.name,
+                            day: schedule.day,
+                            time: schedule.time,
+                            daysUntil: (schedule.day - now.getDay() + 7) % 7
+                        });
+                    }
+                });
+            });
+
+            lessons
+                .sort((a, b) => a.daysUntil - b.daysUntil || 
+                               convertTimeToMinutes(a.time) - convertTimeToMinutes(b.time))
+                .slice(0, 5) // عرض أول 5 دروس قادمة فقط
+                .forEach(lesson => {
+                    const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+                    const lessonDiv = document.createElement('div');
+                    lessonDiv.className = 'lesson upcoming';
+                    lessonDiv.innerHTML = `
+                        <div class="lesson-header">
+                            <div class="lesson-time">${convert24To12(lesson.time)}</div>
+                            <span class="lesson-status">${dayNames[lesson.day]}</span>
+                        </div>
+                        <div class="lesson-details">
+                            <strong>${lesson.group}</strong>
+                        </div>
+                    `;
+                    container.appendChild(lessonDiv);
+                });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             createFloatingShapes();
             createGroupScheduleInputs();
             updateTodayLessons();
+            updateDashboardStats();
             
-            const hash = window.location.hash.slice(1) || 'schedule';
+            const hash = window.location.hash.slice(1) || 'home';
             showPage(hash);
         });
     </script>
