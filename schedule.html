@@ -442,10 +442,6 @@
             <i class="fas fa-calendar-alt"></i>
             <span>المواعيد</span>
         </a>
-        <a href="#search" onclick="showPage('search')" class="nav-link">
-            <i class="fas fa-search"></i>
-            <span>البحث</span>
-        </a>
         <a href="#settings" onclick="showPage('settings')" class="nav-link">
             <i class="fas fa-cog"></i>
             <span>الإعدادات</span>
@@ -490,6 +486,24 @@
                 <h2>الدروس القادمة</h2>
                 <div id="upcomingLessons" class="lessons-grid"></div>
             </div>
+
+            <div class="divider"></div>
+
+            <div class="schedule-section">
+                <h2>البحث في المواعيد</h2>
+                <div class="search-container">
+                    <label for="searchDate">تاريخ البحث:</label>
+                    <input type="date" id="searchDate" class="search-date-input" placeholder="اختر التاريخ" title="اختر تاريخ للبحث عن الدروس">
+                    <button onclick="searchLessons()" class="search-button" title="بحث عن الدروس" style="padding: 0.75rem 1.5rem;
+                    background: var(--primary-color);
+                    color: white;
+                    border: none;
+                    border-radius: 0.5rem;
+                    margin-right: 1rem;
+                    cursor: pointer;">بحث</button>
+                </div>
+                <div id="searchResults" class="lessons-grid"></div>
+            </div>
             
         </section>
 
@@ -511,25 +525,7 @@
             </div>
         </section>
 
-        <section id="search-page" class="page-section">
-            <h1>البحث في المواعيد</h1>
-            <div class="search-container"></div>
-                <input type="date" id="searchDate" class="search-date-input">
-                <button onclick="searchLessons()" class="search-button"
-                    padding: 0.75rem 1.5rem;
-                    background: var(--primary-color);
-                    color: white;
-                    border: none;
-                    border-radius: 0.5rem;
-                    margin-right: 1rem;
-                    cursor: pointer;
-                ">بحث</button>
-            </div>
-            <div class="schedule-section">
-                <h2>نتائج البحث</h2>
-                <div id="searchResults" class="lessons-grid"></div>
-            </div>
-        </section>
+
 
         <section id="settings-page" class="page-section">
             <h1>تعيين مواعيد المجموعات</h1>
@@ -579,6 +575,7 @@
 
             const todayLessons = [];
             const tomorrowLessons = [];
+            const processedLessons = new Map();
 
             for (let i = 1; i <= 30; i++) {
                 const groupData = JSON.parse(localStorage.getItem(`group${i}`));
@@ -589,19 +586,39 @@
                 const time1 = localStorage.getItem(`time1-${i}`);
                 const time2 = localStorage.getItem(`time2-${i}`);
 
-                if (day1 === today) {
-                    const lessonTime = convertTimeToMinutes(time1);
-                    addLesson(todayLessons, groupData, time1, currentTimeInMinutes, lessonTime);
+                // معالجة دروس اليوم
+                if (day1 === today && time1) {
+                    const lessonKey = `${time1}`;
+                    if (!processedLessons.has(lessonKey)) {
+                        const lessonTime = convertTimeToMinutes(time1);
+                        addLesson(todayLessons, groupData, time1, currentTimeInMinutes, lessonTime);
+                        processedLessons.set(lessonKey, true);
+                    }
                 }
-                if (day2 === today) {
-                    const lessonTime = convertTimeToMinutes(time2);
-                    addLesson(todayLessons, groupData, time2, currentTimeInMinutes, lessonTime);
+                if (day2 === today && time2) {
+                    const lessonKey = `${time2}`;
+                    if (!processedLessons.has(lessonKey)) {
+                        const lessonTime = convertTimeToMinutes(time2);
+                        addLesson(todayLessons, groupData, time2, currentTimeInMinutes, lessonTime);
+                        processedLessons.set(lessonKey, true);
+                    }
                 }
-                if (day1 === nextDay) {
-                    addLesson(tomorrowLessons, groupData, time1);
+
+                // معالجة دروس الغد
+                processedLessons.clear(); // إعادة تعيين المعالجة لدروس الغد
+                if (day1 === nextDay && time1) {
+                    const lessonKey = `${time1}`;
+                    if (!processedLessons.has(lessonKey)) {
+                        addLesson(tomorrowLessons, groupData, time1);
+                        processedLessons.set(lessonKey, true);
+                    }
                 }
-                if (day2 === nextDay) {
-                    addLesson(tomorrowLessons, groupData, time2);
+                if (day2 === nextDay && time2) {
+                    const lessonKey = `${time2}`;
+                    if (!processedLessons.has(lessonKey)) {
+                        addLesson(tomorrowLessons, groupData, time2);
+                        processedLessons.set(lessonKey, true);
+                    }
                 }
             }
 
@@ -619,14 +636,25 @@
         }
 
         function addLesson(lessonsArray, groupData, time, currentTime = null, timeValue = null, daysRemaining = null) {
+            if (!time) return;
             const formattedTime = convert24To12(time);
-            lessonsArray.push({
-                group: groupData.groupName,
-                time: formattedTime,
-                timeValue: timeValue || convertTimeToMinutes(time),
-                isPast: currentTime ? currentTime > (timeValue || convertTimeToMinutes(time)) : false,
-                daysRemaining: daysRemaining
-            });
+            const timeInMinutes = timeValue || convertTimeToMinutes(time);
+            
+            // التحقق من عدم وجود درس في نفس الوقت لنفس المجموعة
+            const isDuplicate = lessonsArray.some(lesson => 
+                lesson.group === groupData.groupName && 
+                lesson.timeValue === timeInMinutes
+            );
+            
+            if (!isDuplicate) {
+                lessonsArray.push({
+                    group: groupData.groupName,
+                    time: formattedTime,
+                    timeValue: timeInMinutes,
+                    isPast: currentTime ? currentTime > timeInMinutes : false,
+                    daysRemaining: daysRemaining
+                });
+            }
         }
 
         function convert24To12(time24) {
