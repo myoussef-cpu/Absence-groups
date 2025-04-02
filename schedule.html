@@ -726,8 +726,11 @@
                 const groupData = JSON.parse(localStorage.getItem(`group${i}`));
                 if (groupData) {
                     groupCount++;
+                    const studentsCount = groupData.students ? groupData.students.length : 0;
                     details += `<li style="padding: 0.5rem; margin-bottom: 0.5rem; background: rgba(99, 102, 241, 0.1); border-radius: 0.5rem;">
-                        <strong>المجموعة ${i}:</strong> ${groupData.students.length} طالب
+                        <strong>المجموعة ${i}:</strong> ${groupData.groupName}
+                        <br>
+                        <small>عدد الطلاب: ${studentsCount}</small>
                     </li>`;
                 }
             }
@@ -742,6 +745,9 @@
             let hasLessons = false;
 
             for (let i = 1; i <= 30; i++) {
+                const groupData = JSON.parse(localStorage.getItem(`group${i}`));
+                if (!groupData) continue;
+
                 const day1 = parseInt(localStorage.getItem(`day1-${i}`));
                 const day2 = parseInt(localStorage.getItem(`day2-${i}`));
                 const time1 = localStorage.getItem(`time1-${i}`);
@@ -750,7 +756,9 @@
                 if ((day1 === today && time1) || (day2 === today && time2)) {
                     hasLessons = true;
                     details += `<li style="padding: 0.5rem; margin-bottom: 0.5rem; background: rgba(99, 102, 241, 0.1); border-radius: 0.5rem;">
-                        <strong>المجموعة ${i}:</strong> ${day1 === today ? time1 : time2}
+                        <strong>${groupData.groupName}</strong>
+                        <br>
+                        <small>الموعد: ${day1 === today ? time1 : time2}</small>
                     </li>`;
                 }
             }
@@ -766,6 +774,9 @@
             let hasCompletedLessons = false;
 
             for (let i = 1; i <= 30; i++) {
+                const groupData = JSON.parse(localStorage.getItem(`group${i}`));
+                if (!groupData) continue;
+
                 const day1 = parseInt(localStorage.getItem(`day1-${i}`));
                 const day2 = parseInt(localStorage.getItem(`day2-${i}`));
                 const time1 = localStorage.getItem(`time1-${i}`);
@@ -779,7 +790,9 @@
                     if (lessonTimeInMinutes < currentTime) {
                         hasCompletedLessons = true;
                         details += `<li style="padding: 0.5rem; margin-bottom: 0.5rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.5rem;">
-                            <strong>المجموعة ${i}:</strong> ${lessonTime}
+                            <strong>${groupData.groupName}</strong>
+                            <br>
+                            <small>الموعد: ${lessonTime}</small>
                         </li>`;
                     }
                 }
@@ -796,6 +809,9 @@
             let hasRemainingLessons = false;
 
             for (let i = 1; i <= 30; i++) {
+                const groupData = JSON.parse(localStorage.getItem(`group${i}`));
+                if (!groupData) continue;
+
                 const day1 = parseInt(localStorage.getItem(`day1-${i}`));
                 const day2 = parseInt(localStorage.getItem(`day2-${i}`));
                 const time1 = localStorage.getItem(`time1-${i}`);
@@ -809,7 +825,9 @@
                     if (lessonTimeInMinutes >= currentTime) {
                         hasRemainingLessons = true;
                         details += `<li style="padding: 0.5rem; margin-bottom: 0.5rem; background: rgba(239, 68, 68, 0.1); border-radius: 0.5rem;">
-                            <strong>المجموعة ${i}:</strong> ${lessonTime}
+                            <strong>${groupData.groupName}</strong>
+                            <br>
+                            <small>الموعد: ${lessonTime}</small>
                         </li>`;
                     }
                 }
