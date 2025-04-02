@@ -40,6 +40,7 @@
             left: 50%;
             transform: translateX(-50%);
             background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             padding: 0.75rem 2rem;
             display: flex;
@@ -126,6 +127,7 @@
 
         .container {
             background: var(--card-background);
+            -webkit-backdrop-filter: blur(16px);
             backdrop-filter: blur(16px);
             padding: 0.5rem;
             border-radius: 0.5rem;
@@ -163,6 +165,7 @@
 
         .schedule-section {
             background: rgba(255, 255, 255, 0.9);
+            -webkit-backdrop-filter: blur(16px);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 0.5rem;
@@ -192,6 +195,7 @@
 
         .lesson {
             background: rgba(255, 255, 255, 0.85);
+            -webkit-backdrop-filter: blur(8px);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             transform-style: preserve-3d;
@@ -328,6 +332,7 @@
             padding: 1rem;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 1rem;
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -508,9 +513,9 @@
 
         <section id="search-page" class="page-section">
             <h1>البحث في المواعيد</h1>
-            <div class="search-container" style="text-align: center; margin-bottom: 2rem;">
-                <input type="date" id="searchDate" style="padding: 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border-color);">
-                <button onclick="searchLessons()" style="
+            <div class="search-container"></div>
+                <input type="date" id="searchDate" class="search-date-input">
+                <button onclick="searchLessons()" class="search-button"
                     padding: 0.75rem 1.5rem;
                     background: var(--primary-color);
                     color: white;
