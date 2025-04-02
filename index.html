@@ -46,8 +46,8 @@
             font-size: 2.5rem;
             font-weight: 800;
             background: linear-gradient(to left, var(--primary-color), var(--secondary-color));
-            background-clip: text;
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             position: relative;
             padding-bottom: 1rem;
@@ -198,6 +198,7 @@
             right: 0;
             z-index: 3;
             background-color: rgba(0, 0, 0, 0); /* تغيير خلفية العنوان لتكون شفافة */
+            -webkit-backdrop-filter: blur(0px);
             backdrop-filter: blur(0px);
         }
 
@@ -206,6 +207,7 @@
             right: 0;
             z-index: 2;
             background-color: rgba(0, 0, 0, 0); /* تغيير الخلفية لتكون شفافة */
+            -webkit-backdrop-filter: blur(0px); /* Add blur effect for Safari */
             backdrop-filter: blur(0px); /* إضافة تأثير الضبابية */
             border-left: 2px solid var(--primary-color);
             box-shadow: -2px 0 5px rgba(0,0,200,0.1);
@@ -769,9 +771,17 @@
             <button onclick="backupLocalStorage()">حفظ نسخة احتياطية</button>
             <button onclick="document.getElementById('restoreInput').click()">استعادة نسخة احتياطية</button>
             <button onclick="resetToDefaults()" class="reset-button">استعادة القيم الافتراضية</button>
-            <button onclick="showAboutPage()" style="background-color: var(--secondary-color)">عن البرنامج</button>
-            <button onclick="window.location.href='schedule.html'" style="background-color: var(--secondary-color)">جدول المواعيد</button>
-            <input type="file" id="restoreInput" accept=".json" style="display: none;" onchange="restoreLocalStorage(event)">
+            <button onclick="showAboutPage()" class="about-button">عن البرنامج</button>
+            <button onclick="window.location.href='schedule.html'" class="schedule-button">جدول المواعيد</button>
+<input 
+    type="file" 
+    id="restoreInput" 
+    accept=".json" 
+    class="hidden-input" 
+    onchange="restoreLocalStorage(event)"
+    title="اختر ملف النسخة الاحتياطية"
+    aria-label="اختر ملف النسخة الاحتياطية"
+>
         </div>
     </div>
 
@@ -1335,7 +1345,7 @@
                 attendance: attendance,
                 payments: payments,
                 notes: '', 
-                monthlyPayment: 150 
+                monthlyPayment: 150 // قيمة افتراضية للسداد الشهري
             });
             
             localStorage.setItem(`group${groupNumber}`, JSON.stringify(groupData));
@@ -1437,6 +1447,13 @@
         async function updateStudentNotes(groupNumber, studentIndex, newNotes) {
             const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
             groupData.students[studentIndex].notes = newNotes;
+            await saveData(`group${groupNumber}`, groupData);
+        }
+
+        // تحديث قيمة السداد الشهري
+        async function updateMonthlyPayment(groupNumber, studentIndex, value) {
+            const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
+            groupData.students[studentIndex].monthlyPayment = parseFloat(value) || 150; // استخدام القيمة الافتراضية 150 إذا كانت القيمة غير صالحة
             await saveData(`group${groupNumber}`, groupData);
         }
 
