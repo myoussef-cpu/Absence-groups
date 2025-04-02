@@ -2386,22 +2386,6 @@
                 });
             }
         }
-        document.addEventListener("DOMContentLoaded", function () {
-    const inputs = document.querySelectorAll(".monthly-payment-input");
-
-    // تحميل القيم المحفوظة عند تحميل الصفحة
-    inputs.forEach((input) => {
-        const studentId = input.dataset.studentId; 
-        if (localStorage.getItem(`payment_${studentId}`)) {
-            input.value = localStorage.getItem(`payment_${studentId}`);
-        }
-
-        // حفظ القيم عند تغييرها
-        input.addEventListener("input", function () {
-            localStorage.setItem(`payment_${studentId}`, input.value);
-        });
-    });
-});
 
         // تحديث دالة initializeSearch
         function initializeSearch() {
