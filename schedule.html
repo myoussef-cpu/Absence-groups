@@ -7,17 +7,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #4f46e5;
-            --primary-hover: #4338ca;
-            --secondary-color: #06b6d4;
+            --primary-color: #6366f1;
+            --primary-hover: #4f46e5;
+            --secondary-color: #ec4899;
             --text-color: #1e293b;
-            --background-color: #000b2e;
-            --surface-color: rgba(255, 255, 255, 0.95);
-            --border-color: #e2e8f0;
+            --background-color: #0f172a;
+            --surface-color: rgba(255, 255, 255, 0.98);
+            --border-color: #334155;
             --past-lesson: #ef4444;
             --upcoming-lesson: #10b981;
-            --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            --card-background: rgba(255, 255, 255, 0.95);
+            --card-shadow: 0 8px 32px 0 rgba(99, 102, 241, 0.25);
+            --card-background: rgba(255, 255, 255, 0.98);
+            --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --border-radius: 1rem;
         }
 
         body {
@@ -39,18 +41,21 @@
             top: 0;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.95);
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.98);
+            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(16px);
             padding: 0.75rem 2rem;
             display: flex;
             justify-content: center;
             gap: 2rem;
             z-index: 1000;
-            border-radius: 0 0 1rem 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
             width: auto;
             max-width: 90%;
+            margin-top: 1rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition-base);
         }
 
         .nav-link {
@@ -60,12 +65,14 @@
             gap: 0.3rem;
             color: var(--text-color);
             text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 0.75rem;
-            transition: all 0.3s ease;
-            font-size: 0.8rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition-base);
+            font-size: 0.9rem;
             position: relative;
-            min-width: 60px;
+            min-width: 70px;
+            background: transparent;
+            border: 1px solid transparent;
         }
 
         .nav-link i {
@@ -80,7 +87,9 @@
 
         .nav-link.active {
             color: var(--primary-color);
-            background: rgba(79, 70, 229, 0.1);
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.2);
+            font-weight: 600;
         }
 
         .nav-link.active i {
@@ -93,7 +102,9 @@
 
         .nav-link:hover {
             transform: translateY(-2px);
-            background: rgba(79, 70, 229, 0.05);
+            background: rgba(99, 102, 241, 0.05);
+            border-color: rgba(99, 102, 241, 0.1);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
         }
 
         .nav-link:hover i {
@@ -127,15 +138,94 @@
 
         .container {
             background: var(--card-background);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition-base);
+            margin-top: 5rem;
+            margin-bottom: 1rem;
+            margin-inline: 1rem;
+        }
+
+        .search-container {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            margin: 1.5rem 0;
             -webkit-backdrop-filter: blur(16px);
             backdrop-filter: blur(16px);
-            padding: 0.5rem;
-            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
             box-shadow: var(--card-shadow);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            transition: all 0.3s ease;
-            margin-top: 3rem;
-            margin-bottom: 0.5rem;
+            transition: var(--transition-base);
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .search-date-input {
+            padding: 1rem 1.5rem;
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: rgba(255, 255, 255, 0.98);
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: var(--transition-base);
+            box-shadow: var(--card-shadow);
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .search-date-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .search-button {
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-base);
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.25);
+            background: linear-gradient(135deg, var(--primary-hover), var(--primary-color));
+        }
+
+        .search-button:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 8px rgba(99, 102, 241, 0.15);
+        }
+
+        .search-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .search-button:hover::before {
+            left: 100%;
         }
 
         h1, h2, h3 {
@@ -164,14 +254,15 @@
         }
 
         .schedule-section {
-            background: rgba(255, 255, 255, 0.9);
-            -webkit-backdrop-filter: blur(16px);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 0.5rem;
-            padding: 0.5rem;
-            margin-bottom: 0.5rem;
+            background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
             box-shadow: var(--card-shadow);
+            transition: var(--transition-base);
         }
 
         .lessons-grid {
@@ -303,19 +394,18 @@
         }
 
         .save-button {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            padding: 1rem 2rem;
+            position: relative;
+            display: inline-block;
+            margin-right: 1rem;
+            padding: 0.5rem 1.5rem;
             background: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 2rem;
-            font-size: 1.1rem;
+            border-radius: 1rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            animation: pulse 2s infinite;
-            z-index: 100;
+            vertical-align: middle;
         }
 
         .save-button:hover {
@@ -374,6 +464,56 @@
             font-weight: bold;
             margin: 0.25rem 0 0 0;
             color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: var(--surface-color);
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            width: 80%;
+            max-width: 600px;
+            border-radius: var(--border-radius);
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .modal-title {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .modal-details {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .weekly-stats {
@@ -448,6 +588,13 @@
         </a>
     </nav>
 
+    <div class="modal" id="detailsModal">
+        <div class="modal-content">
+            <h2 class="modal-title" id="modalTitle"></h2>
+            <div class="modal-details" id="modalDetails"></div>
+        </div>
+    </div>
+
     <div class="container">
         <section id="home" class="page-section active">
             <h1>لوحة المعلومات</h1>
@@ -482,11 +629,6 @@
                 </div>
             </div>
 
-            <div class="schedule-section">
-                <h2>الدروس القادمة</h2>
-                <div id="upcomingLessons" class="lessons-grid"></div>
-            </div>
-
             <div class="divider"></div>
 
             <div class="schedule-section">
@@ -494,13 +636,7 @@
                 <div class="search-container">
                     <label for="searchDate">تاريخ البحث:</label>
                     <input type="date" id="searchDate" class="search-date-input" placeholder="اختر التاريخ" title="اختر تاريخ للبحث عن الدروس">
-                    <button onclick="searchLessons()" class="search-button" title="بحث عن الدروس" style="padding: 0.75rem 1.5rem;
-                    background: var(--primary-color);
-                    color: white;
-                    border: none;
-                    border-radius: 0.5rem;
-                    margin-right: 1rem;
-                    cursor: pointer;">بحث</button>
+                    <button onclick="searchLessons()" class="search-button" title="بحث عن الدروس">بحث</button>
                 </div>
                 <div id="searchResults" class="lessons-grid"></div>
             </div>
@@ -528,16 +664,160 @@
 
 
         <section id="settings-page" class="page-section">
-            <h1>تعيين مواعيد المجموعات</h1>
+            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                <h1 style="margin: 0;">تعيين مواعيد المجموعات</h1>
+                <button onclick="saveSchedules()" class="save-button">
+                    حفظ المواعيد 💾
+                </button>
+            </div>
             
             <div id="groupSchedules" class="settings-grid"></div>
-            <button onclick="saveSchedules()" class="save-button">
-                حفظ المواعيد 💾
-            </button>
         </section>
     </div>
 
     <script>
+        // إضافة مستمعات الأحداث لكروت الإحصائيات
+        document.getElementById('totalGroups').addEventListener('click', () => showDetails('groups'));
+        document.getElementById('todayTotal').addEventListener('click', () => showDetails('today'));
+        document.getElementById('completedToday').addEventListener('click', () => showDetails('completed'));
+        document.getElementById('remainingToday').addEventListener('click', () => showDetails('remaining'));
+
+        // إغلاق النافذة المنبثقة
+        document.getElementById('detailsModal').addEventListener('click', (event) => {
+            if (event.target === document.getElementById('detailsModal') || event.target.closest('.modal-content')) {
+                document.getElementById('detailsModal').style.display = 'none';
+            }
+        });
+
+        function showDetails(type) {
+            const modal = document.getElementById('detailsModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDetails = document.getElementById('modalDetails');
+            let content = '';
+
+            switch(type) {
+                case 'groups':
+                    modalTitle.textContent = 'تفاصيل المجموعات';
+                    content = getGroupsDetails();
+                    break;
+                case 'today':
+                    modalTitle.textContent = 'تفاصيل دروس اليوم';
+                    content = getTodayLessonsDetails();
+                    break;
+                case 'completed':
+                    modalTitle.textContent = 'الدروس المكتملة';
+                    content = getCompletedLessonsDetails();
+                    break;
+                case 'remaining':
+                    modalTitle.textContent = 'الدروس المتبقية';
+                    content = getRemainingLessonsDetails();
+                    break;
+            }
+
+            modalDetails.innerHTML = content;
+            modal.style.display = 'block';
+        }
+
+        function getGroupsDetails() {
+            let details = '<ul style="list-style: none; padding: 0;">';
+            let groupCount = 0;
+            
+            for (let i = 1; i <= 30; i++) {
+                const groupData = JSON.parse(localStorage.getItem(`group${i}`));
+                if (groupData) {
+                    groupCount++;
+                    details += `<li style="padding: 0.5rem; margin-bottom: 0.5rem; background: rgba(99, 102, 241, 0.1); border-radius: 0.5rem;">
+                        <strong>المجموعة ${i}:</strong> ${groupData.students.length} طالب
+                    </li>`;
+                }
+            }
+            
+            return groupCount ? details + '</ul>' : '<p>لا توجد مجموعات مسجلة</p>';
+        }
+
+        function getTodayLessonsDetails() {
+            const now = new Date();
+            const today = now.getDay();
+            let details = '<ul style="list-style: none; padding: 0;">';
+            let hasLessons = false;
+
+            for (let i = 1; i <= 30; i++) {
+                const day1 = parseInt(localStorage.getItem(`day1-${i}`));
+                const day2 = parseInt(localStorage.getItem(`day2-${i}`));
+                const time1 = localStorage.getItem(`time1-${i}`);
+                const time2 = localStorage.getItem(`time2-${i}`);
+
+                if ((day1 === today && time1) || (day2 === today && time2)) {
+                    hasLessons = true;
+                    details += `<li style="padding: 0.5rem; margin-bottom: 0.5rem; background: rgba(99, 102, 241, 0.1); border-radius: 0.5rem;">
+                        <strong>المجموعة ${i}:</strong> ${day1 === today ? time1 : time2}
+                    </li>`;
+                }
+            }
+
+            return hasLessons ? details + '</ul>' : '<p>لا توجد دروس اليوم</p>';
+        }
+
+        function getCompletedLessonsDetails() {
+            const now = new Date();
+            const today = now.getDay();
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+            let details = '<ul style="list-style: none; padding: 0;">';
+            let hasCompletedLessons = false;
+
+            for (let i = 1; i <= 30; i++) {
+                const day1 = parseInt(localStorage.getItem(`day1-${i}`));
+                const day2 = parseInt(localStorage.getItem(`day2-${i}`));
+                const time1 = localStorage.getItem(`time1-${i}`);
+                const time2 = localStorage.getItem(`time2-${i}`);
+
+                if ((day1 === today && time1) || (day2 === today && time2)) {
+                    const lessonTime = day1 === today ? time1 : time2;
+                    const [hours, minutes] = lessonTime.split(':').map(Number);
+                    const lessonTimeInMinutes = hours * 60 + minutes;
+
+                    if (lessonTimeInMinutes < currentTime) {
+                        hasCompletedLessons = true;
+                        details += `<li style="padding: 0.5rem; margin-bottom: 0.5rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.5rem;">
+                            <strong>المجموعة ${i}:</strong> ${lessonTime}
+                        </li>`;
+                    }
+                }
+            }
+
+            return hasCompletedLessons ? details + '</ul>' : '<p>لا توجد دروس مكتملة اليوم</p>';
+        }
+
+        function getRemainingLessonsDetails() {
+            const now = new Date();
+            const today = now.getDay();
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+            let details = '<ul style="list-style: none; padding: 0;">';
+            let hasRemainingLessons = false;
+
+            for (let i = 1; i <= 30; i++) {
+                const day1 = parseInt(localStorage.getItem(`day1-${i}`));
+                const day2 = parseInt(localStorage.getItem(`day2-${i}`));
+                const time1 = localStorage.getItem(`time1-${i}`);
+                const time2 = localStorage.getItem(`time2-${i}`);
+
+                if ((day1 === today && time1) || (day2 === today && time2)) {
+                    const lessonTime = day1 === today ? time1 : time2;
+                    const [hours, minutes] = lessonTime.split(':').map(Number);
+                    const lessonTimeInMinutes = hours * 60 + minutes;
+
+                    if (lessonTimeInMinutes >= currentTime) {
+                        hasRemainingLessons = true;
+                        details += `<li style="padding: 0.5rem; margin-bottom: 0.5rem; background: rgba(239, 68, 68, 0.1); border-radius: 0.5rem;">
+                            <strong>المجموعة ${i}:</strong> ${lessonTime}
+                        </li>`;
+                    }
+                }
+            }
+
+            return hasRemainingLessons ? details + '</ul>' : '<p>لا توجد دروس متبقية اليوم</p>';
+        }
+
         function updateTodayLessons() {
             const todayContainer = document.getElementById('todayLessons');
             const tomorrowContainer = document.getElementById('tomorrowLessons');
@@ -962,6 +1242,9 @@
 
         function updateUpcomingLessons() {
             const container = document.getElementById('upcomingLessons');
+            // If container doesn't exist, just return without doing anything
+            if (!container) return;
+            
             const now = new Date();
             const lessons = [];
             const addedLessons = new Set(); // لتتبع الدروس المضافة
@@ -993,6 +1276,9 @@
                     }
                 });
             });
+
+            // Clear existing content
+            container.innerHTML = '';
 
             lessons
                 .sort((a, b) => a.daysUntil - b.daysUntil || 
