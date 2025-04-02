@@ -936,6 +936,7 @@
             const container = document.getElementById('upcomingLessons');
             const now = new Date();
             const lessons = [];
+            const addedLessons = new Set(); // لتتبع الدروس المضافة
 
             getAllGroups().forEach(group => {
                 const day1 = parseInt(localStorage.getItem(`day1-${group.number}`));
@@ -948,12 +949,19 @@
                     { day: day2, time: time2 }
                 ].forEach(schedule => {
                     if (schedule.day >= now.getDay()) {
-                        lessons.push({
-                            group: group.name,
-                            day: schedule.day,
-                            time: schedule.time,
-                            daysUntil: (schedule.day - now.getDay() + 7) % 7
-                        });
+                        // إنشاء معرف فريد للدرس
+                        const lessonKey = `${group.name}-${schedule.day}-${schedule.time}`;
+                        
+                        // التحقق من عدم وجود الدرس مسبقاً
+                        if (!addedLessons.has(lessonKey)) {
+                            lessons.push({
+                                group: group.name,
+                                day: schedule.day,
+                                time: schedule.time,
+                                daysUntil: (schedule.day - now.getDay() + 7) % 7
+                            });
+                            addedLessons.add(lessonKey);
+                        }
                     }
                 });
             });
