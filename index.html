@@ -24,9 +24,10 @@
         body {
             font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
             direction: rtl;
+            top: 50px;
             max-width: 1280px;
             margin: 0 auto;
-            padding: 1rem 1rem calc(var(--nav-height) + 1rem) 1rem;
+            padding: calc(var(--nav-height) + 1rem) 1rem 1rem 1rem;
             background-color: var(--background-color);
             color: var(--text-color);
             line-height: 1.5;
@@ -182,7 +183,7 @@
         @media (max-width: 768px) {
              #mainContentContainer { padding: 1rem; }
              .table-container { margin: 1.5rem -1rem 0 -1rem; padding: 0 1rem; }
-             body { padding: 0.75rem 0.75rem calc(var(--nav-height) + 0.75rem) 0.75rem; }
+             body { padding: calc(var(--nav-height) + 0.5rem) 0.75rem 0.75rem 0.75rem; }
              th, td { padding: 0.5rem; font-size: 0.9rem; }
              td input[type="text"], th input[type="text"], th input[type="date"], td input[type="number"] {
                 font-size: 0.9rem; padding: 0.4rem;
@@ -218,7 +219,7 @@
             }
             
             body { 
-                padding: 0.5rem 0.5rem calc(var(--nav-height) + 0.5rem) 0.5rem; 
+                padding: calc(var(--nav-height) + 0.5rem) 0.5rem 0.5rem 0.5rem; 
             }
             
             .search-container {
@@ -373,7 +374,7 @@
         .table-container {
             max-width: 100vw;
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
         }
 
         .student-details {
@@ -387,25 +388,82 @@
             padding-right: 0.5rem;
         }
 
-        /* Bottom Navigation Bar Styles */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0; height: var(--nav-height);
-            background-color: var(--surface-color); box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
-            border-top: 1px solid var(--border-color);
+        /* Top Navigation Bar Styles */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            background: var(--surface-color);
+            padding: 0.5rem;
+            border-radius: 0;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            margin-top: 0;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
+
+        /* إضافة وعاء خارجي للنافبار للتحكم في العرض */
+        .top-nav::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 1280px;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .top-nav {
+                padding: 0.25rem;
+                gap: 0.25rem;
+            }
+
+            .nav-item {
+                padding: 0.5rem;
+                font-size: 0.7rem;
+            }
+
+            .nav-item i {
+                font-size: 1.1rem;
+            }
+        }
+
         .nav-item {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            flex-grow: 1; height: 100%; background: none; border: none; color: var(--text-color);
-            cursor: pointer; font-size: 0.7rem; padding: 0.4rem 0; transition: color 0.3s ease, transform 0.2s ease;
-            text-decoration: none; font-family: inherit; text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.5rem 1rem;
+            color: var(--text-color);
+            background: none;
+            border: none;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-family: inherit;
+            min-width: 60px;
         }
-        .nav-item i { font-size: 1.3rem; margin-bottom: 3px; transition: transform 0.2s ease; }
-        .nav-item span { display: block; line-height: 1.1; }
-        .nav-item:hover { color: var(--primary-hover); }
-        .nav-item:hover i { transform: scale(1.1); }
-        .nav-item.active { color: var(--primary-color); font-weight: 600; }
-        .nav-item.active i { transform: scale(1.1); }
+
+        .nav-item.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary-color);
+        }
+
+        .nav-item:hover {
+            transform: translateY(-2px);
+            background: rgba(99, 102, 241, 0.05);
+        }
 
         /* Footer */
         .copyright { text-align: center; padding: 1rem; margin-top: 2rem; color: var(--text-color); font-size: 0.9rem; border-top: 1px solid var(--border-color); }
@@ -503,11 +561,21 @@
         .student-list li:last-child { border-bottom: none; }
 
         /* Connection Status */
-        .connection-status { position: fixed; top: 1rem; left: 1rem; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.875rem; z-index: 1001; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; }
-        .connection-status.online { background-color: #10b981; color: white; }
-        .connection-status.offline { background-color: #dc2626; color: white; }
-        .connection-status .icon { width: 8px; height: 8px; border-radius: 50%; background-color: currentColor; animation: pulseDot 1.5s infinite ease-in-out; }
-        @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .connection-status {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            z-index: 1001;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        .connection-status.online { background-color: #22c55e; }
+        .connection-status.offline { background-color: #ef4444; }
+        .connection-status .icon { display: none; }
+        .connection-status .status-text { display: none; }
 
         /* Splash Screen */
         .splash-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.8s ease-out, transform 0.8s ease-out; overflow: hidden; }
@@ -758,6 +826,30 @@
     </style>
 </head>
 <body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+        <button class="nav-item active" onclick="navigateToMainPage()">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>الرئيسية</span>
+        </button>
+        <button class="nav-item" onclick="showGroups()">
+            <i class="fas fa-users"></i>
+            <span>المجموعات</span>
+        </button>
+        <button class="nav-item" onclick="showStatistics()">
+            <i class="fas fa-chart-bar"></i>
+            <span>الإحصائيات</span>
+        </button>
+        <button class="nav-item" onclick="window.location.href='schedule.html'">
+            <i class="fas fa-calendar-alt"></i>
+            <span>المواعيد</span>
+        </button>
+        <button class="nav-item" onclick="showSettings()">
+            <i class="fas fa-cog"></i>
+            <span>الإعدادات</span>
+        </button>
+    </nav>
+
     <!-- Splash Screen -->
     <div class="splash-screen">
         <div class="splash-logo">
@@ -768,10 +860,7 @@
     </div>
 
     <!-- Connection Status Indicator -->
-    <div id="connectionStatus" class="connection-status">
-        <span class="icon"></span>
-        <span class="status-text"></span>
-    </div>
+    <div id="connectionStatus" class="connection-status"></div>
 
     <!-- Animated Background -->
     <div class="animated-background">
@@ -797,37 +886,13 @@
 
     </div> <!-- End of #appContainer -->
 
-    <!-- Bottom Navigation Bar -->
-    <nav class="bottom-nav">
-        <button class="nav-item active" onclick="navigateToMainPage()">
-            <i class="fas fa-tachometer-alt"></i> <!-- Dashboard Icon -->
-            <span>الرئيسية</span>
-        </button>
-        <button class="nav-item" onclick="showGroups()">
-            <i class="fas fa-users"></i>
-            <span>المجموعات</span>
-        </button>
-        <button class="nav-item" onclick="showStatistics()">
-            <i class="fas fa-chart-bar"></i>
-            <span>الإحصائيات</span> <!-- Full Statistics Report -->
-        </button>
-         <button class="nav-item" onclick="window.location.href='schedule.html'">
-            <i class="fas fa-calendar-alt"></i>
-            <span>المواعيد</span>
-        </button>
-        <button class="nav-item" onclick="showSettings()">
-            <i class="fas fa-cog"></i>
-            <span>الإعدادات</span>
-        </button>
-    </nav>
-
     <script>
         // Global flag for online status
         let isOnline = navigator.onLine;
 
         // --- Function to update active navigation item ---
         function updateActiveNavItem(activeViewFunction) {
-            const navItems = document.querySelectorAll('.bottom-nav .nav-item');
+            const navItems = document.querySelectorAll('.top-nav .nav-item');
             navItems.forEach(item => {
                 item.classList.remove('active');
                 const onclickAttr = item.getAttribute('onclick') || '';
@@ -996,8 +1061,8 @@
                         <div class="title">إجمالي المحصل</div> 
                         <div class="value">${stats.totalCollected}<span class="unit">ج</span></div> 
                     </div>
-                    <div class="kpi-card outstanding ${stats.totalOutstanding > 0 ? '' : 'zero'}"> 
-                        <i class="fas fa-file-invoice-dollar icon"></i> 
+                    <div class="kpi-card outstanding ${stats.totalOutstanding > 0 ? 'has-outstanding' : ''}"> 
+                        <i class="fas fa-exclamation-triangle icon"></i> 
                         <div class="title">إجمالي المتأخرات</div> 
                         <div class="value">${stats.totalOutstanding}<span class="unit">ج</span></div> 
                     </div>
@@ -1044,7 +1109,7 @@
                     const lessonTime = hours * 60 + minutes;
                     
                     // Check if we're within 30 minutes of the lesson time
-                    if (Math.abs(currentTime - lessonTime) <= 30) {
+                    if (Math.abs(currentTime - lessonTime) <= 45) {
                         return {
                             groupNumber: i,
                             groupName: groupData.groupName || `المجموعة ${i}`,
@@ -1128,6 +1193,19 @@
                 groupData.students[studentIndex].attendance = Array(groupData.dates.length).fill([false, false]);
             }
             
+            // حساب عدد الحصص المحتسبة قبل التحديث
+            const periodSize = 8;
+            const totalPeriods = Math.ceil(groupData.dates.length / periodSize);
+            const currentPeriodIndex = totalPeriods - 1;
+            const currentPeriodStart = currentPeriodIndex * periodSize;
+            
+            let currentPeriodLessons = 0;
+            groupData.students[studentIndex].attendance.forEach((att, idx) => {
+                if (idx >= currentPeriodStart && att && att[0]) {
+                    currentPeriodLessons++;
+                }
+            });
+
             // تعيين الحضور والاحتساب معاً
             groupData.students[studentIndex].attendance[dateIndex] = [true, isChecked];
             
@@ -1137,9 +1215,13 @@
             // تحديث العداد مباشرة
             const counterElement = document.getElementById(`lessons-count-${groupNumber}-${studentIndex}`);
             if (counterElement) {
-                // حساب العدد الجديد مباشرة
-                const lessonsCount = countStudentLessons(groupData.students[studentIndex]);
-                counterElement.textContent = `${lessonsCount.current}/${lessonsCount.total}`;
+                // حساب العدد الجديد من الحصص المحتسبة
+                // إذا كان التاريخ في الفترة الحالية، نضيف 1 للعداد
+                const isCurrentPeriod = dateIndex >= currentPeriodStart;
+                const newCount = isCurrentPeriod ? currentPeriodLessons + 1 : currentPeriodLessons;
+                
+                // تحديث العداد
+                counterElement.textContent = `${newCount}/8`;
                 
                 // تحريك العداد لجذب الانتباه
                 counterElement.style.transform = 'scale(1.2)';
@@ -1225,8 +1307,7 @@
                                             style="font-size: 0.75rem; padding: 0.15rem; width: 55px;"
                                             title="${date || 'اختر التاريخ'}"
                                             data-date="${date || ''}"
-                                            onfocus="this.showPicker && this.showPicker().catch(() => {})"
-                                            onclick="this.showPicker && this.showPicker().catch(() => {})">
+                                            onclick="try { this.showPicker() } catch(e) {}">
                                     </th>
                                     ${(index + 1) % 8 === 0 ? `<th style="min-width: 40px;">السداد</th>` : ''}`
                                 ).join('')}
@@ -1496,7 +1577,21 @@
         // (Includes: updateConnectionStatus, saveData, syncPendingChanges, addGroup, deleteGroup, changeGroupName, addStudent, deleteStudent, updateStudentName, updateStudentNotes, updateMonthlyPayment, updateAttendance, updateDate, updatePayment, addNewMonth, deleteMonth, backupLocalStorage, restoreLocalStorage, clearAllDataWithConfirmation, exportToExcel, importFromExcel, calculateGroupStats, calculateAllStatistics, exportStatisticsToExcel, initializeSearch)
         // These functions remain the same as the previous version.
 
-        function updateConnectionStatus() { const s=document.getElementById('connectionStatus'),t=s?.querySelector('.status-text'); isOnline=navigator.onLine; if(!s||!t)return; localStorage.setItem('isOnline', isOnline.toString()); if(isOnline){s.classList.remove('offline');s.classList.add('online');t.textContent='متصل';syncPendingChanges()}else{s.classList.remove('online');s.classList.add('offline');t.textContent='غير متصل'}}
+        function updateConnectionStatus() { 
+            const s = document.getElementById('connectionStatus');
+            isOnline = navigator.onLine; 
+            if (!s) return; 
+            localStorage.setItem('isOnline', isOnline.toString()); 
+            if (isOnline) {
+                s.classList.remove('offline');
+                s.classList.add('online');
+            } else {
+                s.classList.remove('online');
+                s.classList.add('offline');
+            }
+            if (!isOnline) syncPendingChanges();
+        }
+
         async function saveData(key, data) { try{localStorage.setItem(key,JSON.stringify(data));if(!isOnline){const p=JSON.parse(localStorage.getItem('pendingChanges')||'[]');if(!p.includes(key)){p.push(key);localStorage.setItem('pendingChanges',JSON.stringify(p))}}}catch(e){console.error(`Save Error ${key}:`,e);if(e.name==='QuotaExceededError'){alert('مساحة التخزين ممتلئة!')}else{alert(`خطأ حفظ ${key}`)}}}
         async function syncPendingChanges() { if(!isOnline)return;const p=JSON.parse(localStorage.getItem('pendingChanges')||'[]');if(p.length>0){console.log('Syncing:',p);localStorage.setItem('pendingChanges','[]');console.log('Queue cleared.')}}
         function addGroup() { let n=1; while(localStorage.getItem(`group${n}`)!==null&&n<=30)n++; if(n>30){alert('وصلت للحد الأقصى للمجموعات (30).');return} const name=prompt(`اسم المجموعة الجديدة (افتراضي: المجموعة ${n}):`,`المجموعة ${n}`); if(name===null)return; const fn=name.trim()||`المجموعة ${n}`; const d={groupName:fn,students:[],dates:Array(8).fill('')}; saveData(`group${n}`,d); alert(`تم إنشاء "${fn}".`); loadGroup(n)}
@@ -1540,18 +1635,6 @@
         function calculateAllStatistics() { const os={totalCollected:0,totalExpected:0,groupStats:[],unpaidStudents:[]};for(let i=1;i<=30;i++){const gds=localStorage.getItem(`group${i}`);if(!gds)continue;try{const gd=JSON.parse(gds);if(!gd||!gd.students||gd.students.length===0)continue;const cgs={number:i,name:gd.groupName||`المجموعة ${i}`,collected:0,expected:0,remaining:0};gd.students.forEach((s)=>{if(!s)return;const mp=s.monthlyPayment||150;const ps=s.payments||[];const stp=ps.reduce((sum,p)=>sum+(Number(p)||0),0);let sc=0,sa=0;const cld=[];(s.attendance||[]).forEach((att,idx)=>{if(att&&att[0]){sc++;if(att[1])sa++;cld.push({index:idx,present:att[1],monthIndex:Math.floor(idx/8),date:gd.dates?.[idx]||''})}});const cp=Math.floor(sc/8);const ste=cp*mp;const sua=Math.max(0,ste-stp);cgs.collected+=stp;cgs.expected+=ste;if(sua>0){let op=0;const ad=[];for(let p=0;p<cp;p++){const pp=ps[p]||0;const io=pp<mp;if(io)op++;const psi=p*8;const pei=psi+8;const pl=cld.filter(l=>l.index>=psi&&l.index<pei);ad.push({periodNumber:p+1,startMonth:Math.floor(pl[0]?.index/8)+1||(p+1),countedLessons:pl.length,attendedLessons:pl.filter(l=>l.present).length,paid:pp,expected:mp,isOverdue:io})} os.unpaidStudents.push({name:s.name||'طالب بدون اسم',groupName:cgs.name,groupNumber:i,unpaidAmount:sua,monthsOverdue:op,totalPaid:stp,totalDue:ste,expectedPerMonth:mp,attendanceDetails:ad})} os.totalCollected+=stp;os.totalExpected+=ste});cgs.remaining=cgs.expected-cgs.collected;if(cgs.expected>0||cgs.collected>0)os.groupStats.push(cgs)}catch(e){console.error(`Error calc full stats group ${i}:`,e)}} os.totalCollected=Number(os.totalCollected.toFixed(2));os.totalExpected=Number(os.totalExpected.toFixed(2));return os}
         function exportStatisticsToExcel() { if(typeof XLSX==='undefined'){alert('مكتبة Excel غير متاحة.');return} const stats=calculateAllStatistics();const wb=XLSX.utils.book_new();const date=new Date().toISOString().slice(0,10).replace(/-/g,''); try{if(stats.unpaidStudents.length>0){const ud=stats.unpaidStudents.map(s=>({'اسم الطالب':s.name,'المجموعة':s.groupName,'المتأخرات (ج)':s.unpaidAmount,'إجمالي المطلوب':s.totalDue,'إجمالي المدفوع':s.totalPaid,'فترات متأخرة':s.monthsOverdue,'قيمة السداد':s.expectedPerMonth}));const ws=XLSX.utils.json_to_sheet(ud);if(!ws['!props'])ws['!props']={};ws['!props'].RTL=true;ws['!cols']=[{wch:30},{wch:20},{wch:15},{wch:15},{wch:15},{wch:18},{wch:18}];XLSX.utils.book_append_sheet(wb,ws,'الطلاب المتأخرين')} if(stats.groupStats.length>0){const gd=stats.groupStats.map(g=>({'المجموعة':g.name,'المحصل':g.collected,'المتوقع':g.expected,'المتبقي':g.remaining,'التحصيل (%)':g.expected>0?Math.round((g.collected/g.expected)*100):100}));const ws=XLSX.utils.json_to_sheet(gd);if(!ws['!props'])ws['!props']={};ws['!props'].RTL=true;ws['!cols']=[{wch:30},{wch:15},{wch:15},{wch:18},{wch:18}];XLSX.utils.book_append_sheet(wb,ws,'إحصائيات المجموعات')} const sd=[{"البند":"إجمالي المحصل","القيمة":stats.totalCollected},{"البند":"إجمالي المتوقع","القيمة":stats.totalExpected},{"البند":"إجمالي المتأخرات","القيمة":stats.totalExpected-stats.totalCollected},{"البند":"عدد الطلاب المتأخرين","القيمة":stats.unpaidStudents.length},{"البند":"عدد المجموعات النشطة","القيمة":stats.groupStats.length}];const ws=XLSX.utils.json_to_sheet(sd,{skipHeader:true});if(!ws['!props'])ws['!props']={};ws['!props'].RTL=true;ws['!cols']=[{wch:25},{wch:15}];XLSX.utils.sheet_add_aoa(ws,[["البند","القيمة"]],{origin:"A1"});XLSX.utils.book_append_sheet(wb,ws,'الملخص العام'); if(wb.SheetNames.length===0){alert("لا توجد بيانات للتصدير.");return} XLSX.writeFile(wb,`TeacherHelper_Stats_${date}.xlsx`);alert('تم تصدير الإحصائيات.')}catch(err){console.error('Stats Export Error:',err);alert('خطأ تصدير الإحصائيات.')}}
         function initializeSearch() { const si=document.getElementById('searchInput');if(!si)return; si.addEventListener('input',function(){/* Optional: const st=this.value.trim(); if(st.length>=2){} else if(st.length===0){} */}); si.addEventListener('keypress',function(e){if(e.key==='Enter')showSearchPage(this.value)})}
-
-        // Add error handling for date picker
-        document.addEventListener('click', function(e) {
-            if (e.target && e.target.type === 'date') {
-                try {
-                    e.target.showPicker && e.target.showPicker().catch(() => {});
-                } catch (err) {
-                    // Silently handle any picker errors
-                    console.debug('Date picker interaction handled');
-                }
-            }
-        });
     </script>
 
     <!-- SheetJS Library (XLSX) -->
