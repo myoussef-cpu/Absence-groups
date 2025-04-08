@@ -395,7 +395,7 @@
             left: 0;
             right: 0;
             display: flex;
-            box-sizing: border-box;
+            max-width: 90%;
             justify-content: center;
             gap: 1rem;
             background: var(--surface-color);
@@ -418,8 +418,8 @@
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
-            width: 100%;
-            max-width: 1280px;
+            width: calc(100% - 4rem); /* تعديل العرض ليكون أقل من المحتوى */
+            max-width: calc(1280px - 4rem); /* تعديل العرض الأقصى */
             height: 100%;
             pointer-events: none;
         }
@@ -565,7 +565,7 @@
         .connection-status {
             position: fixed;
             top: 1rem;
-            left: 1rem;
+            left: 6rem;
             width: 10px;
             height: 10px;
             border-radius: 50%;
@@ -823,6 +823,118 @@
             border-radius: 0.5rem;
             font-size: 0.8rem;
             transition: all 0.3s ease;
+        }
+
+        /* إضافة الأنماط الداخلية الجديدة */
+        .text-center {
+            text-align: center;
+        }
+
+        .margin-bottom-2 {
+            margin-bottom: 2rem;
+        }
+
+        .margin-bottom-1 {
+            margin-bottom: 1rem;
+        }
+
+        .color-gray {
+            color: #555;
+        }
+
+        .icon-container img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .stats-title {
+            color: var(--primary-hover);
+        }
+
+        .bullet-list {
+            line-height: 1.8;
+            padding-right: 20px;
+        }
+
+        .list-icon {
+            margin-left: 8px;
+        }
+
+        .icon-success {
+            color: #28a745;
+        }
+
+        .icon-danger {
+            color: #dc3545;
+        }
+
+        .icon-primary {
+            color: var(--primary-color);
+        }
+
+        .font-bold {
+            font-weight: bold;
+        }
+
+        .text-danger {
+            color: #dc3545;
+        }
+
+        .grid-full {
+            grid-column: 1 / -1;
+        }
+
+        .pointer-events-none {
+            pointer-events: none;
+        }
+
+        .settings-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .settings-title {
+            margin: 0;
+        }
+
+        .about-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .about-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .about-title {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .about-version {
+            color: #555;
+        }
+
+        .footer-credit {
+            text-align: center;
+            margin-top: 2rem;
+            color: #777;
+        }
+
+        .empty-box-icon {
+            font-size: 2rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+            display: block;
         }
     </style>
 </head>
@@ -1260,7 +1372,7 @@
                                 <div class="stat-item"><span>المتأخرات</span><strong style="color:${group.stats.remaining > 0 ? '#dc3545' : '#198754'}">${group.stats.remaining} ج</strong></div> <div class="stat-item"><span>الحضور</span><strong>${group.stats.attendanceRate}%</strong></div>
                             </div>
                             <div class="group-details"> <div class="group-students"> <h4>الطلاب (${group.students.length}):</h4> <ul class="student-list">${group.students.length > 0 ? group.students.map(s => `<li>${s.name || 'طالب بدون اسم'}</li>`).join('') : '<li style="text-align:center; color:#888;">لا يوجد طلاب</li>'}</ul> </div> </div>
-                        </div>`).join('') : '<div style="grid-column: 1 / -1; text-align: center; padding: 2rem; background: var(--surface-color); border-radius: var(--border-radius); box-shadow: var(--shadow-sm);"><i class="fas fa-box-open" style="font-size: 2rem; color: #ccc; margin-bottom: 1rem; display: block;"></i><p>لا توجد مجموعات حالياً.</p></div>'}
+                        </div>`).join('') : '<div class="grid-full"><i class="fas fa-box-open empty-box-icon"></i><p>لا توجد مجموعات حالياً.</p></div>'}
                 </div>`;
             loadViewContent('المجموعات الدراسية', groupsHTML);
             updateActiveNavItem('showGroups');
@@ -1489,10 +1601,12 @@
 
         // --- Show Search Results Page ---
         function showSearchPage(searchTerm) {
-             // console.log("Showing search results for:", searchTerm); // Debug log
-             const searchInputEl = document.getElementById('searchInput');
-             const currentCursorPosition = searchInputEl?.selectionStart;
-             searchTerm = searchTerm ? searchTerm.trim().toLowerCase() : '';
+            // إغلاق لوحة المفاتيح على الهواتف المحمولة
+            document.activeElement?.blur();
+            
+            const searchInputEl = document.getElementById('searchInput');
+            const currentCursorPosition = searchInputEl?.selectionStart;
+            searchTerm = searchTerm ? searchTerm.trim().toLowerCase() : '';
             if (!searchTerm || searchTerm.length < 2) { const mc = document.getElementById('mainContentContainer'); if (mc.querySelector('.search-results')) { mc.querySelector('.search-results').innerHTML = '<div class="stats-card" style="text-align:center; color:#888;"><i class="fas fa-search"></i><p>أدخل حرفين على الأقل للبحث.</p></div>'; } updateActiveNavItem('navigateToMainPage'); return; }
              let allResults = [];
               for (let i = 1; i <= 30; i++) {
@@ -1553,11 +1667,17 @@
              // console.log("Showing about page..."); // Debug log
              const contentHTML = `
                  <button onclick="showSettings()" class="back-button"> <i class="fas fa-arrow-right"></i> العودة للإعدادات </button>
-                <div style="text-align: center; margin-bottom: 2rem;"> <img src="logo.jpg" alt="الأيقونة" style="width:100px; height:100px; border-radius:50%; margin-bottom:1rem; box-shadow:var(--shadow);"> <h2 style="color: var(--primary-color); margin-bottom: 0.5rem;">رفيق المعلم</h2> <p style="color: #555;">الإصدار 1.1</p> </div>
+                <div class="about-container"> 
+                    <img src="logo.jpg" alt="الأيقونة" class="about-logo"> 
+                    <h2 class="about-title">رفيق المعلم</h2> 
+                    <p class="about-version">الإصدار 1.1</p> 
+                </div>
                 <div class="stats-card"> <h2><i class="fas fa-star"></i> المميزات</h2> <ul style="line-height:1.8; padding-right:20px;"> <li><i class="fas fa-check-circle" style="color:#28a745;margin-left:8px;"></i>إدارة الحضور والغياب والمدفوعات.</li><li><i class="fas fa-check-circle" style="color:#28a745;margin-left:8px;"></i>حساب المتأخرات تلقائياً.</li><li><i class="fas fa-check-circle" style="color:#28a745;margin-left:8px;"></i>بحث سريع عن الطلاب.</li><li><i class="fas fa-check-circle" style="color:#28a745;margin-left:8px;"></i>إحصائيات تفصيلية.</li><li><i class="fas fa-check-circle" style="color:#28a745;margin-left:8px;"></i>تصدير Excel للمجموعات والإحصائيات.</li><li><i class="fas fa-check-circle" style="color:#28a745;margin-left:8px;"></i>نسخ احتياطي واستعادة بيانات.</li><li><i class="fas fa-check-circle" style="color:#28a745;margin-left:8px;"></i>إدارة جدول المواعيد.</li></ul> </div>
                 <div class="stats-card"> <h2><i class="fas fa-question-circle"></i> الاستخدام</h2> <h3 style="color:var(--primary-hover);"><i class="fas fa-users-cog"></i> المجموعات والطلاب</h3> <ul style="line-height:1.8; padding-right:20px;"> <li><strong>الإضافة/الفتح:</strong> من صفحة "المجموعات".</li> <li><strong>الحضور:</strong> المربع الأول (يمين) للحصة المحتسبة، الثاني (يسار) للحضور الفعلي.</li> <li><strong>السداد:</strong> من أعمدة السداد في الجدول.</li> <li><strong>الحذف/التعديل:</strong> الأزرار المخصصة.</li> </ul> <h3 style="color:var(--primary-hover); margin-top:1.5rem;"><i class="fas fa-clipboard-check"></i> المتابعة والإعدادات</h3> <ul style="line-height:1.8; padding-right:20px;"> <li><strong>الرئيسية/الإحصائيات:</strong> لعرض الملخصات.</li> <li><strong>البحث:</strong> الشريط العلوي.</li> <li><strong>البيانات:</strong> النسخ/الاستعادة/المسح من "الإعدادات".</li> </ul> </div>
                 <div class="stats-card"> <h2><i class="fas fa-exclamation-circle"></i> نصائح</h2> <ul style="line-height:1.8; padding-right:20px;"> <li><i class="fas fa-save" style="color:var(--primary-color);margin-left:8px;"></i><strong>النسخ الاحتياطي هو الأهم!</strong></li> <li><i class="fas fa-calendar-check" style="color:var(--primary-color);margin-left:8px;"></i>سجل البيانات أولاً بأول.</li> <li><i class="fas fa-mobile-alt" style="color:var(--primary-color);margin-left:8px;"></i>ثبت التطبيق على الهاتف (Add to Home Screen).</li> <li><i class="fas fa-exclamation-triangle" style="color:#dc3545;margin-left:8px;"></i><strong>احذر عند مسح البيانات.</strong></li> </ul> </div>
-                <div style="text-align: center; margin-top: 2rem; color: #777;"> <p>تم التطوير بواسطة الأستاذ / يوسف الزغبي</p> </div>`;
+                <footer class="footer-credit">
+                    <p>تم التطوير بواسطة الأستاذ / يوسف الزغبي</p>
+                </footer>`;
             loadViewContent('عن برنامج رفيق المعلم', contentHTML);
             updateActiveNavItem('showSettings'); // Keep Settings active
         }
