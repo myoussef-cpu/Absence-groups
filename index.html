@@ -151,7 +151,7 @@
         }
 
         th input[type="date"] {
-            width: 110px;
+            width: 57px;
             text-align: right;
             padding: 0.25rem;
             font-size: 0.8rem;
@@ -819,7 +819,7 @@
         .lessons-counter {
             background: var(--primary-color);
             color: white;
-            padding: 0.25rem 0.5rem;
+            padding: 0rem 0rem;
             border-radius: 0.5rem;
             font-size: 0.8rem;
             transition: all 0.3s ease;
@@ -1417,7 +1417,7 @@
                                         <input type="date" 
                                             value="${date || ''}" 
                                             onchange="updateDate(${groupNumber}, ${index}, this.value)" 
-                                            style="font-size: 0.75rem; padding: 0.15rem; width: 55px;"
+                                            class="lesson-date-input"
                                             title="${date || 'اختر التاريخ'}"
                                             data-date="${date || ''}"
                                             onclick="try { this.showPicker() } catch(e) {}">
@@ -1428,16 +1428,24 @@
                         </thead>
                         <tbody>
                              ${groupData.students.length === 0 ? `<tr><td colspan="${2 + (numMonths * 9) + 1}" style="text-align: center; padding: 2rem; color: #888;"><i class="fas fa-user-slash" style="font-size: 1.5rem; display:block; margin-bottom: 0.5rem;"></i>لا يوجد طلاب.</td></tr>` : ''}
-                            ${groupData.students.map((student, sIdx) => `
+                            ${groupData.students.map((student, sIdx) => {
+                                const lessonCount = calculateCurrentLesson(student);
+                                return `
                                 <tr id="student-row-${groupNumber}-${sIdx}">
                                     <td style="min-width: 80px; padding: 2px;">
-                                        <div style="display: flex; flex-direction: column; gap: 2px;">
-                                            <input type="text" value="${student.name || ''}" 
-                                                onchange="updateStudentName(${groupNumber}, ${sIdx}, this.value)" 
-                                                style="width: 100%;">
-                                            <button onclick="deleteStudent(${groupNumber}, ${sIdx})" 
-                                                class="delete-student" 
-                                                title="حذف ${student.name || ''}">حذف</button>
+                                        <div style="display: flex; align-items: center; gap: 2px;">
+                                            <div style="display: flex; align-items: center; gap: 2px;">
+                                                <span class="lesson-counter${lessonCount.current === 8 ? ' warning' : ''}" 
+                                                      title="الدورة ${lessonCount.period}">${lessonCount.current}/8</span>
+                                            </div>
+                                            <div style="display: flex; flex-direction: column; gap: 2px; flex-grow: 1;">
+                                                <input type="text" value="${student.name || ''}" 
+                                                    onchange="updateStudentName(${groupNumber}, ${sIdx}, this.value)" 
+                                                    style="width: 110%;">
+                                                <button style="width: 50%;" onclick="deleteStudent(${groupNumber}, ${sIdx}) style=" 
+                                                    class="delete-student" 
+                                                    title="حذف ${student.name || ''}">حذف</button>
+                                            </div>
                                         </div>
                                     </td>
                                     <td style="min-width: 40px; padding: 2px;">
@@ -1482,12 +1490,28 @@
                                             onchange="updateStudentNotes(${groupNumber}, ${sIdx}, this.value)" 
                                             style="width: 100%;">
                                     </td>
-                                </tr>`).join('')}
+                                </tr>`;
+                            }).join('')}
                         </tbody>
                     </table>
                 </div>`;
             loadViewContent(groupData.groupName || `المجموعة ${groupNumber}`, contentHTML);
             updateActiveNavItem('showGroups'); // Keep groups active when viewing a group
+        }
+
+        // Add new helper function to calculate current lesson
+        function calculateCurrentLesson(student) {
+            if (!student.attendance) return { current: 0, period: 1 };
+            
+            let totalCounted = 0;
+            student.attendance.forEach(att => {
+                if (att && att[0]) totalCounted++;
+            });
+            
+            const period = Math.floor(totalCounted / 8) + 1;
+            const current = totalCounted % 8 || 8;
+            
+            return { current, period };
         }
 
         // --- Renderer for the Full Statistics Page ---
@@ -1723,7 +1747,71 @@
         async function updateStudentName(n, idx, nn) { const gds=localStorage.getItem(`group${n}`); if(!gds)return; try{const gd=JSON.parse(gds);if(gd.students&&gd.students[idx]){gd.students[idx].name=nn.trim();await saveData(`group${n}`,gd);const ci=document.querySelector(`#student-row-${n}-${idx} td:last-of-type input[disabled]`);if(ci)ci.value=nn.trim()}}catch(e){console.error("Name Update Error:",e)}}
         async function updateStudentNotes(n, idx, notes) { const gds=localStorage.getItem(`group${n}`); if(!gds)return; try{const gd=JSON.parse(gds);if(gd.students&&gd.students[idx]){gd.students[idx].notes=notes;await saveData(`group${n}`,gd)}}catch(e){console.error("Notes Update Error:",e)}}
         async function updateMonthlyPayment(n, idx, val) { const gds=localStorage.getItem(`group${n}`); if(!gds)return; try{const gd=JSON.parse(gds);const pv=parseFloat(val);if(gd.students&&gd.students[idx]){gd.students[idx].monthlyPayment=(isNaN(pv)||pv<0)?150:pv;await saveData(`group${n}`,gd);const i=document.querySelector(`#student-row-${n}-${idx} input.monthly-payment-input`);if(i)i.value=gd.students[idx].monthlyPayment}}catch(e){console.error("Payment Value Update Error:",e)}}
-        async function updateAttendance(n, sIdx, dIdx, cbIdx, isChecked) { const gds=localStorage.getItem(`group${n}`); if(!gds)return; try{const gd=JSON.parse(gds); if(!gd.students||!gd.students[sIdx]||!gd.students[sIdx].attendance||!gd.students[sIdx].attendance[dIdx]){console.error("Att data error:",n,sIdx,dIdx);return} const pair=gd.students[sIdx].attendance[dIdx]; const cb2=document.querySelector(`#student-row-${n}-${sIdx} td:nth-of-type(${3+dIdx}) input[type="checkbox"]:nth-of-type(2)`); if(cbIdx===0){pair[0]=isChecked;if(!isChecked){pair[1]=false;if(cb2){cb2.checked=false;cb2.disabled=true;cb2.style.opacity=0.5}}else{if(cb2){cb2.disabled=false;cb2.style.opacity=1}}}else if(cbIdx===1){if(pair[0]){pair[1]=isChecked}else{alert('لا يمكن تسجيل الحضور لحصة غير محتسبة.');if(cb2)cb2.checked=false;return}} gd.students[sIdx].attendance[dIdx]=pair;await saveData(`group${n}`,gd)}catch(e){console.error("Att Update Error:",e)}}
+        async function updateAttendance(n, sIdx, dIdx, cbIdx, isChecked) { 
+            const gds = localStorage.getItem(`group${n}`); 
+            if (!gds) return; 
+            try {
+                const gd = JSON.parse(gds); 
+                if (!gd.students || !gd.students[sIdx] || !gd.students[sIdx].attendance) {
+                    console.error("Att data error:", n, sIdx, dIdx);
+                    return;
+                }
+                
+                // تأكد من وجود مصفوفة الحضور وإنشائها إذا لم تكن موجودة
+                if (!gd.students[sIdx].attendance[dIdx]) {
+                    gd.students[sIdx].attendance[dIdx] = [false, false];
+                }
+                
+                const pair = gd.students[sIdx].attendance[dIdx];
+                const cb2 = document.querySelector(`#student-row-${n}-${sIdx} td:nth-of-type(${3 + dIdx}) input[type="checkbox"]:nth-of-type(2)`);
+        
+                if (cbIdx === 0) { // تحديث حالة الاحتساب
+                    pair[0] = isChecked;
+                    if (cb2) {
+                        if (!isChecked) {
+                            pair[1] = false; // إعادة ضبط حالة الحضور عند إلغاء الاحتساب
+                            cb2.checked = false;
+                            cb2.disabled = true;
+                            cb2.style.opacity = '0.5';
+                        } else {
+                            cb2.disabled = false;
+                            cb2.style.opacity = '1';
+                        }
+                    }
+                } else if (cbIdx === 1) { // تحديث حالة الحضور
+                    if (pair[0]) { // تحقق من أن الحصة محتسبة
+                        pair[1] = isChecked;
+                    } else {
+                        if (cb2) cb2.checked = false;
+                        alert('لا يمكن تسجيل الحضور لحصة غير محتسبة.');
+                        return;
+                    }
+                }
+                
+                gd.students[sIdx].attendance[dIdx] = pair;
+                await saveData(`group${n}`, gd);
+                
+                // تحديث واجهة المستخدم مباشرة
+                if (cb2 && cbIdx === 0) {
+                    cb2.disabled = !isChecked;
+                    cb2.style.opacity = isChecked ? '1' : '0.5';
+                    if (!isChecked) {
+                        cb2.checked = false;
+                    }
+                }
+                
+                // After saving the attendance data, update the counter
+                const lessonCount = calculateCurrentLesson(gd.students[sIdx]);
+                const counterElement = document.querySelector(`#student-row-${n}-${sIdx} .lesson-counter`);
+                if (counterElement) {
+                    counterElement.textContent = `${lessonCount.current}/8`;
+                    counterElement.title = `الدورة ${lessonCount.period}`;
+                    counterElement.classList.toggle('warning', lessonCount.current === 8);
+                }
+            } catch (e) {
+                console.error("Att Update Error:", e);
+            }
+        }
         async function updateDate(n, dIdx, newDate) { 
             const gds = localStorage.getItem(`group${n}`); 
             if (!gds) return; 
