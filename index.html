@@ -105,7 +105,7 @@
             z-index: 2;
         }
 
-        td input[type="text"], 
+        td input[type="text"],
         th input[type="text"] {
             width: 100%;
             text-align: right;
@@ -160,7 +160,7 @@
             direction: rtl;
         }
 
-        td input[type="number"], 
+        td input[type="number"],
         .monthly-payment-input {
             text-align: right;
             direction: rtl;
@@ -207,62 +207,62 @@
         }
 
         @media (max-width: 768px) {
-            #mainContentContainer { 
+            #mainContentContainer {
                 padding: 0.5rem;
                 margin: 0.25rem;
             }
-            
-            .table-container { 
-                margin: 1rem -0.5rem; 
-                padding: 0; 
+
+            .table-container {
+                margin: 1rem -0.5rem;
+                padding: 0;
                 width: calc(100% + 1rem);
             }
-            
-            body { 
-                padding: calc(var(--nav-height) + 0.5rem) 0.5rem 0.5rem 0.5rem; 
+
+            body {
+                padding: calc(var(--nav-height) + 0.5rem) 0.5rem 0.5rem 0.5rem;
             }
-            
+
             .search-container {
                 padding: 1rem;
                 margin: 0.5rem 0;
             }
-            
+
             .search-box {
                 flex-direction: column;
             }
-            
+
             .search-box input {
                 min-width: unset;
                 width: 80%;
             }
-            
+
             .stats-container {
                 padding: 0;
                 margin: 0.5rem 0;
             }
-            
+
             .stats-card {
                 padding: 1rem;
                 margin: 0.5rem 0;
             }
-            
+
             .buttons-container {
                 padding: 0;
                 margin: 0.5rem 0;
                 gap: 0.5rem;
             }
-            
+
             .buttons-container button {
                 padding: 0.5rem;
                 font-size: 0.85rem;
             }
-            
+
             .back-button {
                 margin: 0.5rem 0;
                 width: 100%;
                 justify-content: center;
             }
-            
+
             .modal-content {
                 width: 95%;
                 margin: 5% auto;
@@ -691,7 +691,7 @@
 
         .lesson-time { font-size: 1.2rem; font-weight: bold; }
         .lesson-status { font-size: 0.8rem; padding: 0.25rem 0.75rem; border-radius: 1rem; }
-        
+
         .lesson {
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -1132,7 +1132,7 @@
         function renderHomePageHTML() {
             const stats = calculateHomePageStats();
             const currentGroupStudents = getCurrentGroupStudents();
-            
+
             const currentGroupHTML = currentGroupStudents ? `
                 <div class="current-group-card">
                     <h3><i class="fas fa-users"></i> ${currentGroupStudents.groupName}</h3>
@@ -1143,8 +1143,8 @@
                             return `
                                 <div class="student-attendance-row">
                                     <label class="attendance-checkbox">
-                                        <input type="checkbox" 
-                                            ${isChecked ? 'checked' : ''} 
+                                        <input type="checkbox"
+                                            ${isChecked ? 'checked' : ''}
                                             onchange="handleQuickAttendance(${currentGroupStudents.groupNumber}, ${idx}, this.checked)">
                                         <span class="student-name">${student.name || 'طالب بدون اسم'}</span>
                                     </label>
@@ -1163,25 +1163,25 @@
             `;
 
             return `
-                <div class="search-container"> 
-                    <div class="search-box"> 
-                        <input type="text" id="searchInput" placeholder="ابحث عن اسم الطالب..." autocomplete="off"> 
+                <div class="search-container">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="ابحث عن اسم الطالب..." autocomplete="off">
                         <button onclick="showSearchPage(document.getElementById('searchInput').value.trim())">
                             <i class="fas fa-search"></i><span>بحث</span>
-                        </button> 
-                    </div> 
+                        </button>
+                    </div>
                 </div>
                 <div class="home-stats-grid">
                     ${currentGroupHTML}
-                    <div class="kpi-card collected"> 
-                        <i class="fas fa-coins icon"></i> 
-                        <div class="title">إجمالي المحصل</div> 
-                        <div class="value">${stats.totalCollected}<span class="unit">ج</span></div> 
+                    <div class="kpi-card collected">
+                        <i class="fas fa-coins icon"></i>
+                        <div class="title">إجمالي المحصل</div>
+                        <div class="value">${stats.totalCollected}<span class="unit">ج</span></div>
                     </div>
-                    <div class="kpi-card outstanding ${stats.totalOutstanding > 0 ? 'has-outstanding' : ''}"> 
-                        <i class="fas fa-exclamation-triangle icon"></i> 
-                        <div class="title">إجمالي المتأخرات</div> 
-                        <div class="value">${stats.totalOutstanding}<span class="unit">ج</span></div> 
+                    <div class="kpi-card outstanding ${stats.totalOutstanding > 0 ? 'has-outstanding' : ''}">
+                        <i class="fas fa-exclamation-triangle icon"></i>
+                        <div class="title">إجمالي المتأخرات</div>
+                        <div class="value">${stats.totalOutstanding}<span class="unit">ج</span></div>
                     </div>
                 </div>
                 ${stats.topUnpaidStudents.length > 0 ? `
@@ -1208,24 +1208,24 @@
             const now = new Date();
             const today = now.getDay();
             const currentTime = now.getHours() * 60 + now.getMinutes();
-            
+
             for (let i = 1; i <= 30; i++) {
                 const groupData = JSON.parse(localStorage.getItem(`group${i}`));
                 if (!groupData) continue;
-                
+
                 const day1 = parseInt(localStorage.getItem(`day1-${i}`));
                 const day2 = parseInt(localStorage.getItem(`day2-${i}`));
                 const time1 = localStorage.getItem(`time1-${i}`);
                 const time2 = localStorage.getItem(`time2-${i}`);
-                
+
                 if (day1 === today || day2 === today) {
                     const time = day1 === today ? time1 : time2;
                     if (!time) continue;
-                    
+
                     const [hours, minutes] = time.split(':').map(Number);
                     const lessonTime = hours * 60 + minutes;
-                    
-                    // Check if we're within 30 minutes of the lesson time
+
+                    // Check if we're within 45 minutes of the lesson time
                     if (Math.abs(currentTime - lessonTime) <= 45) {
                         return {
                             groupNumber: i,
@@ -1241,16 +1241,16 @@
 
         function countStudentLessons(student) {
             if (!student.attendance) return { current: 0, total: 0 };
-            
+
             // حساب بداية الفترة الحالية
             const periodSize = 8;
             const totalPeriods = Math.ceil(student.attendance.length / periodSize);
             const currentPeriodIndex = totalPeriods - 1;
             const currentPeriodStart = currentPeriodIndex * periodSize;
-            
+
             let currentPeriodLessons = 0;
             let totalLessons = 0;
-            
+
             student.attendance.forEach((att, idx) => {
                 if (att && att[0]) {
                     totalLessons++;
@@ -1259,7 +1259,7 @@
                     }
                 }
             });
-            
+
             return {
                 current: currentPeriodLessons,
                 total: 8,
@@ -1269,10 +1269,10 @@
 
         function isStudentAttendedToday(student) {
             if (!student.attendance || student.attendance.length === 0) return false;
-            
+
             const today = new Date().toISOString().split('T')[0];
             const lastAttendanceIdx = student.attendance.length - 1;
-            
+
             // Check if the last attendance entry is from today
             if (lastAttendanceIdx >= 0) {
                 return student.attendance[lastAttendanceIdx][0] && student.attendance[lastAttendanceIdx][1];
@@ -1283,10 +1283,10 @@
         function handleQuickAttendance(groupNumber, studentIndex, isChecked) {
             const groupData = JSON.parse(localStorage.getItem(`group${groupNumber}`));
             if (!groupData || !groupData.students || !groupData.students[studentIndex]) return;
-            
+
             const today = new Date().toISOString().split('T')[0];
             let dateIndex = groupData.dates.indexOf(today);
-            
+
             // إذا لم يكن التاريخ موجوداً، أضفه
             if (dateIndex === -1) {
                 dateIndex = groupData.dates.findIndex(date => !date);
@@ -1304,18 +1304,18 @@
                     groupData.dates[dateIndex] = today;
                 }
             }
-            
+
             // تحديث الحضور
             if (!groupData.students[studentIndex].attendance) {
                 groupData.students[studentIndex].attendance = Array(groupData.dates.length).fill([false, false]);
             }
-            
+
             // حساب عدد الحصص المحتسبة قبل التحديث
             const periodSize = 8;
             const totalPeriods = Math.ceil(groupData.dates.length / periodSize);
             const currentPeriodIndex = totalPeriods - 1;
             const currentPeriodStart = currentPeriodIndex * periodSize;
-            
+
             let currentPeriodLessons = 0;
             groupData.students[studentIndex].attendance.forEach((att, idx) => {
                 if (idx >= currentPeriodStart && att && att[0]) {
@@ -1325,10 +1325,10 @@
 
             // تعيين الحضور والاحتساب معاً
             groupData.students[studentIndex].attendance[dateIndex] = [true, isChecked];
-            
+
             // حفظ التغييرات
             saveData(`group${groupNumber}`, groupData);
-            
+
             // تحديث العداد مباشرة
             const counterElement = document.getElementById(`lessons-count-${groupNumber}-${studentIndex}`);
             if (counterElement) {
@@ -1336,10 +1336,10 @@
                 // إذا كان التاريخ في الفترة الحالية، نضيف 1 للعداد
                 const isCurrentPeriod = dateIndex >= currentPeriodStart;
                 const newCount = isCurrentPeriod ? currentPeriodLessons + 1 : currentPeriodLessons;
-                
+
                 // تحديث العداد
                 counterElement.textContent = `${newCount}/8`;
-                
+
                 // تحريك العداد لجذب الانتباه
                 counterElement.style.transform = 'scale(1.2)';
                 counterElement.style.color = isChecked ? '#10b981' : '#ef4444';
@@ -1418,9 +1418,9 @@
                                     <th style="min-width: 25px;">
                                         حصّة ${ (index % 8) + 1}
                                         <br>
-                                        <input type="date" 
-                                            value="${date || ''}" 
-                                            onchange="updateDate(${groupNumber}, ${index}, this.value)" 
+                                        <input type="date"
+                                            value="${date || ''}"
+                                            onchange="updateDate(${groupNumber}, ${index}, this.value)"
                                             class="lesson-date-input"
                                             title="${date || 'اختر التاريخ'}"
                                             data-date="${date || ''}"
@@ -1439,25 +1439,25 @@
                                     <td style="min-width: 80px; padding: 2px;">
                                         <div style="display: flex; align-items: center; gap: 2px;">
                                             <div style="display: flex; align-items: center; gap: 2px;">
-                                                <span class="lesson-counter${lessonCount.current === 8 ? ' warning' : ''}" 
+                                                <span class="lesson-counter${lessonCount.current === 8 ? ' warning' : ''}"
                                                       title="الدورة ${lessonCount.period}">${lessonCount.current}/8</span>
                                             </div>
                                             <div style="display: flex; flex-direction: column; gap: 2px; flex-grow: 1;">
-                                                <input type="text" value="${student.name || ''}" 
-                                                    onchange="updateStudentName(${groupNumber}, ${sIdx}, this.value)" 
+                                                <input type="text" value="${student.name || ''}"
+                                                    onchange="updateStudentName(${groupNumber}, ${sIdx}, this.value)"
                                                     style="width: 110%;">
-                                                <button style="width: 50%;" onclick="deleteStudent(${groupNumber}, ${sIdx}) style=" 
-                                                    class="delete-student" 
+                                                <button style="width: 50%;" onclick="deleteStudent(${groupNumber}, ${sIdx})"
+                                                    class="delete-student"
                                                     title="حذف ${student.name || ''}">حذف</button>
                                             </div>
                                         </div>
                                     </td>
                                     <td style="min-width: 40px; padding: 2px;">
-                                        <input type="number" 
-                                            class="monthly-payment-input" 
-                                            value="${student.monthlyPayment || 150}" 
-                                            onchange="updateMonthlyPayment(${groupNumber}, ${sIdx}, this.value)" 
-                                            min="0" 
+                                        <input type="number"
+                                            class="monthly-payment-input"
+                                            value="${student.monthlyPayment || 150}"
+                                            onchange="updateMonthlyPayment(${groupNumber}, ${sIdx}, this.value)"
+                                            min="0"
                                             style="width: 100%;">
                                     </td>
                                     ${student.attendance.map((att, i) => {
@@ -1467,31 +1467,31 @@
                                         const pVal = student.payments?.[Math.floor(i/8)] ?? 0;
                                         return `
                                             <td style="min-width: 30px; text-align: center; white-space: nowrap;">
-                                                <input type="checkbox" 
-                                                    title="محتسبة؟" 
-                                                    ${cCkd} 
+                                                <input type="checkbox"
+                                                    title="محتسبة؟"
+                                                    ${cCkd}
                                                     onchange="updateAttendance(${groupNumber}, ${sIdx}, ${i}, 0, this.checked)">
-                                                <input type="checkbox" 
-                                                    title="حضر؟" 
-                                                    ${aCkd} 
-                                                    onchange="updateAttendance(${groupNumber}, ${sIdx}, ${i}, 1, this.checked)" 
-                                                    ${aDis ? 'disabled' : ''} 
+                                                <input type="checkbox"
+                                                    title="حضر؟"
+                                                    ${aCkd}
+                                                    onchange="updateAttendance(${groupNumber}, ${sIdx}, ${i}, 1, this.checked)"
+                                                    ${aDis ? 'disabled' : ''}
                                                     style="opacity: ${aDis ? 0.5 : 1};">
                                             </td>
-                                            ${(i + 1) % 8 === 0 ? 
+                                            ${(i + 1) % 8 === 0 ?
                                                 `<td style="min-width: 50px;">
-                                                    <input type="number" 
-                                                        value="${pVal}" 
-                                                        onchange="updatePayment(${groupNumber}, ${sIdx}, ${Math.floor(i/8)}, this.value)" 
-                                                        style="width: 100%;" 
+                                                    <input type="number"
+                                                        value="${pVal}"
+                                                        onchange="updatePayment(${groupNumber}, ${sIdx}, ${Math.floor(i/8)}, this.value)"
+                                                        style="width: 100%;"
                                                         min="0">
-                                                </td>` : 
+                                                </td>` :
                                                 ''}`;
                                     }).join('')}
                                     <td style="min-width: 80px;">
-                                        <input type="text" 
-                                            value="${student.notes || ''}" 
-                                            onchange="updateStudentNotes(${groupNumber}, ${sIdx}, this.value)" 
+                                        <input type="text"
+                                            value="${student.notes || ''}"
+                                            onchange="updateStudentNotes(${groupNumber}, ${sIdx}, this.value)"
                                             style="width: 100%;">
                                     </td>
                                 </tr>`;
@@ -1506,16 +1506,16 @@
         // Add new helper function to calculate current lesson
         function calculateCurrentLesson(student) {
             if (!student.attendance) return { current: 0, period: 1 };
-            
+
             let totalCounted = 0;
             student.attendance.forEach(att => {
                 if (att && att[0]) totalCounted++;
             });
-            
+
             const period = Math.floor(totalCounted / 8) + 1;
-            const current = totalCounted % 8 || 8;
-            
-            return { current, period };
+            const current = (totalCounted % 8); // Changed from || 8 to handle 0 correctly
+
+            return { current: current === 0 && totalCounted > 0 ? 8 : current, period };
         }
 
         // --- Renderer for the Full Statistics Page ---
@@ -1544,27 +1544,27 @@
                                         ${(() => {
                                             const periods = [];
                                             const numPeriods = Math.ceil((student.attendanceDetails || []).length / 8);
-                                            
+
                                             for(let p = 0; p < numPeriods; p++) {
                                                 // تحديد بداية ونهاية الفترة الحالية
                                                 const pStart = p * 8;
                                                 const periodDetails = (student.attendanceDetails || []).slice(pStart, pStart + 8);
-                                                
+
                                                 // حساب إحصائيات الفترة
                                                 const counted = periodDetails.reduce((sum, d) => sum + (d?.countedLessons || 0), 0);
                                                 const attended = periodDetails.reduce((sum, d) => sum + (d?.attendedLessons || 0), 0);
-                                                
+
                                                 // حساب المبلغ المتوقع بناءً على عدد الحصص المحتسبة
-                                                const expectedAmount = counted === 8 ? 
-                                                    student.expectedPerMonth : 
+                                                const expectedAmount = counted === 8 ?
+                                                    student.expectedPerMonth :
                                                     Math.round((counted / 8) * student.expectedPerMonth);
-                                                
+
                                                 // العثور على أول وآخر تاريخ في الفترة (إن وجد)
                                                 const firstDate = periodDetails.find(d => d?.date)?.date || '';
                                                 const lastDate = [...periodDetails].reverse().find(d => d?.date)?.date || '';
-                                                
+
                                                 const payment = student.payments?.[p] || 0;
-                                                
+
                                                 periods.push(`
                                                     <div class="month-item">
                                                         <strong>الفترة ${p + 1}</strong>
@@ -1574,10 +1574,10 @@
                                                         </div>
                                                         <div style="color:${payment >= expectedAmount ? '#198754' : '#dc3545'}">
                                                             المدفوع: ${payment}/${expectedAmount} ج
-                                                            ${counted < 8 && counted > 0 ? 
+                                                            ${counted < 8 && counted > 0 ?
                                                                 `<small style="display:block;font-size:0.8em;color:#666">
                                                                     (${Math.round((counted/8)*100)}% من الفترة)
-                                                                </small>` : 
+                                                                </small>` :
                                                                 ''}
                                                         </div>
                                                         ${firstDate ? `
@@ -1631,7 +1631,7 @@
         function showSearchPage(searchTerm) {
             // إغلاق لوحة المفاتيح على الهواتف المحمولة
             document.activeElement?.blur();
-            
+
             const searchInputEl = document.getElementById('searchInput');
             const currentCursorPosition = searchInputEl?.selectionStart;
             searchTerm = searchTerm ? searchTerm.trim().toLowerCase() : '';
@@ -1644,17 +1644,17 @@
                     gd.students.forEach((s, sIdx) => {
                         if (s && s.name && s.name.toLowerCase().includes(searchTerm)) {
                             const mp = s.monthlyPayment || 150; const pays = s.payments || []; const tp = pays.reduce((sum, p) => sum + (Number(p) || 0), 0); let cl = 0; (s.attendance || []).forEach(att => { if (att && att[0]) cl++; }); const cp = Math.floor(cl / 8); const te = cp * mp; const oa = Math.max(0, te - tp); let om = 0; for(let p = 0; p < cp; p++){ if((pays[p] || 0) < mp) om++; }
-                            allResults.push({ 
-                                name: s.name, 
-                                groupName: gd.groupName || `المجموعة ${i}`, 
-                                groupNumber: i, 
-                                studentIndex: sIdx, 
-                                monthlyPayment: mp, 
-                                payments: pays, 
-                                overdueAmount: oa, 
-                                overdueMonths: om, 
-                                totalExpected: te, 
-                                totalPaid: tp, 
+                            allResults.push({
+                                name: s.name,
+                                groupName: gd.groupName || `المجموعة ${i}`,
+                                groupNumber: i,
+                                studentIndex: sIdx,
+                                monthlyPayment: mp,
+                                payments: pays,
+                                overdueAmount: oa,
+                                overdueMonths: om,
+                                totalExpected: te,
+                                totalPaid: tp,
                                 completePeriods: cp,
                                 attendance: s.attendance || [],
                                 dates: gd.dates || []
@@ -1695,10 +1695,10 @@
              // console.log("Showing about page..."); // Debug log
              const contentHTML = `
                  <button onclick="showSettings()" class="back-button"> <i class="fas fa-arrow-right"></i> العودة للإعدادات </button>
-                <div class="about-container"> 
-                    <img src="logo.jpg" alt="الأيقونة" class="about-logo"> 
-                    <h2 class="about-title">رفيق المعلم</h2> 
-                    <p class="about-version">الإصدار 1.1</p> 
+                <div class="about-container">
+                    <img src="logo.jpg" alt="الأيقونة" class="about-logo">
+                    <h2 class="about-title">رفيق المعلم</h2>
+                    <p class="about-version">الإصدار 1.1</p>
                 </div>
                 <div class="stats-card"> <h2><i class="fas fa-star"></i> المميزات</h2> <ul style="line-height:1.8; padding-right:20px;"> <li><i class="fas fa-check-circle" style="color:#28a745;margin-left:8px;"></i>إدارة الحضور والغياب والمدفوعات.</li><li><i class="fas fa-check-circle" style="color:#28a745;margin-left:8px;"></i>حساب المتأخرات تلقائياً.</li><li><i class="fas fa-check-circle" style="color:#28a745;margin-left:8px;"></i>بحث سريع عن الطلاب.</li><li><i class="fas fa-check-circle" style="color:#28a745;margin-left:8px;"></i>إحصائيات تفصيلية.</li><li><i class="fas fa-check-circle" style="color:#28a745;margin-left:8px;"></i>تصدير Excel للمجموعات والإحصائيات.</li><li><i class="fas fa-check-circle" style="color:#28a745;margin-left:8px;"></i>نسخ احتياطي واستعادة بيانات.</li><li><i class="fas fa-check-circle" style="color:#28a745;margin-left:8px;"></i>إدارة جدول المواعيد.</li></ul> </div>
                 <div class="stats-card"> <h2><i class="fas fa-question-circle"></i> الاستخدام</h2> <h3 style="color:var(--primary-hover);"><i class="fas fa-users-cog"></i> المجموعات والطلاب</h3> <ul style="line-height:1.8; padding-right:20px;"> <li><strong>الإضافة/الفتح:</strong> من صفحة "المجموعات".</li> <li><strong>الحضور:</strong> المربع الأول (يمين) للحصة المحتسبة، الثاني (يسار) للحضور الفعلي.</li> <li><strong>السداد:</strong> من أعمدة السداد في الجدول.</li> <li><strong>الحذف/التعديل:</strong> الأزرار المخصصة.</li> </ul> <h3 style="color:var(--primary-hover); margin-top:1.5rem;"><i class="fas fa-clipboard-check"></i> المتابعة والإعدادات</h3> <ul style="line-height:1.8; padding-right:20px;"> <li><strong>الرئيسية/الإحصائيات:</strong> لعرض الملخصات.</li> <li><strong>البحث:</strong> الشريط العلوي.</li> <li><strong>البيانات:</strong> النسخ/الاستعادة/المسح من "الإعدادات".</li> </ul> </div>
@@ -1724,13 +1724,12 @@
 
         // --- Core Data Functions & Helpers ---
         // (Includes: updateConnectionStatus, saveData, syncPendingChanges, addGroup, deleteGroup, changeGroupName, addStudent, deleteStudent, updateStudentName, updateStudentNotes, updateMonthlyPayment, updateAttendance, updateDate, updatePayment, addNewMonth, deleteMonth, backupLocalStorage, restoreLocalStorage, clearAllDataWithConfirmation, exportToExcel, importFromExcel, calculateGroupStats, calculateAllStatistics, exportStatisticsToExcel, initializeSearch)
-        // These functions remain the same as the previous version.
 
-        function updateConnectionStatus() { 
+        function updateConnectionStatus() {
             const s = document.getElementById('connectionStatus');
-            isOnline = navigator.onLine; 
-            if (!s) return; 
-            localStorage.setItem('isOnline', isOnline.toString()); 
+            isOnline = navigator.onLine;
+            if (!s) return;
+            localStorage.setItem('isOnline', isOnline.toString());
             if (isOnline) {
                 s.classList.remove('offline');
                 s.classList.add('online');
@@ -1751,60 +1750,53 @@
         async function updateStudentName(n, idx, nn) { const gds=localStorage.getItem(`group${n}`); if(!gds)return; try{const gd=JSON.parse(gds);if(gd.students&&gd.students[idx]){gd.students[idx].name=nn.trim();await saveData(`group${n}`,gd);const ci=document.querySelector(`#student-row-${n}-${idx} td:last-of-type input[disabled]`);if(ci)ci.value=nn.trim()}}catch(e){console.error("Name Update Error:",e)}}
         async function updateStudentNotes(n, idx, notes) { const gds=localStorage.getItem(`group${n}`); if(!gds)return; try{const gd=JSON.parse(gds);if(gd.students&&gd.students[idx]){gd.students[idx].notes=notes;await saveData(`group${n}`,gd)}}catch(e){console.error("Notes Update Error:",e)}}
         async function updateMonthlyPayment(n, idx, val) { const gds=localStorage.getItem(`group${n}`); if(!gds)return; try{const gd=JSON.parse(gds);const pv=parseFloat(val);if(gd.students&&gd.students[idx]){gd.students[idx].monthlyPayment=(isNaN(pv)||pv<0)?150:pv;await saveData(`group${n}`,gd);const i=document.querySelector(`#student-row-${n}-${idx} input.monthly-payment-input`);if(i)i.value=gd.students[idx].monthlyPayment}}catch(e){console.error("Payment Value Update Error:",e)}}
-        async function updateAttendance(n, sIdx, dIdx, cbIdx, isChecked) { 
-            const gds = localStorage.getItem(`group${n}`); 
-            if (!gds) return; 
+        async function updateAttendance(n, sIdx, dIdx, cbIdx, isChecked) {
+            const gds = localStorage.getItem(`group${n}`);
+            if (!gds) return;
             try {
-                const gd = JSON.parse(gds); 
+                const gd = JSON.parse(gds);
                 if (!gd.students || !gd.students[sIdx] || !gd.students[sIdx].attendance) {
                     console.error("Att data error:", n, sIdx, dIdx);
                     return;
                 }
-                
+
                 // تأكد من وجود مصفوفة الحضور وإنشائها إذا لم تكن موجودة
                 if (!gd.students[sIdx].attendance[dIdx]) {
                     gd.students[sIdx].attendance[dIdx] = [false, false];
                 }
-                
-                const pair = gd.students[sIdx].attendance[dIdx];
+
+                const pair = [...gd.students[sIdx].attendance[dIdx]]; // Create a copy
                 const cb2 = document.querySelector(`#student-row-${n}-${sIdx} td:nth-of-type(${3 + dIdx}) input[type="checkbox"]:nth-of-type(2)`);
-        
+
                 if (cbIdx === 0) { // تحديث حالة الاحتساب
                     pair[0] = isChecked;
-                    if (cb2) {
-                        if (!isChecked) {
-                            pair[1] = false; // إعادة ضبط حالة الحضور عند إلغاء الاحتساب
-                            cb2.checked = false;
-                            cb2.disabled = true;
-                            cb2.style.opacity = '0.5';
-                        } else {
-                            cb2.disabled = false;
-                            cb2.style.opacity = '1';
-                        }
+                    if (!isChecked) {
+                        pair[1] = false; // إعادة ضبط حالة الحضور عند إلغاء الاحتساب
                     }
+                    // Update UI for checkbox 2 based on checkbox 1's state
+                    if (cb2) {
+                         cb2.disabled = !isChecked;
+                         cb2.style.opacity = isChecked ? '1' : '0.5';
+                         if (!isChecked) {
+                             cb2.checked = false;
+                         }
+                    }
+
                 } else if (cbIdx === 1) { // تحديث حالة الحضور
                     if (pair[0]) { // تحقق من أن الحصة محتسبة
                         pair[1] = isChecked;
                     } else {
+                        // Prevent checking attendance if not counted
                         if (cb2) cb2.checked = false;
                         alert('لا يمكن تسجيل الحضور لحصة غير محتسبة.');
-                        return;
+                        return; // Exit function early
                     }
                 }
-                
-                gd.students[sIdx].attendance[dIdx] = pair;
+
+                gd.students[sIdx].attendance[dIdx] = pair; // Assign the updated pair
                 await saveData(`group${n}`, gd);
-                
-                // تحديث واجهة المستخدم مباشرة
-                if (cb2 && cbIdx === 0) {
-                    cb2.disabled = !isChecked;
-                    cb2.style.opacity = isChecked ? '1' : '0.5';
-                    if (!isChecked) {
-                        cb2.checked = false;
-                    }
-                }
-                
-                // After saving the attendance data, update the counter
+
+                // After saving the attendance data, update the lesson counter
                 const lessonCount = calculateCurrentLesson(gd.students[sIdx]);
                 const counterElement = document.querySelector(`#student-row-${n}-${sIdx} .lesson-counter`);
                 if (counterElement) {
@@ -1814,22 +1806,25 @@
                 }
             } catch (e) {
                 console.error("Att Update Error:", e);
+                alert("حدث خطأ أثناء تحديث الحضور.");
             }
         }
-        async function updateDate(n, dIdx, newDate) { 
-            const gds = localStorage.getItem(`group${n}`); 
-            if (!gds) return; 
+        async function updateDate(n, dIdx, newDate) {
+            const gds = localStorage.getItem(`group${n}`);
+            if (!gds) return;
             try {
                 const gd = JSON.parse(gds);
                 if (gd.dates && dIdx >= 0 && dIdx < gd.dates.length) {
+                    const oldDate = gd.dates[dIdx]; // Store old date before updating
                     gd.dates[dIdx] = newDate;
                     await saveData(`group${n}`, gd);
-                    
-                    // تحديث عرض التاريخ المختصر
-                    const input = document.querySelector(`input[type="date"][data-date="${gd.dates[dIdx]}"]`);
+
+                    // Update the input element directly
+                    const input = document.querySelector(`#attendanceTable th:nth-of-type(${dIdx + 1}) input[type="date"]`); // More specific selector
                     if (input) {
-                        input.title = newDate;
-                        input.setAttribute('data-date', newDate);
+                        input.title = newDate || 'اختر التاريخ';
+                        input.setAttribute('data-date', newDate || ''); // Keep data-date attribute updated
+                        // No need to update value again as the browser handles it on change
                     }
                 }
             } catch(e) {
@@ -1839,13 +1834,14 @@
         async function updatePayment(n, sIdx, mIdx, val) { const gds=localStorage.getItem(`group${n}`); if(!gds)return; try{const gd=JSON.parse(gds);const pv=parseFloat(val);if(gd.students&&gd.students[sIdx]){if(!gd.students[sIdx].payments)gd.students[sIdx].payments=[]; const el=Math.ceil(gd.dates.length/8); while(gd.students[sIdx].payments.length<el)gd.students[sIdx].payments.push(0); if(mIdx>=0&&mIdx<gd.students[sIdx].payments.length){gd.students[sIdx].payments[mIdx]=(isNaN(pv)||pv<0)?0:pv;await saveData(`group${n}`,gd);const i=document.querySelector(`#student-row-${n}-${sIdx} input[onchange*="updatePayment(${n}, ${sIdx}, ${mIdx}"]`);if(i)i.value=gd.students[sIdx].payments[mIdx]}}}catch(e){console.error("Payment Update Error:",e)}}
         function addNewMonth(n) { const gds=localStorage.getItem(`group${n}`); if(!gds)return; try{const gd=JSON.parse(gds); gd.dates=[...(gd.dates||[]),...Array(8).fill('')]; const ndc=gd.dates.length; const nmc=Math.ceil(ndc/8); if(!gd.students)gd.students=[]; gd.students.forEach(s=>{s.attendance=[...(s.attendance||[]),...Array(8).fill([false,false])]; if(s.attendance.length!==ndc){const ca=Array(ndc).fill([false,false]);for(let i=0;i<Math.min(s.attendance.length,ndc);i++)ca[i]=s.attendance[i];s.attendance=ca} s.payments=s.payments||[];while(s.payments.length<nmc)s.payments.push(0)}); saveData(`group${n}`,gd); loadGroup(n)}catch(e){console.error("Add Month Error:",e);alert("خطأ إضافة شهر.")}}
         function deleteMonth(n, mIdx) { const gds=localStorage.getItem(`group${n}`); if(!gds)return; try{const gd=JSON.parse(gds);const cnd=gd.dates?gd.dates.length:0;const cnm=Math.ceil(cnd/8); if(cnd<=8){alert('لا يمكن حذف الشهر الوحيد.');return} if(mIdx<0||mIdx>=cnm){console.error("Invalid month index:",mIdx);return} if(mIdx!==cnm-1){alert('يمكن حذف الشهر الأخير فقط حالياً.');return} if(!confirm(`متأكد من حذف بيانات الشهر ${mIdx+1} بالكامل؟`))return; const si=mIdx*8;const ntd=Math.min(8,cnd-si); gd.dates.splice(si,ntd); if(gd.students){gd.students.forEach(s=>{if(s.attendance)s.attendance.splice(si,ntd);if(s.payments&&mIdx<s.payments.length)s.payments.splice(mIdx,1)})} saveData(`group${n}`,gd); loadGroup(n)}catch(err){console.error('Delete Month Error:',err);alert('خطأ حذف الشهر.')}}
-        function backupLocalStorage() { try{const bd={};let f=0;for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&(k.startsWith('group')||k==='weeklySchedule')){bd[k]=localStorage.getItem(k);f++}} if(f===0){alert("لا توجد بيانات للحفظ.");return false} const bs=JSON.stringify(bd,null,2);const blob=new Blob([bs],{type:'application/json'});const url=URL.createObjectURL(blob);const date=new Date().toISOString().slice(0,10).replace(/-/g,'');const a=document.createElement('a');a.style.display='none';a.href=url;a.download=`TeacherHelper_Backup_${date}.json`;document.body.appendChild(a);a.click();setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);alert(`تم الحفظ (${f} عنصر).\nالملف: ${a.download}`)},100);return true}catch(err){console.error('Backup Error:',err);if(err.name==='QuotaExceededError'){alert('خطأ: مساحة التخزين ممتلئة!')}else{alert('خطأ حفظ النسخة.')}return false}}
-        function restoreLocalStorage(event) { const f=event.target.files[0]; if(!f)return; if(!f.name.toLowerCase().endsWith('.json')){alert("ملف غير صالح (.json مطلوب)");event.target.value='';return} if(!confirm('تحذير! سيتم استبدال البيانات الحالية ببيانات الملف.\nمتابعة؟')){event.target.value='';return} const r=new FileReader();r.onload=function(e){try{const bj=e.target.result;const bd=JSON.parse(bj);if(typeof bd!=='object'||bd===null){throw new Error('ملف النسخة تالف.')} let ir=0;const ktc=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&(k.startsWith('group')||k==='weeklySchedule')){ktc.push(k)}} ktc.forEach(k=>localStorage.removeItem(k));console.log(`Cleared: ${ktc.join(', ')}`); for(const key in bd){if(key.startsWith('group')||key==='weeklySchedule'){if(typeof bd[key]==='string'){try{if(key.startsWith('group'))JSON.parse(bd[key]);localStorage.setItem(key,bd[key]);ir++}catch(pe){console.warn(`Skipping invalid key ${key}`)}}else{console.warn(`Skipping non-string key ${key}`)}}} if(ir===0){alert('لم يتم العثور على بيانات صالحة.')}else{alert(`تم الاستعادة (${ir} عنصر). سيتم إعادة تحميل التطبيق.`);setTimeout(()=>window.location.reload(),500)}}catch(err){console.error('Restore Error:',err);alert(`خطأ استعادة: ${err.message}`)}finally{const ri=document.getElementById('restoreInput');if(ri)ri.value=''}};r.onerror=function(){alert('خطأ قراءة الملف.');const ri=document.getElementById('restoreInput');if(ri)ri.value=''};r.readAsText(f)}
-        function clearAllDataWithConfirmation() { if(!confirm('تحذير شديد!!!\n\nهل أنت متأكد تماماً من حذف *جميع* بيانات المجموعات والطلاب وجدول المواعيد؟\n\n*** لا يمكن التراجع! ***\n\nخذ نسخة احتياطية أولاً.'))return; if(!confirm('تأكيد أخير!!!\n\nسيتم حذف كل شيء الآن. متأكد 100%؟'))return; try{console.warn("Clearing all data...");const ktr=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&(k.startsWith('group')||k==='weeklySchedule'))ktr.push(k)} ktr.forEach(k=>{localStorage.removeItem(k);console.log(`Removed: ${k}`)}); alert('تم حذف جميع البيانات بنجاح. سيتم إعادة تحميل الصفحة.'); setTimeout(()=>window.location.reload(),500)}catch(err){console.error('Clear Error:',err);alert('خطأ مسح البيانات.')}}
+        function backupLocalStorage() { try{const bd={};let f=0;for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&(k.startsWith('group')||k==='weeklySchedule' || k.startsWith('day') || k.startsWith('time'))){bd[k]=localStorage.getItem(k);f++}} if(f===0){alert("لا توجد بيانات للحفظ.");return false} const bs=JSON.stringify(bd,null,2);const blob=new Blob([bs],{type:'application/json'});const url=URL.createObjectURL(blob);const date=new Date().toISOString().slice(0,10).replace(/-/g,'');const a=document.createElement('a');a.style.display='none';a.href=url;a.download=`TeacherHelper_Backup_${date}.json`;document.body.appendChild(a);a.click();setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);alert(`تم الحفظ (${f} عنصر).\nالملف: ${a.download}`)},100);return true}catch(err){console.error('Backup Error:',err);if(err.name==='QuotaExceededError'){alert('خطأ: مساحة التخزين ممتلئة!')}else{alert('خطأ حفظ النسخة.')}return false}}
+        function restoreLocalStorage(event) { const f=event.target.files[0]; if(!f)return; if(!f.name.toLowerCase().endsWith('.json')){alert("ملف غير صالح (.json مطلوب)");event.target.value='';return} if(!confirm('تحذير! سيتم استبدال البيانات الحالية ببيانات الملف.\nمتابعة؟')){event.target.value='';return} const r=new FileReader();r.onload=function(e){try{const bj=e.target.result;const bd=JSON.parse(bj);if(typeof bd!=='object'||bd===null){throw new Error('ملف النسخة تالف.')} let ir=0;const ktc=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&(k.startsWith('group')||k==='weeklySchedule' || k.startsWith('day') || k.startsWith('time'))){ktc.push(k)}} ktc.forEach(k=>localStorage.removeItem(k));console.log(`Cleared: ${ktc.join(', ')}`); for(const key in bd){if(key.startsWith('group')||key==='weeklySchedule' || key.startsWith('day') || key.startsWith('time')){if(typeof bd[key]==='string'){try{if(key.startsWith('group'))JSON.parse(bd[key]); // Basic validation for group data
+                            localStorage.setItem(key,bd[key]);ir++}catch(pe){console.warn(`Skipping invalid key ${key}`)}}else{console.warn(`Skipping non-string key ${key}`)}}} if(ir===0){alert('لم يتم العثور على بيانات صالحة.')}else{alert(`تم الاستعادة (${ir} عنصر). سيتم إعادة تحميل التطبيق.`);setTimeout(()=>window.location.reload(),500)}}catch(err){console.error('Restore Error:',err);alert(`خطأ استعادة: ${err.message}`)}finally{const ri=document.getElementById('restoreInput');if(ri)ri.value=''}};r.onerror=function(){alert('خطأ قراءة الملف.');const ri=document.getElementById('restoreInput');if(ri)ri.value=''};r.readAsText(f)}
+        function clearAllDataWithConfirmation() { if(!confirm('تحذير شديد!!!\n\nهل أنت متأكد تماماً من حذف *جميع* بيانات المجموعات والطلاب وجدول المواعيد؟\n\n*** لا يمكن التراجع! ***\n\nخذ نسخة احتياطية أولاً.'))return; if(!confirm('تأكيد أخير!!!\n\nسيتم حذف كل شيء الآن. متأكد 100%؟'))return; try{console.warn("Clearing all data...");const ktr=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&(k.startsWith('group')||k==='weeklySchedule' || k.startsWith('day') || k.startsWith('time')))ktr.push(k)} ktr.forEach(k=>{localStorage.removeItem(k);console.log(`Removed: ${k}`)}); alert('تم حذف جميع البيانات بنجاح. سيتم إعادة تحميل الصفحة.'); setTimeout(()=>window.location.reload(),500)}catch(err){console.error('Clear Error:',err);alert('خطأ مسح البيانات.')}}
         function exportToExcel(n) { if(typeof XLSX==='undefined'){alert('مكتبة Excel غير متاحة.');return} const gds=localStorage.getItem(`group${n}`); if(!gds){alert("لم يتم العثور على بيانات.");return} try{const gd=JSON.parse(gds);if(!gd.students||gd.students.length===0){alert("لا يوجد طلاب للتصدير.");return} const nd=gd.dates?gd.dates.length:0;const nm=Math.ceil(nd/8); const h=['اسم الطالب','قيمة السداد']; for(let i=0;i<nd;i++)h.push(gd.dates[i]||`حصّة ${(i%8)+1}`); for(let m=0;m<nm;m++)h.push(`سداد شهر ${m+1}`); h.push('ملاحظات'); const dr=gd.students.map(s=>{const r=[s.name||'',s.monthlyPayment||150]; for(let i=0;i<nd;i++){const att=s.attendance?.[i]||[false,false];if(att[0]&&att[1])r.push('✓');else if(att[0]&&!att[1])r.push('○');else r.push('✗')} for(let m=0;m<nm;m++)r.push(s.payments?.[m]??0); r.push(s.notes||'');return r}); const ws=XLSX.utils.aoa_to_sheet([h,...dr]); const cw=[{wch:30},{wch:10}];for(let i=0;i<nd;i++)cw.push({wch:12});for(let i=0;i<nm;i++)cw.push({wch:12});cw.push({wch:30});ws['!cols']=cw;if(!ws['!props'])ws['!props']={};ws['!props'].RTL=true;const wb=XLSX.utils.book_new();const sn=(gd.groupName||`Group_${n}`).replace(/[*?:\\/\[\]]/g,'_').substring(0,30);XLSX.utils.book_append_sheet(wb,ws,sn);const fn=sn.replace(/\s+/g,'_');XLSX.writeFile(wb,`${fn}_Export.xlsx`)}catch(err){console.error('Excel Export Error:',err);alert('خطأ تصدير Excel.')}}
         function importFromExcel(n) { if(typeof XLSX==='undefined'){alert('مكتبة Excel غير متاحة.');return} const fi=document.getElementById('importFile');const f=fi?.files?.[0]; if(!f){alert("اختر ملف Excel أولاً.");return} if(!confirm(`تحذير! سيتم استبدال طلاب المجموعة ببيانات الملف.\nمتابعة؟`)){fi.value='';return} const r=new FileReader();r.onload=function(e){try{const d=new Uint8Array(e.target.result);const wb=XLSX.read(d,{type:'array',cellDates:true});if(!wb.SheetNames||wb.SheetNames.length===0)throw new Error("ملف Excel فارغ.");const sn=wb.SheetNames[0];const ws=wb.Sheets[sn];const jd=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,dateNF:'yyyy-mm-dd'});if(!jd||jd.length<2)throw new Error("الورقة فارغة.");const hr=jd[0];const sdr=jd.slice(1);const nameCol=hr.findIndex(h=>h&&h.toLowerCase().includes('اسم الطالب'));const payCol=hr.findIndex(h=>h&&h.toLowerCase().includes('قيمة السداد'));const noteCol=hr.findIndex(h=>h&&h.toLowerCase().includes('ملاحظات'));if(nameCol===-1)throw new Error("لم يتم العثور على عمود 'اسم الطالب'.");let firstDateCol=(payCol!==-1)?payCol+1:nameCol+1;let lastDateCol=-1,firstPayCol=-1;for(let i=firstDateCol;i<hr.length;i++){if(hr[i]&&typeof hr[i]==='string'&&hr[i].toLowerCase().includes('سداد شهر')){firstPayCol=i;break}} if(firstPayCol!==-1){lastDateCol=firstPayCol-1}else if(noteCol!==-1){lastDateCol=noteCol-1}else{lastDateCol=hr.length-1} const dateIdxs=[],impDates=[];if(lastDateCol>=firstDateCol){for(let i=firstDateCol;i<=lastDateCol;i++){dateIdxs.push(i);let dh=hr[i];if(dh instanceof Date){const y=dh.getFullYear(),m=(dh.getMonth()+1).toString().padStart(2,'0'),d=dh.getDate().toString().padStart(2,'0');impDates.push(`${y}-${m}-${d}`)}else if(typeof dh==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(dh)){impDates.push(dh)}else{impDates.push('')}}} const numDates=dateIdxs.length,numMonths=Math.ceil(numDates/8);const payIdxs=[];if(firstPayCol!==-1){let epc=(noteCol!==-1)?noteCol-firstPayCol:hr.length-firstPayCol;for(let i=0;i<epc;i++){if(hr[firstPayCol+i]?.toLowerCase().includes('سداد شهر'))payIdxs.push(firstPayCol+i);else break}} const impStuds=sdr.map(row=>{if(!row||row.length===0||!row[nameCol])return null;const s={name:row[nameCol]||'طالب',monthlyPayment:parseFloat(row[payCol])||150,attendance:Array(numDates).fill([false,false]),payments:Array(numMonths).fill(0),notes:(noteCol!==-1&&row[noteCol])?row[noteCol]:''};dateIdxs.forEach((cIdx,dArrIdx)=>{const cv=row[cIdx];if(cv==='✓')s.attendance[dArrIdx]=[true,true];else if(cv==='○')s.attendance[dArrIdx]=[true,false];else s.attendance[dArrIdx]=[false,false]});payIdxs.forEach((cIdx,mArrIdx)=>{if(mArrIdx<numMonths)s.payments[mArrIdx]=parseFloat(row[cIdx])||0});return s}).filter(s=>s!==null);const gds=localStorage.getItem(`group${n}`);let gd;try{gd=JSON.parse(gds)||{groupName:`المجموعة ${n}`}}catch(e){gd={groupName:`المجموعة ${n}`}} gd.students=impStuds;gd.dates=impDates;saveData(`group${n}`,gd);loadGroup(n);alert(`تم استيراد ${impStuds.length} طالب.`)}catch(err){console.error('Excel Import Error:',err);alert(`خطأ استيراد: ${err.message}`)}finally{fi.value=''}};r.onerror=function(){alert('خطأ قراءة الملف.');fi.value=''};r.readAsArrayBuffer(f)}
         function calculateGroupStats(groupData) { let s={collected:0,expected:0,remaining:0,attendanceRate:0};if(!groupData||!groupData.students||groupData.students.length===0)return s;let tc=0,ta=0;groupData.students.forEach(st=>{const mp=st.monthlyPayment||150;const ps=st.payments||[];s.collected+=ps.reduce((sum,p)=>sum+(Number(p)||0),0);let sc=0;(st.attendance||[]).forEach(att=>{if(att&&att[0]){sc++;tc++;if(att[1])ta++}});const cp=Math.floor(sc/8);s.expected+=cp*mp});s.remaining=s.expected-s.collected;s.attendanceRate=tc>0?Math.round((ta/tc)*100):0;s.collected=Number(s.collected.toFixed(2));s.expected=Number(s.expected.toFixed(2));s.remaining=Number(s.remaining.toFixed(2));return s}
-        function calculateAllStatistics() { const os={totalCollected:0,totalExpected:0,groupStats:[],unpaidStudents:[]};for(let i=1;i<=30;i++){const gds=localStorage.getItem(`group${i}`);if(!gds)continue;try{const gd=JSON.parse(gds);if(!gd||!gd.students||gd.students.length===0)continue;const cgs={number:i,name:gd.groupName||`المجموعة ${i}`,collected:0,expected:0,remaining:0};gd.students.forEach((s)=>{if(!s)return;const mp=s.monthlyPayment||150;const ps=s.payments||[];const stp=ps.reduce((sum,p)=>sum+(Number(p)||0),0);let sc=0,sa=0;const cld=[];(s.attendance||[]).forEach((att,idx)=>{if(att&&att[0]){sc++;if(att[1])sa++;cld.push({index:idx,present:att[1],monthIndex:Math.floor(idx/8),date:gd.dates?.[idx]||''})}});const cp=Math.floor(sc/8);const ste=cp*mp;const sua=Math.max(0,ste-stp);cgs.collected+=stp;cgs.expected+=ste;if(sua>0){let op=0;const ad=[];for(let p=0;p<cp;p++){const pp=ps[p]||0;const io=pp<mp;if(io)op++;const psi=p*8;const pei=psi+8;const pl=cld.filter(l=>l.index>=psi&&l.index<pei);ad.push({periodNumber:p+1,startMonth:Math.floor(pl[0]?.index/8)+1||(p+1),countedLessons:pl.length,attendedLessons:pl.filter(l=>l.present).length,paid:pp,expected:mp,isOverdue:io})} os.unpaidStudents.push({name:s.name||'طالب بدون اسم',groupName:cgs.name,groupNumber:i,unpaidAmount:sua,monthsOverdue:op,totalPaid:stp,totalDue:ste,expectedPerMonth:mp,attendanceDetails:ad})} os.totalCollected+=stp;os.totalExpected+=ste});cgs.remaining=cgs.expected-cgs.collected;if(cgs.expected>0||cgs.collected>0)os.groupStats.push(cgs)}catch(e){console.error(`Error calc full stats group ${i}:`,e)}} os.totalCollected=Number(os.totalCollected.toFixed(2));os.totalExpected=Number(os.totalExpected.toFixed(2));return os}
+        function calculateAllStatistics() { const os={totalCollected:0,totalExpected:0,groupStats:[],unpaidStudents:[]};for(let i=1;i<=30;i++){const gds=localStorage.getItem(`group${i}`);if(!gds)continue;try{const gd=JSON.parse(gds);if(!gd||!gd.students||gd.students.length===0)continue;const cgs={number:i,name:gd.groupName||`المجموعة ${i}`,collected:0,expected:0,remaining:0};gd.students.forEach((s)=>{if(!s)return;const mp=s.monthlyPayment||150;const ps=s.payments||[];const stp=ps.reduce((sum,p)=>sum+(Number(p)||0),0);let sc=0,sa=0;const cld=[];(s.attendance||[]).forEach((att,idx)=>{if(att&&att[0]){sc++;if(att[1])sa++;cld.push({index:idx,countedLessons: 1, attendedLessons: att[1] ? 1 : 0, date:gd.dates?.[idx]||''})}});const cp=Math.floor(sc/8);const ste=cp*mp;const sua=Math.max(0,ste-stp);cgs.collected+=stp;cgs.expected+=ste;if(sua>0){let op=0;const ad=[];for(let p=0;p<cp;p++){const pp=ps[p]||0;const io=pp<mp;if(io)op++;const psi=p*8;const pei=psi+8;const pl=cld.filter(l=>l.index>=psi&&l.index<pei);ad.push({periodNumber:p+1,countedLessons:pl.length,attendedLessons:pl.filter(l=>l.attendedLessons).length,paid:pp,expected:mp,isOverdue:io})} os.unpaidStudents.push({name:s.name||'طالب بدون اسم',groupName:cgs.name,groupNumber:i,unpaidAmount:sua,monthsOverdue:op,totalPaid:stp,totalDue:ste,expectedPerMonth:mp,attendanceDetails:ad, payments: ps})} os.totalCollected+=stp;os.totalExpected+=ste});cgs.remaining=cgs.expected-cgs.collected;if(cgs.expected>0||cgs.collected>0)os.groupStats.push(cgs)}catch(e){console.error(`Error calc full stats group ${i}:`,e)}} os.totalCollected=Number(os.totalCollected.toFixed(2));os.totalExpected=Number(os.totalExpected.toFixed(2));return os}
         function exportStatisticsToExcel() { if(typeof XLSX==='undefined'){alert('مكتبة Excel غير متاحة.');return} const stats=calculateAllStatistics();const wb=XLSX.utils.book_new();const date=new Date().toISOString().slice(0,10).replace(/-/g,''); try{if(stats.unpaidStudents.length>0){const ud=stats.unpaidStudents.map(s=>({'اسم الطالب':s.name,'المجموعة':s.groupName,'المتأخرات (ج)':s.unpaidAmount,'إجمالي المطلوب':s.totalDue,'إجمالي المدفوع':s.totalPaid,'فترات متأخرة':s.monthsOverdue,'قيمة السداد':s.expectedPerMonth}));const ws=XLSX.utils.json_to_sheet(ud);if(!ws['!props'])ws['!props']={};ws['!props'].RTL=true;ws['!cols']=[{wch:30},{wch:20},{wch:15},{wch:15},{wch:15},{wch:18},{wch:18}];XLSX.utils.book_append_sheet(wb,ws,'الطلاب المتأخرين')} if(stats.groupStats.length>0){const gd=stats.groupStats.map(g=>({'المجموعة':g.name,'المحصل':g.collected,'المتوقع':g.expected,'المتبقي':g.remaining,'التحصيل (%)':g.expected>0?Math.round((g.collected/g.expected)*100):100}));const ws=XLSX.utils.json_to_sheet(gd);if(!ws['!props'])ws['!props']={};ws['!props'].RTL=true;ws['!cols']=[{wch:30},{wch:15},{wch:15},{wch:18},{wch:18}];XLSX.utils.book_append_sheet(wb,ws,'إحصائيات المجموعات')} const sd=[{"البند":"إجمالي المحصل","القيمة":stats.totalCollected},{"البند":"إجمالي المتوقع","القيمة":stats.totalExpected},{"البند":"إجمالي المتأخرات","القيمة":stats.totalExpected-stats.totalCollected},{"البند":"عدد الطلاب المتأخرين","القيمة":stats.unpaidStudents.length},{"البند":"عدد المجموعات النشطة","القيمة":stats.groupStats.length}];const ws=XLSX.utils.json_to_sheet(sd,{skipHeader:true});if(!ws['!props'])ws['!props']={};ws['!props'].RTL=true;ws['!cols']=[{wch:25},{wch:15}];XLSX.utils.sheet_add_aoa(ws,[["البند","القيمة"]],{origin:"A1"});XLSX.utils.book_append_sheet(wb,ws,'الملخص العام'); if(wb.SheetNames.length===0){alert("لا توجد بيانات للتصدير.");return} XLSX.writeFile(wb,`TeacherHelper_Stats_${date}.xlsx`);alert('تم تصدير الإحصائيات.')}catch(err){console.error('Stats Export Error:',err);alert('خطأ تصدير الإحصائيات.')}}
         function initializeSearch() { const si=document.getElementById('searchInput');if(!si)return; si.addEventListener('input',function(){/* Optional: const st=this.value.trim(); if(st.length>=2){} else if(st.length===0){} */}); si.addEventListener('keypress',function(e){if(e.key==='Enter')showSearchPage(this.value)})}
     </script>
