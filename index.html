@@ -194,7 +194,7 @@
                 min-width: 120px;
              }
              td:first-child input[type="text"] {
-                font-size: 0.85rem;
+                font-size: 0.75rem;
              }
              .settings-grid, .home-stats-grid { grid-template-columns: 1fr; }
              .kpi-card { min-height: 120px; padding: 1rem; }
@@ -1443,7 +1443,7 @@
                                             <div style="display: flex; flex-direction: column; gap: 2px; flex-grow: 1;">
                                                 <input type="text" value="${student.name || ''}"
                                                     onchange="updateStudentName(${groupNumber}, ${sIdx}, this.value)"
-                                                    style="width: 110%;">
+                                                    style="width: 140%;">
                                                 <button style="width: 50%;" onclick="deleteStudent(${groupNumber}, ${sIdx})"
                                                     class="delete-student"
                                                     title="حذف ${student.name || ''}">حذف</button>
@@ -1851,3 +1851,4 @@
 
 </body>
 </html>
+
