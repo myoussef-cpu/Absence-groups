@@ -162,7 +162,7 @@
 
         td input[type="number"],
         .monthly-payment-input {
-            text-align: right;
+            text-align: left;
             direction: rtl;
         }
 
@@ -186,7 +186,7 @@
              body { padding: calc(var(--nav-height) + 0.5rem) 0.75rem 0.75rem 0.75rem; }
              th, td { padding: 0.5rem; font-size: 0.9rem; }
              td input[type="text"], th input[type="text"], th input[type="date"], td input[type="number"] {
-                font-size: 0.9rem; padding: 0.4rem;
+                font-size: 0.9rem; padding: 0.1rem;
              }
              .delete-student { padding: 0.3rem 0.5rem; font-size: 0.8rem; margin-left: 0.25rem; }
              td:first-child input[type="text"]{ width: calc(100% - 55px); }
@@ -1443,7 +1443,7 @@
                                             <div style="display: flex; flex-direction: column; gap: 2px; flex-grow: 1;">
                                                 <input type="text" value="${student.name || ''}"
                                                     onchange="updateStudentName(${groupNumber}, ${sIdx}, this.value)"
-                                                    style="width: 140%;">
+                                                    style="width: 160%;">
                                                 <button style="width: 50%;" onclick="deleteStudent(${groupNumber}, ${sIdx})"
                                                     class="delete-student"
                                                     title="حذف ${student.name || ''}">حذف</button>
@@ -1851,4 +1851,5 @@
 
 </body>
 </html>
+
 
