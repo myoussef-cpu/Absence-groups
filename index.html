@@ -34,6 +34,10 @@
             position: relative;
             min-height: 100vh;
         }
+        .late-red {
+    color: #dc3545;
+    font-weight: bold;
+        }
 
         #mainContentContainer {
             background: var(--surface-color);
@@ -1148,10 +1152,22 @@
                                             onchange="handleQuickAttendance(${currentGroupStudents.groupNumber}, ${idx}, this.checked)">
                                         <span class="student-name">${student.name || 'طالب بدون اسم'}</span>
                                     </label>
-                                    <span class="lessons-counter${lessonCount.current === 8 ? ' warning' : ''}" 
-                                          title="الدورة ${lessonCount.period}">
-                                        ${lessonCount.current}/8
-                                    </span>
+                                    const overdue = student.payments
+    ? (() => {
+        let counted = 0;
+        (student.attendance || []).forEach(att => {
+            if (att && att[0]) counted++;
+        });
+        const completedPeriods = Math.floor(counted / 8);
+        const paidPeriods = (student.payments || []).filter(p => p > 0).length;
+        return Math.max(0, completedPeriods - paidPeriods);
+    })()
+    : 0;
+    <span class="lesson-counter${lessonCount.current === 8 ? ' warning' : ''}"
+      title="الدورة ${lessonCount.period}">
+    ${lessonCount.current}
+    ${overdue > 0 ? `/ <span class="late-red">${overdue}</span>` : ''}
+</span>
                                 </div>
                             `;
                         }).join('')}
@@ -1851,6 +1867,7 @@
 
 </body>
 </html>
+
 
 
 
